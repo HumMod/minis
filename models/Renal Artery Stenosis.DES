@@ -1,0 +1,630 @@
+Renal Artery Stenosis
+
+Created : 25-Mar-02
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Renal Artery Stenosis </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ========================================
+
+Arterial Pressure
+
+<var>
+  <name> ArterialPressure </name>
+</var>
+
+<parm>
+  <name> NormalArterialPressure </name>
+  <val> 100.0 </val>
+</parm>
+
+<var>
+  <name> ECFV-AP </name>
+</var>
+
+<var>
+  <name> PRA-AP </name>
+</var>
+
+ECFV
+
+<parm>
+  <name> Salt&H2OIntake </name>
+  <val> 1.0 </val>
+</parm>
+
+<var>
+  <name> UrineOutput </name>
+</var>
+
+Kidney
+
+<var>
+  <name> RenalArteryPressure </name>
+</var>
+
+<parm>
+  <name> RenalArteryPressureDrop </name>
+  <val> 0.0 </val>
+</parm>
+
+Renin
+
+<var>
+  <name> PRA </name>
+</var>
+
+<var>
+  <name> ReninSecretion </name>
+</var>
+
+<parm>
+  <name> ReninSecBlock </name>
+  <val> 1.0 </val>
+</parm>
+
+<var>
+  <name> ReninDegradation </name>
+</var>
+
+<parm>
+  <name> ReninClearanceK </name>
+  <val> 0.07 </val>
+</parm>
+
+</variables>
+
+<equations> ========================================
+
+<diffeq>
+  <name> ECFV </name>
+  <integralname> ECFV </integralname>
+  <initialval> 15000 </initialval>
+  <dervname> ECFVChange </dervname>
+  <errorlim> 150 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> Renin </name>
+  <integralname> Renin </integralname>
+  <initialval> 30000 </initialval>
+  <dervname> ReninChange </dervname>
+  <errorlim> 300 </errorlim>
+</diffeq>
+
+{ /equations }
+
+</equations>
+
+<functions> ========================================
+
+<curve>
+  <name> ECFV-AP </name>
+  <point>
+    <x> 8000 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 15000 </x><y> 1.0 </y><slope> 0.0004 </slope>
+  </point>
+  <point>
+    <x> 20000 </x><y> 2.0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> PRA-AP </name>
+  <point>
+    <x> 0 </x><y> 0.8 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 2.0 </x><y> 1.0 </y><slope> 0.2 </slope>
+  </point>
+  <point>
+    <x> 10.0 </x><y> 2.0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> RAP-ReninSecretion </name>
+  <point>
+    <x> 40 </x><y> 10000 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 100 </x><y> 2100 </y><slope> -50.0 </slope>
+  </point>
+  <point>
+    <x> 200 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> RAP-UrineOutput </name>
+  <point>
+    <x> 60 </x><y> 0.0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 100 </x><y> 1.0 </y><slope> 0.04 </slope>
+  </point>
+  <point>
+    <x> 200 </x><y> 4.0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions> =======================================
+
+<block><name> Dervs </name> =========================
+
+<def>
+  <name> PRA </name>
+  <val> Renin / ECFV </val>
+</def>
+
+<def>
+  <name> ECFV-AP </name>
+  <val> ECFV-AP [ ECFV ] </val>
+</def>
+
+<def>
+  <name> PRA-AP </name>
+  <val> PRA-AP [ PRA ] </val>
+</def>
+
+<def>
+  <name> ArterialPressure </name>
+  <val>
+      NormalArterialPressure
+    * ECFV-AP
+    * PRA-AP
+  </val>
+</def>
+
+<def>
+  <name> RenalArteryPressure </name>
+  <val>
+      ArterialPressure
+    - RenalArteryPressureDrop
+  </val>
+</def>
+
+<def>
+  <name> UrineOutput </name>
+  <val>
+      RAP-UrineOutput
+    [ RenalArteryPressure ]
+  </val>
+</def>
+
+<def>
+  <name> ECFVChange </name>
+  <val>
+      Salt&H2OIntake
+    - UrineOutput
+  </val>
+</def>
+
+<def>
+  <name> ReninSecretion </name>
+  <val>
+      ReninSecBlock
+    * RAP-ReninSecretion
+    [ RenalArteryPressure ]
+  </val>
+</def>
+
+<def>
+  <name> ReninDegradation </name>
+  <val> Renin * ReninClearanceK </val>
+</def>
+
+<def>
+  <name> ReninChange </name>
+  <val> ReninSecretion - ReninDegradation </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> =============================================
+
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 1 </displayint>
+  <menuitem> 10 Min </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 60 </solutionint>
+  <displayint> 5 </displayint>
+  <menuitem> 1 Hour </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 1440 </solutionint>
+  <displayint> 120 </displayint>
+  <menuitem> 1 Day </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10080 </solutionint>
+  <displayint> 1440 </displayint>
+  <menuitem> 1 Week </menuitem>
+</gofor>
+
+<gobar/>
+
+<goto>
+  <solutionint> 60 </solutionint>
+  <displayint> 5 </displayint>
+  <menuitem> Next Hour </menuitem>
+</goto>
+
+<goto>
+  <solutionint> 1440 </solutionint>
+  <displayint> 120 </displayint>
+  <menuitem> Next Day </menuitem>
+</goto>
+
+<goto>
+  <solutionint> 10080 </solutionint>
+  <displayint> 1440 </displayint>
+  <menuitem> Next Week </menuitem>
+</goto>
+
+</control>
+
+<display> =========================================
+
+<common>
+
+<tree>
+
+<branch>
+  <name> Panels </name>
+  <label> Panels </label>
+  <parent> MAINMENU </parent>
+</branch>
+
+<leaf>
+  <name> General </name>
+  <label> General </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> ECFV </name>
+  <label> ECFV </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Renin </name>
+  <label> Renin </label>
+  <parent> Panels </parent>
+</leaf>
+
+</tree>
+
+</common>
+
+<panel><name> General </name> ===========================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <ampm/>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> ArterialPressure </name>
+   <format> <integer/> </format>
+   <label> ArterialPressure </label>
+</showvalue>
+
+<showgraph>
+  <row> 3.0 </row><col> 1 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> ArterialPressure </name>
+      <label> AP </label>
+    </yvar>
+    <scale><min> 80 </min><max> 120 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<editbox>
+   <row> 10.4 </row><col> 1 </col>
+   <name> RenalArteryPressureDrop </name>
+   <label> RenalArteryPressureDrop </label>
+</editbox>
+
+<showvalue>
+   <row> 11.8 </row><col> 1 </col>
+   <name> RenalArteryPressure </name>
+   <format> <integer/> </format>
+   <label> RenalArteryPressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.2 </row><col> 1 </col>
+   <name> ECFV-AP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> ECFV-AP </label>
+</showvalue>
+
+<showvalue>
+   <row> 14.2 </row><col> 1 </col>
+   <name> PRA-AP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> PRA-AP </label>
+</showvalue>
+
+</panel>
+
+<panel><name> ECFV </name> ===========================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <ampm/>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> ECFV </name>
+   <format> <integer/> </format>
+   <label> ECFV </label>
+</showvalue>
+
+<showgraph>
+  <row> 3.0 </row><col> 1 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 7 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> ECFV </name>
+      <label> ECFV </label>
+    </yvar>
+    <scale><min> 14000 </min><max> 16000 </max><inc> 1000 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+   <row> 10.4 </row><col> 1 </col>
+   <name> ECFVChange </name>
+   <format> <integer/> </format>
+   <label> ECFVChange </label>
+</showvalue>
+
+<editbox>
+   <row> 11.8 </row><col> 3 </col>
+   <name> Salt&H2OIntake </name>
+   <label> Salt&H2OIntake </label>
+</editbox>
+
+<showvalue>
+   <row> 13.2 </row><col> 3 </col>
+   <name> UrineOutput </name>
+   <format><decimal> 1 </decimal></format>
+   <label> UrineOutput </label>
+</showvalue>
+
+<showcurve>
+  <row> 2.0 </row><col> 32 </col>
+  <high> 6 </high><wide> 24 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> RenalArteryPressure </name>
+    <label> RAP </label>
+    <scale><min> 0 </min><max> 200 </max><inc> 100 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> UO </label>
+    <scale><min> 0 </min><max> 4 </max><inc> 1 </inc></scale>
+  </yaxis>
+
+  <curvename> RAP-UrineOutput </curvename>
+</showcurve>
+
+<showcurve>
+  <row> 9.0 </row><col> 32 </col>
+  <high> 6 </high><wide> 24 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> ECFV </name>
+    <label> ECFV </label>
+    <scale><min> 0 </min><max> 20000 </max><inc> 1000 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> AP Eff </label>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+
+  <curvename> ECFV-AP </curvename>
+</showcurve>
+
+</panel>
+
+<panel><name> Renin </name> ===========================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <ampm/>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> PRA </name>
+   <format><decimal> 1 </decimal></format>
+   <label> PRA </label>
+</showvalue>
+
+<showgraph>
+  <row> 3.0 </row><col> 1 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> PRA </name>
+      <label> PRA </label>
+    </yvar>
+    <scale><min> 1 </min><max> 3 </max><inc> 1 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+   <row> 11.4 </row><col> 1 </col>
+   <name> Renin </name>
+   <format> <integer/> </format>
+   <label> Renin </label>
+</showvalue>
+
+<showvalue>
+   <row> 12.4 </row><col> 3 </col>
+   <name> ReninChange </name>
+   <format> <integer/> </format>
+   <label> Renin Change </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.8 </row><col> 1 </col>
+   <name> ReninSecretion </name>
+   <format> <integer/> </format>
+   <label> Renin Secretion </label>
+</showvalue>
+
+<editbox>
+   <row> 15.2 </row><col> 3 </col>
+   <name> ReninSecBlock </name>
+   <label> Renin Sec Block </label>
+</editbox>
+
+<showvalue>
+   <row> 16.6 </row><col> 1 </col>
+   <name> ReninDegradation </name>
+   <format> <integer/> </format>
+   <label> Renin Degradation </label>
+</showvalue>
+
+<editbox>
+   <row> 18.0 </row><col> 3 </col>
+   <name> ReninClearanceK </name>
+   <label> Renin Clearance K </label>
+</editbox>
+
+<showcurve>
+  <row> 2.0 </row><col> 32 </col>
+  <high> 6 </high><wide> 24 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> RenalArteryPressure </name>
+    <label> RAP </label>
+    <scale><min> 0 </min><max> 200 </max><inc> 100 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> Sec </label>
+    <scale><min> 0 </min><max> 10000 </max><inc> 1000 </inc></scale>
+  </yaxis>
+
+  <curvename> RAP-ReninSecretion </curvename>
+</showcurve>
+
+<showcurve>
+  <row> 9.0 </row><col> 32 </col>
+  <high> 6 </high><wide> 24 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> PRA </name>
+    <label> PRA </label>
+    <scale><min> 0 </min><max> 10 </max><inc> 1 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> AP Eff </label>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+
+  <curvename> PRA-AP </curvename>
+</showcurve>
+
+</panel>
+</display>
+
+</model>
+
+End

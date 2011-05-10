@@ -1,0 +1,320 @@
+Michaelis-Menten
+
+Created : 29-Dec-03
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Michaelis-Menten </basic></title>
+
+<structure><name> Model </name>
+
+<variables> =================================
+
+<var>
+  <name> VelocityOne-Two </name>
+</var>
+
+<var>
+  <name> VelocityOne-Three </name>
+</var>
+
+<var>
+  <name> [S]One </name>
+</var>
+
+<var>
+  <name> [S]Two </name>
+</var>
+
+<var>
+  <name> [S]Three </name>
+</var>
+
+<parm>
+  <name> Formation </name>
+  <val> 4.6 </val>
+</parm>
+
+<parm>
+  <name> Volume </name>
+  <val> 1.0 </val>
+</parm>
+
+<parm>
+  <name> KTwo </name>
+  <val> 1.0 </val>
+</parm>
+
+<parm>
+  <name> KThree </name>
+  <val> 1.0 </val>
+</parm>
+
+</variables>
+
+<equations>
+
+<diffeq>
+  <name> MassOne </name>
+  <integralname> MassOne </integralname>
+  <initialval> 1.0 </initialval>
+  <dervname> ChangeOne </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> MassTwo </name>
+  <integralname> MassTwo </integralname>
+  <initialval> 1.3 </initialval>
+  <dervname> ChangeTwo </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> MassThree </name>
+  <integralname> MassThree </integralname>
+  <initialval> 3.3 </initialval>
+  <dervname> ChangeThree </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> =====================================
+
+<block><name> Dervs </name> =======================
+
+<def>
+  <name> [S]One </name>
+  <val> MassOne / Volume </val>
+</def>
+
+<def>
+  <name> [S]Two </name>
+  <val> MassTwo / Volume </val>
+</def>
+
+<def>
+  <name> [S]Three </name>
+  <val> MassThree / Volume </val>
+</def>
+
+<def>
+  <name> VelocityOne-Two </name>
+  <val> ( 2.0 * [S]One ) / ( 0.5 + [S]One ) </val>
+</def>
+
+<def>
+  <name> VelocityOne-Three </name>
+  <val> ( 10.0 * [S]One ) / ( 2.0 + [S]One ) </val>
+</def>
+
+<def>
+  <name> ChangeOne </name>
+  <val> Formation - VelocityOne-Two - VelocityOne-Three </val>
+</def>
+
+<def>
+  <name> ChangeTwo </name>
+  <val> VelocityOne-Two - ( KTwo * MassTwo ) </val>
+</def>
+
+<def>
+  <name> ChangeThree </name>
+  <val> VelocityOne-Three - ( KThree * MassThree ) </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ==========================================
+
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 1 </displayint>
+  <menuitem> 10 Sec </menuitem>
+</gofor>
+
+
+</control>
+
+<display> =========================================
+
+<panel><name> Michaelis-Menten </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <timebase> SEC </timebase>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> [S]One </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [S1] </label>
+</showvalue>
+
+<showgraph>
+  <row> 3.0 </row><col> 1 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 7 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> [S]One </name>
+      <label> [S1] </label>
+    </yvar>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+   <row> 10.4 </row><col> 1 </col>
+   <name> MassOne </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Mass 1 </label>
+</showvalue>
+
+<showvalue>
+   <row> 11.4 </row><col> 3 </col>
+   <name> ChangeOne </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Change 1 </label>
+</showvalue>
+
+<editbox>
+   <row> 12.8 </row><col> 3 </col>
+   <name> Formation </name>
+   <label> Formation </label>
+</editbox>
+
+<showvalue>
+   <row> 14.2 </row><col> 3 </col>
+   <name> VelocityOne-Two </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Velocity 1-2 </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.2 </row><col> 3 </col>
+   <name> VelocityOne-Three </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Velocity 1-3 </label>
+</showvalue>
+
+<showvalue>
+   <row> 17.0 </row><col> 1 </col>
+   <name> [S]Two </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [S2] </label>
+</showvalue>
+
+<showgraph>
+  <row> 18.0 </row><col> 1 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 7 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> [S]Two </name>
+      <label> [S2] </label>
+    </yvar>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+   <row> 25.4 </row><col> 1 </col>
+   <name> MassTwo </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Mass 2 </label>
+</showvalue>
+
+<showvalue>
+   <row> 26.4 </row><col> 3 </col>
+   <name> ChangeTwo </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Change 2 </label>
+</showvalue>
+
+<showvalue>
+   <row> 17.0 </row><col> 32 </col>
+   <name> [S]Three </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [S3] </label>
+</showvalue>
+
+<showgraph>
+  <row> 18.0 </row><col> 32 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 7 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> [S]Three </name>
+      <label> [S3] </label>
+    </yvar>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+   <row> 25.4 </row><col> 32 </col>
+   <name> MassThree </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Mass 3 </label>
+</showvalue>
+
+<showvalue>
+   <row> 26.4 </row><col> 34 </col>
+   <name> ChangeThree </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Change 3 </label>
+</showvalue>
+
+</panel>
+</display>
+
+</model>
+
+End

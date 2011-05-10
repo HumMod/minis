@@ -1,0 +1,277 @@
+Drug Dosing
+
+Created : 24-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+Watch the concentration of drug build
+up over time with repeated dosing.
+
+A medicine is taken N times a day. The
+medicine is continuously degraded in
+proportion to the total amount in the
+body.  The concentration in the body
+is a time-dependent function of both
+dosing and degradation.
+
+The independent variable is time in days.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Drug Dosing </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ======================================
+
+<parm>
+  <name> K </name>
+  <val> 2.0 </val>
+</parm>
+
+<parm>
+  <name> Dose </name>
+  <val> 5 </val>
+</parm>
+
+<parm>
+  <name> TimesDay </name>
+  <val> 4 </val>
+</parm>
+
+<var>
+  <name> LastDose </name>
+  <val> 0 </val>
+</var>
+
+<var>
+  <name> Peak </name>
+  <val> 0 </val>
+</var>
+
+<var>
+  <name> Interval </name>
+</var>
+
+</variables>
+
+<equations> ====================================
+
+<diffeq>
+  <name> Q </name>
+  <integralname> Q </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dQ/dt </dervname>
+</diffeq>
+
+</equations>
+
+<definitions> ======================================
+
+<block><name> Parms </name> ========================
+
+<def>
+  <name> Interval </name>
+  <val> INVERT TimesDay </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> ========================
+
+<def>
+  <name> dQ/dt </name>
+  <val> - K * Q </val>
+</def>
+
+</block>
+
+<block><name> Wrapup </name> =======================
+
+<if>
+  <test> System.X GE ( LastDose + Interval ) </test>
+  <true>
+    <def>
+      <name> LastDose </name>
+      <val> LastDose + Interval </val>
+    </def>
+    <def>
+      <name> Q </name>
+      <val> Q + Dose </val>
+    </def>
+  </true>
+</if>
+
+<if>
+  <test> Q GT Peak </test>
+  <true>
+    <def>
+      <name> Peak </name>
+      <val> Q </val>
+    </def>
+  </true>
+</if>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ==========================================
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+  <wrapup> Model.Wrapup </wrapup>
+
+</math>
+
+<control> ========================================
+
+
+<gofor>
+  <solutionint> 2 </solutionint>
+  <displayint> 0.05 </displayint>
+</gofor>
+
+
+</control>
+
+<display> ========================================
+<panel>
+
+<name> Drug Dosing </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> Q </name>
+   <format> <integer/> </format>
+   <label> Conc </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 3 </col>
+   <name> dQ/dt </name>
+   <format> <integer/> </format>
+   <label> Change </label>
+</showvalue>
+
+Rx
+
+<groupbox>
+   <row> 5 </row><col> 1 </col>
+   <high> 4.6 </high><wide> 28 </wide>
+   <title> Rx </title>
+
+<repeatlist>
+  <name> Dose </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> Dose </name>
+  <listname> Dose </listname>
+  <label> Dose </label>
+</slidebar>
+
+<repeatlist>
+  <name> TimesDay </name>
+  <repeat>
+    <reps> 10 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> TimesDay </name>
+  <listname> TimesDay </listname>
+  <label> Times / Day </label>
+</slidebar>
+
+</groupbox>
+
+Clearance
+
+<groupbox>
+   <row> 10 </row><col> 1 </col>
+   <high> 3.2 </high><wide> 28 </wide>
+   <title> Clearance </title>
+
+<maplist>
+  <name> K </name>
+  <map><val> 0.0 </val><img> None </img></map>
+  <map><val> 1.0 </val><img> Poor </img></map>
+  <map><val> 2.0 </val><img> Normal </img></map>
+  <map><val> 4.0 </val><img> Good </img></map>
+  <map><val> 10.0 </val><img> Excellent </img></map>
+</maplist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> K </name>
+  <listname> K </listname>
+  <label> Rate </label>
+</slidebar>
+
+</groupbox>
+
+Greatest Concentration
+
+<showvalue>
+   <row> 14 </row><col> 1 </col>
+   <name> Peak </name>
+   <format> <integer/> </format>
+   <label> Greatest Concentration </label>
+</showvalue>
+
+Right-hand Side =================================
+
+<showclock>
+   <row> 0.5 </row><col> 31 </col>
+   <name> System.X </name>
+   <timebase> DAY </timebase>
+   <days/>
+</showclock>
+
+<showgraph>
+  <row> 2.5 </row><col> 31 </col>
+  <high> 14 </high><wide> 32 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Days </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> Q </name>
+      <label> Conc </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 5 </max></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

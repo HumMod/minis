@@ -1,0 +1,213 @@
+Kidney / Hemodynamics Panel
+
+Created : 31-Oct-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> General Hemodynamics </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> Circ.ArtyPres </name>
+   <format> <integer/> </format>
+   <label> Arterial Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> Flows.RBF </name>
+   <format> <integer/> </format>
+   <label> Blood Flow </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> Flows.RPF </name>
+   <format> <integer/> </format>
+   <label> Plasma Flow </label>
+</showvalue>
+
+VASCULAR CONDUCTANCE
+
+<groupbox>
+   <row> 6 </row><col> 1 </col>
+   <high> 6.0 </high><wide> 24 </wide>
+   <title> Vascular Cond </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> Flows.TotalCond </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Total </label>
+</showvalue>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> AffArty.Cond </name>
+   <format> <integer/> </format>
+   <label> Afferent </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.4 </row><col> 1 </col>
+   <name> EffArty.Cond </name>
+   <format> <integer/> </format>
+   <label> Efferent </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.4 </row><col> 1 </col>
+   <name> Flows.VenousCond </name>
+   <format> <integer/> </format>
+   <label> Venous </label>
+</showvalue>
+
+</groupbox>
+
+Right Side =================================
+
+RBF GRAPH
+
+<showgraph>
+  <row> 2 </row><col> 31 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Flows.RBF </name>
+      <label> RBF </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 1100 </min><max> 1300 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+Full Width ==================================
+
+Renal perfusion pressure may be
+
+# Endogenous
+# Pumped
+# Stenosed
+
+PUMP
+
+<groupbox>
+   <row> 13 </row><col> 1 </col>
+   <high> 10.5 </high><wide> 64 </wide>
+   <title> Pump </title>
+
+<radiobuttons>
+  <row> 1.5 </row><col> 1 </col>
+  <name> RPP.PumpSwitch </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> RPP.PumpSetting </name>
+  <repeat>
+    <reps> 16 </reps>
+    <stepsize> 5 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 16 </reps>
+    <stepsize> 5 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> RPP.PumpSetting </name>
+  <listname> RPP.PumpSetting </listname>
+  <label> Pres </label>
+</slidebar>
+
+</groupbox>
+
+STENOSIS
+
+<groupbox>
+   <row> 6.5 </row><col> 1 </col>
+   <high> 3.2 </high><wide> 29 </wide>
+   <title> Stenosis </title>
+
+<repeatlist>
+  <name> RPP.PresDrop </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 18 </reps>
+    <stepsize> 5 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> RPP.PresDrop </name>
+  <listname> RPP.PresDrop </listname>
+  <label> Pres Drop </label>
+</slidebar>
+
+</groupbox>
+
+PERFUSION PRESSURE
+
+<showvalue>
+   <row> 1.4 </row><col> 31 </col>
+   <name> RPP.Pres </name>
+   <format> <integer/> </format>
+   <label> Perfusion Pres </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.4 </row><col> 31 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> RPP.Pres </name>
+      <label> RPP </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 80 </min><max> 120 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

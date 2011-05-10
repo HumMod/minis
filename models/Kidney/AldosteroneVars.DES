@@ -1,0 +1,198 @@
+Kidney Model - Aldosterone Vars
+
+Created : 16-Aug-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+There is a circulating aldo pool and plasma
+[aldo].
+
+[AII] stimulates aldosterone secretion.  Effect
+on distal sodium excretion is delayed.
+
+<structure>
+<name> Aldo </name>
+
+<variables> ==================================
+
+<parm>
+  <name> PumpSwitch </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> PumpSetting </name>
+  <val> 140 </val>
+</parm>
+
+<parm>
+  <name> NormalSec </name>
+  <val> 140 </val>
+</parm>
+
+<parm>
+  <name> DegradeK </name>
+  <val> 0.05 </val>
+</parm>
+
+<parm>
+  <name> DelayTau </name>
+  <val> 60 </val>
+</parm>
+
+<var>
+  <name> Log10Conc </name>
+</var>
+
+<var>
+  <name> InfusionRate </name>
+</var>
+
+<var>
+  <name> PlasmaConc </name>
+</var>
+
+<var>
+  <name> A2OnSec </name>
+</var>
+
+<var>
+  <name> SecRate </name>
+</var>
+
+<var>
+  <name> DegradeRate </name>
+</var>
+
+<var>
+  <name> Effect </name>
+</var>
+
+</variables>
+
+<equations> ================================
+
+<diffeq>
+  <name> Mass </name>
+  <integralname> Mass </integralname>
+  <initialval> 2800.0 </initialval>
+  <dervname> Change </dervname>
+  <errorlim> 28.0 </errorlim>
+</diffeq>
+
+<delay>
+  <name> DelayOut </name>
+  <outputname> DelayOut </outputname>
+  <initialval> 0.8 </initialval>
+  <inputname> DelayIn </inputname>
+  <rateconstname> DelayK </rateconstname>
+</delay>
+
+</equations>
+
+<functions> ====================================
+
+<curve>
+  <name> A2OnSec </name>
+  <point>
+    <x> 0.0 </x><y> 0.6 </y><slope> 0.0 </slope>
+  </point>
+  <point>
+    <x> 1.3 </x><y> 1.0 </y><slope> 0.9 </slope>
+  </point>
+  <point>
+    <x> 2.3 </x><y> 2.5 </y><slope> 0.0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> Effect </name>
+  <point>
+    <x> 0.0 </x><y> 0.2 </y><slope> 0.0 </slope>
+  </point>
+  <point>
+    <x> 0.8 </x><y> 1.0 </y><slope> 0.5 </slope>
+  </point>
+  <point>
+    <x> 1.8 </x><y> 1.2 </y><slope> 0.0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions>
+<block><name> Parms </name>
+
+<def>
+  <name> InfusionRate </name>
+  <val> PumpSwitch * PumpSetting </val>
+</def>
+
+<def>
+  <name> DelayK </name>
+  <val> INVERT DelayTau </val>
+</def>
+
+</block>
+
+<block><name> Conc </name>
+
+<def>
+  <name> PlasmaConc </name>
+  <val> Mass / 400 </val>
+</def>
+
+<def>
+  <name> Log10Conc </name>
+  <val> LOG10 ( PlasmaConc MAX 1 ) </val>
+</def>
+
+<def>
+  <name> DelayIn </name>
+  <val> Log10Conc </val>
+</def>
+
+We'll need this for distal Na+ reabsorption
+
+<def>
+  <name> Effect </name>
+  <val> Effect [ DelayOut ]
+  </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name>
+
+<def>
+  <name> A2OnSec </name>
+  <val> A2OnSec [ PRA.Log[A2] ] </val>
+</def>
+
+<def>
+  <name> SecRate </name>
+  <val> NormalSec * A2OnSec
+  </val>
+</def>
+
+<def>
+  <name> DegradeRate </name>
+  <val> Mass * DegradeK
+  </val>
+</def>
+
+<def>
+  <name> Change </name>
+  <val> SecRate + InfusionRate - DegradeRate </val>
+</def>
+
+
+</block>
+
+</definitions>
+</structure>
+
+End

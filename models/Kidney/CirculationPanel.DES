@@ -1,0 +1,196 @@
+Kidney / Circulation Panel
+
+Created : 23-Nov-97
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+This panel shows the little
+ciculatory system with arterial
+pressure, sodium, and [AII].
+
+<panel><name> Circulation </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> Circ.ArtyPres </name>
+   <format> <integer/> </format>
+   <label> Arterial Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.5 </row><col> 1 </col>
+   <name> Circ.NaOnAP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Na Effect </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.5 </row><col> 1 </col>
+   <name> Circ.A2OnAP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [ AII ] Effect </label>
+</showvalue>
+
+<repeatlist>
+  <name> Circ.HctFract </name>
+  <firstval> 0.20 </firstval>
+  <repeat>
+    <reps> 25 </reps>
+    <stepsize> 0.02 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 6 </row><col> 1 </col>
+  <name> Circ.HctFract </name>
+  <listname> Circ.HctFract </listname>
+  <label> Hematocrit </label>
+</slidebar>
+
+<repeatlist>
+  <name> Circ.VenousPres </name>
+  <repeat>
+    <reps> 50 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 7.5 </row><col> 1 </col>
+  <name> Circ.VenousPres </name>
+  <listname> Circ.VenousPres </listname>
+  <label> Venous Pres </label>
+</slidebar>
+
+<showvalue>
+   <row> 9 </row><col> 1 </col>
+   <name> Na.Mass </name>
+   <format> <integer/> </format>
+   <label> Exchangeable Na </label>
+</showvalue>
+
+<showvalue>
+   <row> 10 </row><col> 1 </col>
+   <name> Na.Change </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Change </label>
+</showvalue>
+
+<repeatlist>
+  <name> Na.DailyIntake </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 30 </reps>
+    <stepsize> 20 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 11.4 </row><col> 1 </col>
+  <name> Na.DailyIntake </name>
+  <listname> Na.DailyIntake </listname>
+  <label> Dietary Na </label>
+</slidebar>
+
+<showcurve>
+  <row> 13.3 </row><col> 1.0 </col>
+  <high> 6 </high><wide> 24 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> Na.Mass </name>
+    <label> Na </label>
+    <scale><min> 1000 </min><max> 3000 </max><inc> 1000 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> AP Eff </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> Circ.NaOnAP </curvename>
+</showcurve>
+
+<showcurve>
+  <row> 19.8 </row><col> 1.0 </col>
+  <high> 6 </high><wide> 24 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> PRA.Log[A2] </name>
+    <label> Log [A2] </label>
+    <scale><min> 0 </min><max> 3 </max><inc> 1 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> AP Eff </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> Circ.A2OnAP </curvename>
+</showcurve>
+
+Right Side ==================================
+
+<showgraph>
+  <row> 2.0 </row><col> 33 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Circ.ArtyPres </name>
+      <label> AP </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 80 </min><max> 120 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 9.6 </row><col> 33 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Na.Mass </name>
+      <label> Na </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 2100 </min><max> 2200 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

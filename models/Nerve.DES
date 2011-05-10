@@ -1,0 +1,922 @@
+Nerve
+
+Created : 25-Aug-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+The Hodgkin-Huxley equations describe
+the genesis of an action potential.
+Membrane potential is a function of
+the charge separation across the
+membrane and membrane capacitance.
+Charge separation is the integral
+over time of current flowing through
+the membrane.  Current is the sum of
+sodium, potassium and leakage (other
+ions) ion currents.  Each of these
+currents is a function of membrane
+potential and ion conductances.  The
+conductances are voltage sensitive.
+
+The independent variable is time in
+milliseconds.
+
+Membrane charge is the integral over
+time of membrane current.  Membrane
+potential is a function of membrane
+charge and membrane capacitance.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Hodgkin-Huxley </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ===============================
+
+<parm><name> C </name><val> 1 </val></parm>
+<parm><name> NaTotal </name><val> 120 </val></parm>
+
+Stimulators add to the membrane current.
+
+<var><name> Switch </name></var>
+<var><name> Time </name></var>
+<var><name> Duration </name></var>
+<var><name> Amplitude </name></var>
+<var><name> Output </name></var>
+
+<parm>
+  <name> StimSwitch1 </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> FireAt1 </name>
+  <val> 4 </val>
+</parm>
+
+<parm>
+  <name> Duration1 </name>
+  <val> 0.3 </val>
+</parm>
+
+<var>
+  <name> OldState1 </name>
+  <val> 0 </val>
+</var>
+
+<parm>
+  <name> StimCurrent1 </name>
+  <val> -300 </val>
+</parm>
+
+<parm>
+  <name> StimSwitch2 </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> FireAt2 </name>
+  <val> 8 </val>
+</parm>
+
+<parm>
+  <name> Duration2 </name>
+  <val> 0.3 </val>
+</parm>
+
+<var>
+  <name> OldState2 </name>
+  <val> 0 </val>
+</var>
+
+<parm>
+  <name> StimCurrent2 </name>
+  <val> -300 </val>
+</parm>
+
+Equilibration potential and leak.
+
+<parm>
+  <name> VNa </name>
+  <val> 50 </val>
+</parm>
+
+<parm>
+  <name> VK </name>
+  <val> -75 </val>
+</parm>
+
+<parm>
+  <name> GLeak </name>
+  <val> 0.3 </val>
+</parm>
+
+<parm>
+  <name> VLeak </name>
+  <val> -50 </val>
+</parm>
+
+<var>
+  <name> V </name>
+</var>
+
+<var>
+  <name> NaActiveSS </name>
+</var>
+
+<var>
+  <name> NaInactive </name>
+</var>
+
+<var>
+  <name> NaActiveTau </name>
+</var>
+
+<var>
+  <name> FractSS </name>
+</var>
+
+<var>
+  <name> NaOpen </name>
+</var>
+
+<var>
+  <name> NaClosed </name>
+</var>
+
+<var>
+  <name> FractTau </name>
+</var>
+
+<var>
+  <name> GNa </name>
+</var>
+
+<var>
+  <name> GKSS </name>
+</var>
+
+<var>
+  <name> GKTau </name>
+</var>
+
+<var>
+  <name> IStim1 </name>
+</var>
+
+<var>
+  <name> IStim2 </name>
+</var>
+
+<var>
+  <name> INa </name>
+</var>
+
+<var>
+  <name> IK </name>
+</var>
+
+<var>
+  <name> ILeak </name>
+</var>
+
+</variables>
+
+<equations> ================================
+
+<diffeq>
+  <name> Q </name>
+  <integralname> Q </integralname>
+  <initialval> 75.0 </initialval>
+  <dervname> dQ/dt </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+Active Na+ channel pool.
+
+<diffeq>
+  <name> NaActive </name>
+  <integralname> NaActive </integralname>
+  <initialval> 90.0 </initialval>
+  <dervname> dNaActive/dt </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> Fract </name>
+  <integralname> Fract </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dFract/dt </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> GK </name>
+  <integralname> GK </integralname>
+  <initialval> 7.2 </initialval>
+  <dervname> dGK/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+</equations>
+
+<functions> ==================================
+
+<curve>
+  <name> NaActiveTau </name>
+  <point>
+    <x> -100 </x><y>  2 </y><slope> 0.1 </slope>
+  </point>
+  <point>
+    <x>  -50 </x><y> 10 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>   30 </x><y> 2 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> PoolSS </name>
+  <point>
+    <x> -90 </x><y> 1 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> -30 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> FractSS </name>
+  <point>
+    <x> -60 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>  25 </x><y> 1 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> FractTau </name>
+  <point>
+    <x> -100 </x><y> 0.15 </y><slope> 0.004 </slope>
+  </point>
+  <point>
+    <x>  -40 </x><y> 0.40 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>   50 </x><y> 0.10 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> GKSS </name>
+  <point>
+    <x> -100 </x><y>  3.6 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>   25 </x><y> 36.0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> GKTau </name>
+  <point>
+    <x> -100 </x><y> 4 </y><slope> 0.02 </slope>
+  </point>
+  <point>
+    <x>  -50 </x><y> 6 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>   30 </x><y> 1 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions> ================================
+
+<block><name> Dervs </name> ==================
+
+<def>
+  <name> V </name>
+  <val> ( -1 / C ) * Q </val>
+</def>
+
+Sodium channels can be active or
+inactive.  Active channels may be
+open or closed.  Open channels
+determine the sodium conductance.
+Inactive channels are closed.
+
+The size of the pool of active
+channels and the transition delay
+between active and inactive states
+are both voltage dependent.
+
+If all sodium channels are active
+and open, conductance will be 120.
+
+<def>
+  <name> NaActiveSS </name>
+  <val> NaTotal * PoolSS [ V ] </val>
+</def>
+
+<def>
+  <name> NaInactive </name>
+  <val> NaTotal - NaActive </val>
+</def>
+
+<def>
+  <name> NaActiveTau </name>
+  <val> NaActiveTau [ V ] </val>
+</def>
+
+<def>
+  <name> dNaActive/dt </name>
+  <val>
+      ( 1 / NaActiveTau )
+    * ( NaActiveSS - NaActive )
+  </val>
+</def>
+
+The fraction of active sodium channels
+that are open and the transition delay
+between open and closed are both
+voltage dependent.
+
+Finally, we have enough information to
+calculate the sodium conductance.
+
+<def>
+  <name> FractSS </name>
+  <val> FractSS [ V ] </val>
+</def>
+
+<def>
+  <name> NaOpen </name>
+  <val> Fract * NaActive </val>
+</def>
+
+<def>
+  <name> NaClosed </name>
+  <val> NaTotal - NaOpen </val>
+</def>
+
+<def>
+  <name> FractTau </name>
+  <val> FractTau [ V ] </val>
+</def>
+
+<def>
+  <name> dFract/dt </name>
+  <val> 
+      ( 1 / FractTau )
+    * ( FractSS - Fract )
+  </val>
+</def>
+
+<def>
+  <name> GNa </name>
+  <val> Fract * NaActive </val>
+</def>
+
+Potassium conductance is determined
+by open potassium channels.  Opening
+is voltage dependent and there is a
+voltage sensitive delay in the
+transition.
+
+<def>
+  <name> GKSS </name>
+  <val> GKSS [ V ] </val>
+</def>
+
+<def>
+  <name> GKTau </name>
+  <val> GKTau [ V ] </val>
+</def>
+
+<def>
+  <name> dGK/dt </name>
+  <val> ( 1 / GKTau ) * ( GKSS - GK ) </val>
+</def>
+
+Stimulators add to the membrane current.
+
+<copy><from> StimSwitch1 </from><to> Switch </to></copy>
+<copy><from> FireAt1 </from><to> Time </to></copy>
+<copy><from> Duration1 </from><to> Duration </to></copy>
+<copy><from> StimCurrent1 </from><to> Amplitude </to></copy>
+<call> Stimulator </call>
+<copy><from> Output </from><to> IStim1 </to></copy>
+
+<copy><from> StimSwitch2 </from><to> Switch </to></copy>
+<copy><from> FireAt2 </from><to> Time </to></copy>
+<copy><from> Duration2 </from><to> Duration </to></copy>
+<copy><from> StimCurrent2 </from><to> Amplitude </to></copy>
+<call> Stimulator </call>
+<copy><from> Output </from><to> IStim2 </to></copy>
+
+Equilibration potentials are a
+function of intra- and extracellular
+ion concentrations.  These potentials
+are parameters here.  Ion currents
+are a function of equilibrium
+potentials and conductance.
+
+<def>
+  <name> INa </name>
+  <val> GNa * ( V - VNa ) </val>
+</def>
+
+<def>
+  <name> IK </name>
+  <val> GK * ( V - VK ) </val>
+</def>
+
+<def>
+  <name> ILeak </name>
+  <val> GLeak * ( V - VLeak ) </val>
+</def>
+
+<def>
+  <name> dQ/dt </name>
+  <val> INa + IK + ILeak + IStim1 + IStim2 </val>
+</def>
+
+</block>
+
+<block><name> Stimulator </name>
+
+<conditional>
+  <name> Output </name>
+  <test>
+        Switch
+    AND ( System.X GE Time )
+    AND ( System.X LE ( Time + Duration ) )
+  </test>
+  <true> Amplitude </true>
+  <false> 0.0 </false>
+</conditional>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ==========================================
+
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 1 </solutionint>
+  <displayint> 0.5 </displayint>
+  <menuitem> 1 mS </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 5 </solutionint>
+  <displayint> 0.5 </displayint>
+  <menuitem> 5 mS </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 0.5 </displayint>
+  <menuitem> 10 mS </menuitem>
+</gofor>
+
+</control>
+
+<display> ====================================
+
+<common>
+
+<maplist>
+  <name> Model.Switch </name>
+  <map><val> 0 </val><img> Off </img></map>
+  <map><val> 1 </val><img> On </img></map>
+</maplist>
+
+</common>
+
+<panel><name> Hodgkin-Huxley </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2.5 </row><col> 1 </col>
+   <name> V </name>
+   <format> <integer/> </format>
+   <label> Membrane Potential ( mV ) </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.5 </row><col> 1 </col>
+   <name> INa </name>
+   <format> <integer/> </format>
+   <label> Sodium Current </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.5 </row><col> 1 </col>
+   <name> IK </name>
+   <format> <integer/> </format>
+   <label> Potassium Current </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.5 </row><col> 1 </col>
+   <name> ILeak </name>
+   <format> <integer/> </format>
+   <label> Leak Current </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.5 </row><col> 1 </col>
+   <name> GNa </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Sodium Conductance </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.5 </row><col> 1 </col>
+   <name> GK </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Potassium Conductance </label>
+</showvalue>
+
+<showvalue>
+   <row> 10.5 </row><col> 1 </col>
+   <name> GLeak </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Leak Conductance </label>
+</showvalue>
+
+Some lists for the stimulators are
+next.
+
+<repeatlist>
+  <name> Current </name>
+  <firstval> -500 </firstval>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 50 </stepsize>
+  </repeat>
+</repeatlist>
+
+<repeatlist>
+  <name> FireAt </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<repeatlist>
+  <name> Duration </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+Stimulator 1
+
+<groupbox>
+   <row> 12 </row><col> 1 </col>
+   <high> 8.4 </high><wide> 26 </wide>
+   <title> Stimulator 1 </title>
+
+<radiobuttons>
+  <row> 1.4 </row><col> 1 </col>
+  <name> StimSwitch1 </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<slidebar>
+  <row> 2.8 </row><col> 1 </col>
+  <name> StimCurrent1 </name>
+  <listname> Current </listname>
+  <label> Current </label>
+</slidebar>
+
+<slidebar>
+  <row> 4.2 </row><col> 1 </col>
+  <name> FireAt1 </name>
+  <listname> FireAt </listname>
+  <label> Fire At </label>
+</slidebar>
+
+<slidebar>
+  <row> 5.6 </row><col> 1 </col>
+  <name> Duration1 </name>
+  <listname> Duration </listname>
+  <label> Duration </label>
+</slidebar>
+
+<showvalue>
+   <row> 7.0 </row><col> 1 </col>
+   <name> IStim1 </name>
+   <format> <integer/> </format>
+   <label> Output </label>
+</showvalue>
+
+</groupbox>
+
+Stimulator 2
+
+<groupbox>
+   <row> 21 </row><col> 1 </col>
+   <high> 8.4 </high><wide> 26 </wide>
+   <title> Stimulator 2 </title>
+
+<radiobuttons>
+  <row> 1.4 </row><col> 1 </col>
+  <name> StimSwitch2 </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<slidebar>
+  <row> 2.8 </row><col> 1 </col>
+  <name> StimCurrent2 </name>
+  <listname> Current </listname>
+  <label> Current </label>
+</slidebar>
+
+<slidebar>
+  <row> 4.2 </row><col> 1 </col>
+  <name> FireAt2 </name>
+  <listname> FireAt </listname>
+  <label> Fire At </label>
+</slidebar>
+
+<slidebar>
+  <row> 5.6 </row><col> 1 </col>
+  <name> Duration2 </name>
+  <listname> Duration </listname>
+  <label> Duration </label>
+</slidebar>
+
+<showvalue>
+   <row> 7.0 </row><col> 1 </col>
+   <name> IStim2 </name>
+   <format> <integer/> </format>
+   <label> Output </label>
+</showvalue>
+
+</groupbox>
+
+Na+ Channels
+
+<groupbox>
+   <row> 30 </row><col> 1 </col>
+   <high> 9.1 </high><wide> 26 </wide>
+   <title> Na+ Channels </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> NaTotal </name>
+   <format> <integer/> </format>
+   <label> Total </label>
+</showvalue>
+
+<showvalue>
+   <row> 2.8 </row><col> 1 </col>
+   <name> NaInactive </name>
+   <format> <integer/> </format>
+   <label> Inactive </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.8 </row><col> 1 </col>
+   <name> NaActive </name>
+   <format> <integer/> </format>
+   <label> Active </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.2 </row><col> 1 </col>
+   <name> NaOpen </name>
+   <format> <integer/> </format>
+   <label> Open </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.2 </row><col> 1 </col>
+   <name> NaClosed </name>
+   <format> <integer/> </format>
+   <label> Closed </label>
+</showvalue>
+
+<infobutton>
+  <row> 7.6 </row><col> 1 </col>
+  <label> Init Values </label>
+  <line> Initial Na+ Channels </line>
+  <line>  </line>
+  <line> Total - 120 </line>
+  <line>  </line>
+  <line> Inactive - 30 </line>
+  <line> Active - 90 </line>
+  <line>  </line>
+  <line> Open - 0 </line>
+  <line> Closed - 120 </line>
+</infobutton>
+
+</groupbox>
+
+Reference
+
+<infobutton>
+  <row> 40.6 </row><col> 1 </col>
+  <label> Reference </label>
+  <line> Hodgkin, A.L. and A.F. Huxley </line>
+  <line> A quantitative description of </line>
+  <line> membrane current and its </line>
+  <line> application to conduction. </line>
+  <line> J. Physiol. 117:500-544, 1952. </line>
+</infobutton>
+
+Right Side ====================================
+
+<showvalue>
+   <row> 0.5 </row><col> 28 </col>
+   <name> System.X </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time ( mS ) </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.5 </row><col> 28 </col>
+  <high> 10 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> V </name>
+      <label> V </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> -100 </min><max> 40 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<label>
+  <row> 13 </row><col> 28 </col>
+  <text> Stimulator Current </text>
+</label>
+
+<showgraph>
+  <row> 14 </row><col> 28 </col>
+  <high> 6 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> IStim1 </name>
+      <label> 1 </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> IStim2 </name>
+      <label> 2 </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> -300 </min><max> 0 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<label>
+  <row> 21 </row><col> 28 </col>
+  <text> Ion Current </text>
+</label>
+
+<showgraph>
+  <row> 22 </row><col> 28 </col>
+  <high> 8 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> INa </name>
+      <label> Na </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> IK </name>
+      <label> K </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> -2500 </min><max> 2500 </max></scale>
+  </yaxis>
+</showgraph>
+
+<label>
+  <row> 31 </row><col> 28 </col>
+  <text> Conductance </text>
+</label>
+
+<showgraph>
+  <row> 32 </row><col> 28 </col>
+  <high> 8 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> GNa </name>
+      <label> Na </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> GK </name>
+      <label> K </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <yvar>
+      <name> GLeak </name>
+      <label> Leak </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 80 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<label>
+  <row> 41 </row><col> 28 </col>
+  <text> Na+ Channels </text>
+</label>
+
+<showgraph>
+  <row> 42 </row><col> 28 </col>
+  <high> 7 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> NaActive </name>
+      <label> Active </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> NaOpen </name>
+      <label> Open </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 120 </max></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

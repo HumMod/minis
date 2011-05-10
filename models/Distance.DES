@@ -1,0 +1,356 @@
+Distance
+
+Created : 10-Aug-96
+Last Modified : 30-Nov-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+We're shooting the shotput.  The idea here
+is to find the angle (from horizontal) that
+makes the shotput go the greatest distance
+-- at a constant initial velocity.
+
+Distance is the integral of velocity
+over time while velocity is the integral
+of acceleration over time.
+
+This model is two-dimensional.  Acceleration,
+velocity and distance are described using
+vertical and horizontal components.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Distance </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> =======================================
+
+We define the initial angle and velocity here
+using fixed parameters.  This information is
+used at the start of the solution to start the
+integrals.
+
+<parm>
+  <name> InitAngle </name>
+  <val> 70 </val>
+</parm>
+
+<parm>
+  <name> InitVelocity </name>
+  <val> 10 </val>
+</parm>
+
+The horizontal acceleration is zero.  The
+vertical acceleration is gravity, or -9.8
+m/sec^2 at the earth's surface.
+
+<constant>
+  <name> HorzAcc </name>
+  <val> 0 </val>
+</constant>
+
+<constant>
+  <name> VertAcc </name>
+  <val> -9.8 </val>
+</constant>
+
+<var>
+  <name> Radians </name>
+</var>
+
+<var>
+  <name> MaxAltitude </name>
+  <val> 0 </val>
+</var>
+
+</variables>
+
+<equations> =======================================
+
+The horizontal velocity is the integral over
+time of the horizontal acceleration.  We'll
+use some context code below to set the initial
+velocity.
+
+Horizontal distance is the integral over time of
+the horizontal velocity.
+
+<diffeq>
+  <name> HorzVel </name>
+  <integralname> HorzVel </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dHorzVel/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> HorzDis </name>
+  <integralname> HorzDis </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dHorzDis/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+The vertical velocity is the integral over
+time of the vertical acceleration.  We'll
+use some context code below to set the initial
+velocity.
+
+Vertical distance is the integral over time of
+the vertical velocity.
+
+<diffeq>
+  <name> VertVel </name>
+  <integralname> VertVel </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dVertVel/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> VertDis </name>
+  <integralname> VertDis </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dVertDis/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> =====================================
+
+<block><name> Parms </name> =======================
+
+The following code is executed when a parameter
+value is changed.
+
+<def>
+  <name> Radians </name>
+  <val> InitAngle * System.Pi / 180 </val>
+</def>
+
+<def>
+  <name> VertVel </name>
+  <val> InitVelocity * SIN Radians </val>
+</def>
+
+<def>
+  <name> HorzVel </name>
+  <val> InitVelocity * COS Radians </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> =======================
+
+<def>
+  <name> dHorzVel/dt </name>
+  <val> HorzAcc </val>
+</def>
+
+<def>
+  <name> dHorzDis/dt </name>
+  <val> HorzVel </val>
+</def>
+
+<def>
+  <name> dVertVel/dt </name>
+  <val> VertAcc </val>
+</def>
+
+<def>
+  <name> dVertDis/dt </name>
+  <val> VertVel </val>
+</def>
+
+<if>
+  <test> VertDis GT MaxAltitude </test>
+  <true>
+    <def>
+      <name> MaxAltitude </name>
+      <val> VertDis </val>
+    </def>
+  </true>
+</if>
+
+</block>
+
+<block><name> Wrapup </name> ======================
+
+Stop the solution when height falls to below 0.
+
+<if>
+  <test> VertDis LT 0 </test>
+  <true>
+    <def>
+     <name> VertDis </name>
+      <val> 0 </val>
+    </def>
+    <stop/>
+  </true>
+</if>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+  <wrapup> Model.Wrapup </wrapup>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 5 </solutionint>
+  <displayint> 0.05 </displayint>
+</gofor>
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Distance (Shotput) </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showgraph>
+  <row> 2 </row><col> 32 </col>
+  <high> 14 </high><wide> 30 </wide>
+  <leftmargin> 7 </leftmargin>
+  <xaxis>
+    <name> HorzDis </name>
+    <label> Distance </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> VertDis </name>
+      <label> Height </label>
+    </yvar>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </yaxis>
+</showgraph>
+
+<groupbox>
+   <row> 2 </row><col> 1 </col>
+   <high> 6.4 </high><wide> 30 </wide>
+   <title> Initial Values </title>
+
+<repeatlist>
+  <name> InitAngle </name>
+  <repeat>
+    <reps> 50 </reps>
+    <stepsize> 2 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> InitAngle </name>
+  <listname> InitAngle </listname>
+  <label> Angle </label>
+</slidebar>
+
+<showvalue>
+   <row> 3.0 </row><col> 1 </col>
+   <name> Radians </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Radians </label>
+</showvalue>
+
+<repeatlist>
+  <name> InitVelocity </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 4.5 </row><col> 1 </col>
+  <name> InitVelocity </name>
+  <listname> InitVelocity </listname>
+  <label> Velocity </label>
+</slidebar>
+
+</groupbox>
+
+<showvalue>
+   <row> 10.4 </row><col> 1 </col>
+   <name> System.X </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time </label>
+</showvalue>
+
+<showvalue>
+   <row> 11.8 </row><col> 1 </col>
+   <name> VertDis </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Height </label>
+</showvalue>
+
+<showvalue>
+   <row> 12.8 </row><col> 1 </col>
+   <name> VertVel </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Vertical Velocity </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.8 </row><col> 1 </col>
+   <name> VertAcc </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Vertical Acceleration </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.2 </row><col> 1 </col>
+   <name> HorzDis </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Distance </label>
+</showvalue>
+
+<showvalue>
+   <row> 16.2 </row><col> 1 </col>
+   <name> HorzVel </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Horizontal Velocity </label>
+</showvalue>
+
+<showvalue>
+   <row> 17.2 </row><col> 1 </col>
+   <name> HorzAcc </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Horizontal Acceleration </label>
+</showvalue>
+
+<showvalue>
+   <row> 18.6 </row><col> 1 </col>
+   <name> MaxAltitude </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Maximum Altitude </label>
+</showvalue>
+
+</panel>
+</display>
+
+</model>
+
+End

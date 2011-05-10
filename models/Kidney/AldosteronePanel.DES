@@ -1,0 +1,195 @@
+Kidney / Aldosterone
+
+Created : 11-Oct-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Aldosterone </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> Aldo.PlasmaConc </name>
+   <format> <integer/> </format>
+   <label> Plasma [ AIdo ] </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> Aldo.Log10Conc </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Log 10 [ AIdo ] </label>
+</showvalue>
+
+ALDO PUMP
+
+<groupbox>
+   <row> 4.4 </row><col> 1 </col>
+   <high> 4.5 </high><wide> 30 </wide>
+   <title> Aldo Pump </title>
+
+<radiobuttons>
+  <row> 1.5 </row><col> 1 </col>
+  <name> Aldo.PumpSwitch </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> Aldo.PumpSetting </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 100 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> Aldo.PumpSetting </name>
+  <listname> Aldo.PumpSetting </listname>
+  <label> Rate </label>
+</slidebar>
+
+</groupbox>
+
+ALDO SECRETION
+
+<groupbox>
+   <row> 9.4 </row><col> 1 </col>
+   <high> 5.8 </high><wide> 30 </wide>
+   <title> Aldo Secretion </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> Aldo.SecRate </name>
+   <format> <integer/> </format>
+   <label> Secretion </label>
+</showvalue>
+
+<repeatlist>
+  <name> Aldo.NormalSec </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 100 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 2.9 </row><col> 1 </col>
+  <name> Aldo.NormalSec </name>
+  <listname> Aldo.NormalSec </listname>
+  <label> Normal </label>
+</slidebar>
+
+<showvalue>
+   <row> 4.4 </row><col> 1 </col>
+   <name> Aldo.A2OnSec </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [ AII ] Effect </label>
+</showvalue>
+
+</groupbox>
+
+DEGRADATION
+
+<groupbox>
+   <row> 15.6 </row><col> 1 </col>
+   <high> 4.6 </high><wide> 30 </wide>
+   <title> Aldo Degradation </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> Aldo.DegradeRate </name>
+   <format> <integer/> </format>
+   <label> Degradation </label>
+</showvalue>
+
+<repeatlist>
+  <name> Aldo.DegradeK </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 2.9 </row><col> 1 </col>
+  <name> Aldo.DegradeK </name>
+  <listname> Aldo.DegradeK </listname>
+  <label> Rate Const </label>
+</slidebar>
+
+</groupbox>
+
+Right Side ==============================
+
+<showgraph>
+  <row> 2.0 </row><col> 33 </col>
+  <high> 8 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Aldo.PlasmaConc </name>
+      <label> [ Aldo ] </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </yaxis>
+</showgraph>
+
+EXTRACELLULAR ALDO
+
+<showvalue>
+   <row> 10.6 </row><col> 33 </col>
+   <name> Aldo.Mass </name>
+   <format> <integer/> </format>
+   <label> Extracellular Aldo </label>
+</showvalue>
+
+<showvalue>
+   <row> 11.6 </row><col> 35 </col>
+   <name> Aldo.Change </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Change </label>
+</showvalue>
+
+<infobutton>
+  <row> 14 </row><col> 33 </col>
+  <label> Units </label>
+  <line> Aldosterone Units </line>
+  <line>  </line>
+  <line> [ Conc ] - nG / dL </line>
+  <line> Infusion - nG / Min </line>
+</infobutton>
+
+</panel>
+
+End

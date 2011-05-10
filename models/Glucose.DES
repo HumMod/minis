@@ -1,0 +1,481 @@
+Glucose
+
+Created : 25-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+High glucose concentration in the extratracellular
+fluid stimulates insulin release by the pancreas.
+Insulin, in turn, stimulates cellular uptake of
+glucose.  Low glucose concentration inhibits
+insulin secretion and stimulates hepatic release
+of glucose.
+
+This model is scaled to a 70 kG adult.
+
+The independent variable is time in minutes.
+
+The quantities of glucose and insulin in the
+extracellular fluid volume are the integrals over
+time of their net rate of change.  Glucose
+concentration is reported in G/dL.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Glucose </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ===================================
+
+We have a glucose pump and an insulin pump.  Each
+has a switch and setting.  When the switch is on,
+rate is equal to the setting.
+
+<parm>
+  <name> GSwitch </name>
+  <val> FALSE </val>
+</parm>
+
+<parm>
+  <name> GSetting </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> ISwitch </name>
+  <val> FALSE </val>
+</parm>
+
+<parm>
+  <name> ISetting </name>
+  <val> 0 </val>
+</parm>
+
+The volume of distribution of glucose and insulin
+is the extracellular fluid.
+
+<parm>
+  <name> ECFV </name>
+  <val> 1.5e4 </val>
+</parm>
+
+Next is an insulin clearance constant.
+
+<parm>
+  <name> InsClear </name>
+  <val> 770 </val>
+</parm>
+
+<var>
+  <name> GRate </name>
+</var>
+
+<var>
+  <name> IRate </name>
+</var>
+
+<var>
+  <name> [G] </name>
+</var>
+
+<var>
+  <name> [I] </name>
+</var>
+
+<var>
+  <name> GLiver </name>
+</var>
+
+<var>
+  <name> GCells </name>
+</var>
+
+<var>
+  <name> ISecrete </name>
+</var>
+
+<var>
+  <name> IClear </name>
+</var>
+
+</variables>
+
+<equations> ==================================
+
+<diffeq>
+  <name> G </name>
+  <integralname> G </integralname>
+  <initialval> 1.5e4 </initialval>
+  <dervname> dG/dt </dervname>
+  <errorlim> 1e2 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> I </name>
+  <integralname> I </integralname>
+  <initialval> 1.5e5 </initialval>
+  <dervname> dI/dt </dervname>
+  <errorlim> 1e3 </errorlim>
+</diffeq>
+
+</equations>
+
+<functions> ====================================
+
+<curve>
+  <name> GLiverCurve </name>
+  <point>
+    <x>   0 </x><y> 350 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>  10 </x><y> 150 </y><slope> -2.5 </slope>
+  </point>
+  <point>
+    <x> 200 </x><y>   0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> GCellsCurve </name>
+  <point>
+    <x>   0 </x><y>  1.1 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x>  10 </x><y>  1.5 </y><slope> 0.06 </slope>
+  </point>
+  <point>
+    <x> 200 </x><y> 11.0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> ISecreteCurve </name>
+  <point>
+    <x>   0 </x><y>      0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 100 </x><y>   7700 </y><slope> 140 </slope>
+  </point>
+  <point>
+    <x> 300 </x><y> 112000 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions> =================================
+
+<block><name> Parms </name> ===================
+
+Control the pumps.
+
+<conditional>
+  <name> GRate </name>
+  <test> GSwitch </test>
+  <true> GSetting </true>
+  <false> 0.0 </false>
+</conditional>
+
+<conditional>
+  <name> IRate </name>
+  <test> ISwitch </test>
+  <true> ISetting </true>
+  <false> 0.0 </false>
+</conditional>
+
+</block>
+
+<block><name> Dervs </name> ===================
+
+First, the concentrations
+
+<def>
+  <name> [G] </name>
+  <val> ( G / ECFV ) * 100 </val>
+</def>
+
+<def>
+  <name> [I] </name>
+  <val> I / ECFV </val>
+</def>
+
+Sources of glucose are the liver and infusion.
+
+<def>
+  <name> GLiver </name>
+  <val> GLiverCurve [ [I] ] </val>
+</def>
+
+Glucose is removed from the extracellular
+fluid by cellular uptake.  Uptake is a
+function of glucose and insulin concentration.
+
+<def>
+  <name> GCells </name>
+  <val> ( GCellsCurve [ [I] ] ) * [G] </val>
+</def>
+
+The net rate of change of glucose is a function
+of release by the liver, infusion, and cellular
+uptake.
+
+<def>
+  <name> dG/dt </name>
+  <val> GLiver + GRate - GCells </val>
+</def>
+
+The sources of insulin are secretion by the pancreas
+and infusion.
+
+<def>
+  <name> ISecrete </name>
+  <val> ISecreteCurve [ [G] ] </val>
+</def>
+
+Insulin elimination is a function of insulin
+concentration.
+
+<def>
+  <name> IClear </name>
+  <val> InsClear * [I] </val>
+</def>
+
+The rate of change of insulin is equal to pancreatic
+secretion plus infusion minus insulin elimination.
+
+<def>
+  <name> dI/dt </name>
+  <val> ISecrete + IRate - IClear </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ========================================
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> =====================================
+
+
+<gofor>
+  <solutionint> 2 </solutionint>
+  <displayint> 2 </displayint>
+  <menuitem> 2 Min </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 2 </displayint>
+  <menuitem> 10 Min </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 30 </solutionint>
+  <displayint> 2 </displayint>
+  <menuitem> 30 Min </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 120 </solutionint>
+  <displayint> 2 </displayint>
+  <menuitem> 120 Min </menuitem>
+</gofor>
+
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Glucose - Insulin Interaction </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<maplist>
+  <name> Switch </name>
+  <map><val> 0 </val><img> Off </img></map>
+  <map><val> 1 </val><img> On </img></map>
+</maplist>
+
+<showvalue>
+   <row> 2.5 </row><col> 1 </col>
+   <name> [G] </name>
+   <format> <integer/> </format>
+   <label> [ Glucose ] </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.5 </row><col> 3 </col>
+   <name> GLiver </name>
+   <format> <integer/> </format>
+   <label> Hepatic Release </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.5 </row><col> 3 </col>
+   <name> GRate </name>
+   <format> <integer/> </format>
+   <label> Infusion </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.5 </row><col> 3 </col>
+   <name> GCells </name>
+   <format> <integer/> </format>
+   <label> Cell Uptake </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.5 </row><col> 1 </col>
+   <name> [I] </name>
+   <format> <integer/> </format>
+   <label> [ Insulin ] </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.5 </row><col> 3 </col>
+   <name> ISecrete </name>
+   <format> <integer/> </format>
+   <label> Panreatic Secretion </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.5 </row><col> 3 </col>
+   <name> IRate </name>
+   <format> <integer/> </format>
+   <label> Infusion </label>
+</showvalue>
+
+<showvalue>
+   <row> 10.5 </row><col> 3 </col>
+   <name> IClear </name>
+   <format> <integer/> </format>
+   <label> Clearance </label>
+</showvalue>
+
+Glucose Pump
+
+<groupbox>
+   <row> 13.0 </row><col> 1 </col>
+   <high> 4.8 </high><wide> 26 </wide>
+   <title> Glucose Pump </title>
+
+<radiobuttons>
+  <row> 1.6 </row><col> 1 </col>
+  <name> GSwitch </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> GRate </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 100 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> GSetting </name>
+  <listname> GRate </listname>
+  <label> Rate </label>
+</slidebar>
+
+</groupbox>
+
+Right-hand Side ==============================
+
+<showvalue>
+   <row> 0.5 </row><col> 28 </col>
+   <name> System.X </name>
+   <label> Time ( Min ) </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.5 </row><col> 28 </col>
+  <high> 10 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 120 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> [G] </name>
+      <label> [ G ] </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> [I] </name>
+      <label> [ I ] </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 100 </max></scale>
+  </yaxis>
+</showgraph>
+
+Insulin Pump
+
+<groupbox>
+   <row> 13.0 </row><col> 28 </col>
+   <high> 4.8 </high><wide> 26 </wide>
+   <title> Insulin Pump </title>
+
+<radiobuttons>
+  <row> 1.6 </row><col> 1 </col>
+  <name> ISwitch </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> IRate </name>
+  <repeat>
+    <reps> 10 </reps>
+    <stepsize> 1000 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 9 </reps>
+    <stepsize> 10000 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> ISetting </name>
+  <listname> IRate </listname>
+  <label> Rate </label>
+</slidebar>
+
+</groupbox>
+
+</panel>
+</display>
+
+</model>
+
+End

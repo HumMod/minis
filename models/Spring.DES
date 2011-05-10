@@ -1,0 +1,326 @@
+Spring
+
+Created : 29-Aug-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+A mass is suspended by a spring.  The forces
+acting on the mass are due to gravity and the
+distension of the spring.
+
+Pull the mass down, let it go, and it will
+oscillate up and down.
+
+The independent variable is time.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Spring </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ======================================
+
+The resting length of the spring is the length at
+which it produces no force.
+
+<parm>
+  <name> RestingLength </name>
+  <val> 0 </val>
+</parm>
+
+The force produced by the spring is the product of
+its stiffness and distention from resting length.
+
+<parm>
+  <name> Stiffness </name>
+  <val> 10 </val>
+</parm>
+
+The mass's upward acceleration is equal to spring
+force divided by mass minus the acceleration of
+gravity.
+
+<parm>
+  <name> Mass </name>
+  <val> 1 </val>
+</parm>
+
+<parm>
+  <name> G </name>
+  <val> -9.8 </val>
+</parm>
+
+<parm>
+  <name> InitialPosition </name>
+  <val> 5.0 </val>
+</parm>
+
+<var>
+  <name> Force </name>
+</var>
+
+</variables>
+
+<equations> =====================================
+
+The velocity of the mass is the integral over time
+of its acceleration.
+
+<diffeq>
+  <name> Velocity </name>
+  <integralname> Velocity </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> Acceleration </dervname>
+  <errorlim> 1E-4 </errorlim>
+</diffeq>
+
+The position of the mass is the integral over time
+of its velocity.
+
+<diffeq>
+  <name> Position </name>
+  <integralname> Position </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dPosition/dt </dervname>
+  <errorlim> 1E-4 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> =====================================
+
+<block><name> Parms </name> =====================
+
+<def>
+  <name> Position </name>
+  <val> InitialPosition </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> =========================================
+
+<def>
+  <name> Force </name>
+  <val> Stiffness * ( RestingLength - Position ) </val>
+</def>
+
+<def>
+  <name> Acceleration </name>
+  <val> ( Force / Mass ) - G </val>
+</def>
+
+<def>
+  <name> dPosition/dt </name>
+  <val> Velocity </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ===========================================
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 5 </solutionint>
+  <displayint> 5 </displayint>
+</gofor>
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> A Spring Model </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> System.X </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.5 </row><col> 1 </col>
+   <name> Position </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Position </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.5 </row><col> 1 </col>
+   <name> Velocity </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Velocity </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.5 </row><col> 1 </col>
+   <name> Acceleration </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Acceleration </label>
+</showvalue>
+
+<groupbox>
+   <row> 7.0 </row><col> 1 </col>
+   <high> 3.5 </high><wide> 26 </wide>
+   <title> Initial Position </title>
+
+<repeatlist>
+  <name> InitialPosition </name>
+  <firstval> -20 </firstval>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> InitialPosition </name>
+  <listname> InitialPosition </listname>
+  <label> Position </label>
+</slidebar>
+
+</groupbox>
+
+<repeatlist>
+  <name> Stiffness </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 11.6 </row><col> 1 </col>
+  <name> Stiffness </name>
+  <listname> Stiffness </listname>
+  <label> Stiffness </label>
+</slidebar>
+
+<repeatlist>
+  <name> Mass </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 1.0 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 13.0 </row><col> 1 </col>
+  <name> Mass </name>
+  <listname> Mass </listname>
+  <label> Mass </label>
+</slidebar>
+
+<infobutton>
+  <row> 14.6 </row><col> 1 </col>
+  <label> Math </label>
+  <line> Position = integral ( Velocity )	dt </line>
+  <line> Velocity = integral ( Acceleration ) dt </line>
+  <line> Acceleration = Force / Mass - Gravity </line>
+  <line> Force = Stiffness * ( Position - Resting Length ) </line>
+</infobutton>
+
+Right-hand Side ====================================
+
+<showgraph>
+  <row> 0.5 </row><col> 30 </col>
+  <high> 6 </high><wide> 28 </wide>
+  <leftmargin> 10 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Position </name>
+      <label> Position </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> -10 </min><max> 10 </max><inc> 10 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 6.9 </row><col> 30 </col>
+  <high> 6 </high><wide> 28 </wide>
+  <leftmargin> 10 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Velocity </name>
+      <label> Velocity </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> -20 </min><max> 20 </max><inc> 10 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 13.3 </row><col> 30 </col>
+  <high> 6 </high><wide> 28 </wide>
+  <leftmargin> 10 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Acceleration </name>
+      <label> Acceleration </label>
+      <linecolor> MAGENTA </linecolor>
+    </yvar>
+    <scale><min> -60 </min><max> 60 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

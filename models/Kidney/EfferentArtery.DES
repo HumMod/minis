@@ -1,0 +1,79 @@
+Kidney Model - Efferent Artery
+
+Created : 11-Oct-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<structure>
+<name> EffArty </name>
+
+<variables> ==================================
+
+<parm>
+  <name> NormalCond </name>
+  <val> 25 </val>
+</parm>
+
+<var>
+  <name> A2Effect </name>
+</var>
+
+<var>
+  <name> Cond </name>
+</var>
+
+<var>
+  <name> Diam </name>
+</var>
+
+</variables>
+
+<functions> ====================================
+
+<curve>
+  <name> A2Effect </name>
+  <point>
+    <x> 0.0 </x><y> 1.1 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.3 </x><y> 1.0 </y><slope> -0.2 </slope>
+  </point>
+  <point>
+    <x> 2.0 </x><y> 0.6 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions>
+
+<block><name> Dervs </name>
+
+<def>
+  <name> EffArty.A2Effect </name>
+  <val> EffArty.A2Effect [ PRA.Log[A2] ] </val>
+</def>
+
+<def>
+  <name> EffArty.Cond </name>
+  <val>
+        EffArty.NormalCond
+      * EffArty.A2Effect
+      * EffTGF.Effect
+  </val>
+</def>
+
+<def>
+  <name> EffArty.Diam </name>
+  <val> ( EffArty.Cond ^ INVERT 3 ) * 6.8 </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+End

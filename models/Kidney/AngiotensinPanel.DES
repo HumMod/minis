@@ -1,0 +1,140 @@
+Kidney / Angiotensin Panel
+
+Created : 11-Oct-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Angiotensin </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> PRA.Plasma[A2] </name>
+   <format> <integer/> </format>
+   <label> Plasma [ AII ] </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> PRA.Log[A2] </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Log 10 [ AII ] </label>
+</showvalue>
+
+CONVERTING ENZYME
+
+<groupbox>
+   <row> 4.4 </row><col> 1 </col>
+   <high> 3.2 </high><wide> 30 </wide>
+   <title> Converting Enzym </title>
+
+<repeatlist>
+  <name> ConvertingEnzymeActivity </name>
+  <repeat>
+    <reps> 10 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> PRA.ConvertingEnzymeActivity </name>
+  <listname> ConvertingEnzymeActivity </listname>
+  <label> Activity </label>
+</slidebar>
+
+</groupbox>
+
+ENDOGENOUS FORMATION RATE
+
+<showvalue>
+   <row> 8.0 </row><col> 1 </col>
+   <name> PRA.A2EndogenousRate </name>
+   <format> <integer/> </format>
+   <label> Endogenous Formation Rate </label>
+</showvalue>
+
+AII PUMP
+
+<groupbox>
+   <row> 9.4 </row><col> 1 </col>
+   <high> 4.5 </high><wide> 30 </wide>
+   <title> AII Pump </title>
+
+<radiobuttons>
+  <row> 1.5 </row><col> 1 </col>
+  <name> PRA.A2PumpSwitch </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> A2Pump </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 100 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> PRA.A2PumpSetting </name>
+  <listname> A2Pump </listname>
+  <label> Rate </label>
+</slidebar>
+
+</groupbox>
+
+Right Side ===============================
+
+<showgraph>
+  <row> 2.0 </row><col> 33 </col>
+  <high> 8 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> PRA.Plasma[A2] </name>
+      <label> [ AII ] </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 40 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<infobutton>
+  <row> 10.4 </row><col> 33 </col>
+  <label> Units </label>
+  <line> Angiotensin Units </line>
+  <line>  </line>
+  <line> [ Conc ] - pG / mL </line>
+  <line> Infusion - nG / Min </line>
+  <line> Converting Enzyme - % Max Activity </line>
+</infobutton>
+
+</panel>
+
+End

@@ -1,0 +1,96 @@
+Kidney Model - Afferent TGF
+
+Created : 16-Aug-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<structure><name> AffTGF </name>
+
+<variables>
+
+<var>
+  <name> Effect </name>
+</var>
+
+<parm>
+  <name> DelayTau </name>
+  <val> 0.40 </val>
+</parm>
+
+<parm>
+  <name> ClampSwitch </name>
+  <val> FALSE </val>
+</parm>
+
+<parm>
+  <name> ClampLevel </name>
+  <val> 1.0 </val>
+</parm>
+
+</variables>
+
+<equations>
+
+<lag>
+  <name> DelayOut </name>
+  <outputname> DelayOut </outputname>
+  <initialval> 1.0 </initialval>
+  <inputname> SteadyState </inputname>
+  <rateconstname> DelayK </rateconstname>
+</lag>
+
+</equations>
+
+<functions>
+
+<curve>
+  <name> SteadyState </name>
+  <point>
+    <x> 0.7 </x><y> 1.5 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.0 </x><y> 1.0 </y><slope> -1.0 </slope>
+  </point>
+  <point>
+    <x> 4.0 </x><y> 0.1 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions>
+
+<block><name> Parms </name>
+
+<def>
+  <name> DelayK </name>
+  <val> INVERT DelayTau </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name>
+
+<def>
+  <name> SteadyState </name>
+  <val> SteadyState [ MD.Signal ] </val>
+</def>
+
+<calclag> DelayOut </calclag>
+
+<conditional>
+  <name> Effect </name>
+  <test> ClampSwitch </test>
+  <true> ClampLevel </true>
+  <false> DelayOut </false>
+</conditional>
+
+</block>
+
+</definitions>
+</structure>
+
+End

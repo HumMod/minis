@@ -1,0 +1,449 @@
+Skeletal Muscle Atrophy
+
+Created : 23-Feb-2008
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Skeletal Muscle Atrophy </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ======================================
+
+Muscle activity
+
+   0.0 = Max Unload
+   0.5 = Unload
+   1.0 = Normal
+   1.5 = Load
+   2.0 = Max Load
+
+<parm>
+  <name> MuscleActivity </name>
+  <val> 1.0 </val>
+</parm>
+
+<var>
+  <name> SynthesisRate </name>
+</var>
+
+<parm>
+  <name> NormalSynthesisRate </name>
+  <val> 0.0006667 </val> %/Min
+</parm>
+
+<var>
+  <name> SynthesisRateMultiplier </name>
+</var>
+
+<var>
+  <name> DegradationRate </name>
+</var>
+
+<parm>
+  <name> NormalDegradationK </name>
+  <val> 0.000006667 </val> /Min
+</parm>
+
+<var>
+  <name> DegradationRateMultiplier </name>
+</var>
+
+<var>
+  <name> K12 </name>
+</var>
+
+<parm>
+  <name> K12Basic </name>
+  <val> 6.9e-06 </val> /Min
+</parm>
+
+<var>
+  <name> K12Multiplier </name>
+</var>
+
+<var>
+  <name> K21 </name>
+</var>
+
+<parm>
+  <name> K21Basic </name>
+  <val> 10.35e-06 </val> /Min
+</parm>
+
+<var>
+  <name> K21Multiplier </name>
+</var>
+
+</variables>
+
+<equations> =====================================
+
+Muscle mass is defined in terms of % of normal.
+
+<diffeq>
+  <name> MuscleMass </name>
+  <integralname> MuscleMass </integralname>
+  <initialval> 100.0 </initialval>
+  <dervname> MuscleMassChange </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> TypeI(%) </name>
+  <integralname> TypeI(%) </integralname>
+  <initialval> 60.0 </initialval>
+  <dervname> TypeIChange </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> TypeII(%) </name>
+  <integralname> TypeII(%) </integralname>
+  <initialval> 40.0 </initialval>
+  <dervname> TypeIIChange </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+</equations>
+
+<functions> ====================================
+
+<curve>
+  <name> SynthesisRateMultiplier </name>
+  <point><x> 0 </x><y> 0.5 </y><slope> 0 </slope></point>
+  <point><x> 1 </x><y> 1.0 </y><slope> 1.5 </slope></point>
+  <point><x> 2 </x><y> 2.5 </y><slope> 0 </slope></point>
+</curve>
+
+<curve>
+  <name> DegradationRateMultiplier </name>
+  <point><x> 0 </x><y> 2.0 </y><slope> 0 </slope></point>
+  <point><x> 1 </x><y> 1.0 </y><slope> -1.0 </slope></point>
+  <point><x> 2 </x><y> 0.5 </y><slope> 0 </slope></point>
+</curve>
+
+<curve>
+  <name> K12Multiplier </name>
+  <point><x> 0 </x><y> 1.5 </y><slope> 0 </slope></point>
+  <point><x> 1 </x><y> 1.0 </y><slope> -1.0 </slope></point>
+  <point><x> 2 </x><y> 0.5 </y><slope> 0 </slope></point>
+</curve>
+
+</functions>
+
+<definitions> ===================================
+
+<block><name> Dervs </name> =====================
+
+<def>
+  <name> SynthesisRateMultiplier </name>
+  <val> SynthesisRateMultiplier [ MuscleActivity ] </val>
+</def>
+
+<def>
+  <name> SynthesisRate </name>
+  <val> NormalSynthesisRate * SynthesisRateMultiplier </val>
+</def>
+
+<def>
+  <name> DegradationRateMultiplier </name>
+  <val> DegradationRateMultiplier [ MuscleActivity ] </val>
+</def>
+
+<def>
+  <name> DegradationRate </name>
+  <val> NormalDegradationK * DegradationRateMultiplier * MuscleMass  </val>
+</def>
+
+<def>
+  <name> MuscleMassChange </name>
+  <val> SynthesisRate - DegradationRate </val>
+</def>
+
+<def>
+  <name> K12Multiplier </name>
+  <val> K12Multiplier [ MuscleActivity ] </val>
+</def>
+
+<def>
+  <name> K12 </name>
+  <val> K12Multiplier * K12Basic </val>
+</def>
+
+<def>
+  <name> K21Multiplier </name>
+  <val> 1.0 </val>
+</def>
+
+<def>
+  <name> K21 </name>
+  <val> K21Multiplier * K21Basic </val>
+</def>
+
+<def>
+  <name> TypeIChange </name>
+  <val> ( K21 * TypeII(%) ) - ( K12 * TypeI(%) ) </val>
+</def>
+
+<def>
+  <name> TypeIIChange </name>
+  <val> ( K12 * TypeI(%) ) - ( K21 * TypeII(%) ) </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+  <dervs> Model.Dervs </dervs>
+</math>
+
+<control> ========================================
+
+The time base for QHP is minutes, so I'll go with
+minutes here.
+
+<gofor>
+  <solutionint> 60 </solutionint>
+  <displayint> 10 </displayint>
+  <menuitem> 1 Hour </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 1440 </solutionint>
+  <displayint> 60 </displayint>
+  <menuitem> 1 Day </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 43200 </solutionint>
+  <displayint> 1440 </displayint>
+  <menuitem> 30 Days </menuitem>
+</gofor>
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Skeletal Muscle Atrophy </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<maplist>
+  <name> MuscleActivity </name>
+  <map><val> 0.0 </val><img> Max Unload </img></map>
+  <map><val> 0.5 </val><img> Unload </img></map>
+  <map><val> 1.0 </val><img> Normal </img></map>
+  <map><val> 1.5 </val><img> Load </img></map>
+  <map><val> 2.0 </val><img> Max Load </img></map>
+</maplist>
+
+<slidebar>
+  <row> 2.4 </row><col> 1 </col>
+  <wide> 8.0 </wide>
+  <name> MuscleActivity </name>
+  <listname> MuscleActivity </listname>
+  <label> Activity </label>
+</slidebar>
+
+<showvalue>
+   <row> 3.8 </row><col> 1 </col>
+   <name> MuscleMass </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Muscle Mass </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.8 </row><col> 3 </col>
+   <name> MuscleMassChange </name>
+   <format><decimal> 6 </decimal></format>
+   <label> Change </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.2 </row><col> 1 </col>
+   <name> SynthesisRate </name>
+   <format><decimal> 6 </decimal></format>
+   <label> Synthesis Rate </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.2 </row><col> 3 </col>
+   <name> NormalSynthesisRate </name>
+   <format><decimal> 6 </decimal></format>
+   <label> Normal </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.2 </row><col> 3 </col>
+   <name> SynthesisRateMultiplier </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Activity Factor </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.6 </row><col> 1 </col>
+   <name> DegradationRate </name>
+   <format><decimal> 6 </decimal></format>
+   <label> Degradation Rate </label>
+</showvalue>
+
+<showvalue>
+   <row> 10.6 </row><col> 3 </col>
+   <name> NormalDegradationK  </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> Normal K </label>
+</showvalue>
+
+<showvalue>
+   <row> 11.6 </row><col> 3 </col>
+   <name> DegradationRateMultiplier </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Activity Factor </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.0 </row><col> 1 </col>
+   <name> TypeI(%) </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Type I (%) </label>
+</showvalue>
+
+<showvalue>
+   <row> 14.0 </row><col> 3 </col>
+   <name> TypeIChange  </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> Change </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.4 </row><col> 1 </col>
+   <name> TypeII(%) </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Type II (%) </label>
+</showvalue>
+
+<showvalue>
+   <row> 16.4 </row><col> 3 </col>
+   <name> TypeIIChange  </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> Change </label>
+</showvalue>
+
+<showvalue>
+   <row> 17.8 </row><col> 1 </col>
+   <name> K12 </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> K12 </label>
+</showvalue>
+
+<showvalue>
+   <row> 18.8 </row><col> 3 </col>
+   <name> K12Basic </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> Basic </label>
+</showvalue>
+
+<showvalue>
+   <row> 19.8 </row><col> 3 </col>
+   <name> K12Multiplier </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Activity Factor </label>
+</showvalue>
+
+<showvalue>
+   <row> 21.2 </row><col> 1 </col>
+   <name> K21 </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> K21 </label>
+</showvalue>
+
+<showvalue>
+   <row> 22.2 </row><col> 3 </col>
+   <name> K21Basic </name>
+   <format>
+     <decimal> 8 </decimal>
+     <fieldwidth> 12 </fieldwidth>
+   </format>
+   <label> Basic </label>
+</showvalue>
+
+<showvalue>
+   <row> 23.2 </row><col> 3 </col>
+   <name> K21Multiplier </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Activity Factor </label>
+</showvalue>
+
+
+
+===============================================
+
+<showclock>
+  <row> 0.5 </row><col> 28 </col>
+  <name> System.X </name>
+  <timebase> DAY </timebase>
+  <days/>
+</showclock>
+
+<showgraph>
+  <row> 2.0 </row><col> 28 </col>
+  <high> 12 </high><wide> 32 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+     <name> System.X </name>
+     <label> Minutes </label>
+     <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> MuscleMass </name>
+      <label> Mass </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 200 </max></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

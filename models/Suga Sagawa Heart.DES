@@ -1,0 +1,516 @@
+Suga - Sagawa Heart
+
+Created : 29-Aug-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Suga - Sagawa Heart Model </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables>
+
+The Pericardium
+
+<parm>
+  <name> PCVol </name>
+  <val> 0 </val>
+</parm>
+
+Pulmonary Veins
+
+<parm>
+  <name> VP </name>
+  <val> 9.0 </val>
+</parm>
+
+<parm>
+  <name> VenCond </name>
+  <val> 1000.0 </val>
+</parm>
+
+Thoracic Pressure
+
+<parm>
+  <name> PThorax </name>
+  <val> -4.0 </val>
+</parm>
+
+Systemic Hemodynamics
+
+<parm>
+  <name>TPR  </name>
+  <val> 0.0185 </val>
+</parm>
+
+The left ventricle diastolic P-V curve
+is an exponential.
+
+<parm>
+  <name> Flaccid </name>
+  <val> 0.12 </val>
+</parm>
+
+<parm>
+  <name> MaxVol </name>
+  <val> 200 </val>
+</parm>
+
+Left Ventricle Systole
+
+<parm>
+  <name> EMax </name>
+  <val> 2.0 </val>
+</parm>
+
+Cardiac Output Wrapup
+
+<parm>
+  <name> HR </name>
+  <val> 72 </val>
+</parm>
+
+<var>
+  <name> PCPres </name>
+</var>
+
+<var>
+  <name> PCEff </name>
+</var>
+
+<var>
+  <name> AP </name>
+</var>
+
+<var>
+  <name> EDP </name>
+</var>
+
+<var>
+  <name> TMuralP </name>
+</var>
+
+<var>
+  <name> K </name>
+</var>
+
+<var>
+  <name> EDV </name>
+</var>
+
+<var>
+  <name> ESV </name>
+</var>
+
+<var>
+  <name> SV </name>
+</var>
+
+<var>
+  <name> EjectionFraction </name>
+</var>
+
+</variables>
+
+<equations> ====================================
+
+There is an implicit equation here of
+the form CO = f (CO) since CO is both
+flow into and flow out of the heart.
+
+<impliciteq>
+  <name> CO </name>
+  <startname> CO </startname>
+  <initialval> 5400.0 </initialval>
+  <endname> COEnd </endname>
+  <errorlim> 54.0 </errorlim>
+  <searchminname> SearchMin </searchminname>
+</impliciteq>
+
+</equations>
+
+<functions> ====================================
+
+<curve>
+  <name> PCEffCurve </name>
+  <point>
+    <x> 0 </x><y> 1.0 </y><slope> 0.0 </slope>
+  </point>
+  <point>
+    <x> 20.0 </x><y> 5.0 </y><slope> 0.3 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions> ===================================
+
+<block><name> Dervs </name> =====================
+
+<def>
+  <name> PCPres </name>
+  <val> 0.0008 * ( PCVol * PCVol ) </val>
+</def>
+
+<def>
+  <name> PCEff </name>
+  <val> PCEffCurve [ PCPres ] </val>
+</def>
+
+<def>
+  <name> SearchMin </name>
+  <val> 0.0 </val>
+</def>
+
+<implicitmath><name> CO </name>
+
+<def>
+  <name> AP </name>
+  <val> CO * TPR </val>
+</def>
+
+<def>
+  <name> EDP </name>
+  <val> VP - ( CO / VenCond ) </val>
+</def>
+
+<def>
+  <name> TMuralP </name>
+  <val> EDP - PThorax </val>
+</def>
+
+<def>
+  <name> K </name>
+  <val> - ( Flaccid / PCEff ) * TMuralP </val>
+</def>
+
+<def>
+  <name> EDV </name>
+  <val> MaxVol * ( 1 - EXP K ) </val>
+</def>
+
+<def>
+  <name> ESV </name>
+  <val> AP / EMax </val>
+</def>
+
+<def>
+  <name> SV </name>
+  <val> EDV - ESV </val>
+</def>
+
+<def>
+  <name> COEnd </name>
+  <val> HR * SV </val>
+</def>
+
+</implicitmath>
+
+<def>
+  <name> EjectionFraction </name>
+  <val> SV / EDV </val>
+</def>
+
+<if>
+  <test> AP LE 50 </test>
+  <true>
+    <page> Severe hypotension. </page>
+  </true>
+</if>
+
+<if>
+  <test> AP GE 150 </test>
+  <true>
+    <page> Acute hypertension. </page>
+  </true>
+</if>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+  <dervs> Model.Dervs </dervs>
+</math>
+
+<display> =========================================
+<panel>
+
+<name> Suga - Sagawa Heart Model </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> CO </name>
+   <format> <integer/> </format>
+   <label> CO </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> SV </name>
+   <format> <integer/> </format>
+   <label> SV </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> HR </name>
+   <format> <integer/> </format>
+   <label> HR </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.5 </row><col> 1 </col>
+   <name> EDV </name>
+   <format> <integer/> </format>
+   <label> EDV </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.5 </row><col> 1 </col>
+   <name> ESV </name>
+   <format> <integer/> </format>
+   <label> ESV </label>
+</showvalue>
+
+<showvalue>
+   <row> 8 </row><col> 1 </col>
+   <name> EjectionFraction </name>
+   <format><decimal> 2 </decimal></format>
+   <label> EjectionFraction </label>
+</showvalue>
+
+<repeatlist>
+  <name> VP </name>
+  <repeat>
+    <reps> 30 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 9.5 </row><col> 1 </col>
+  <name> VP </name>
+  <listname> VP </listname>
+  <label> VP </label>
+</slidebar>
+
+<showvalue>
+   <row> 10.9 </row><col> 1 </col>
+   <name> EDP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> EDP </label>
+</showvalue>
+
+<showvalue>
+   <row> 11.9 </row><col> 1 </col>
+   <name> TMuralP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> TMuralP </label>
+</showvalue>
+
+<showvalue>
+   <row> 12.9 </row><col> 1 </col>
+   <name> AP </name>
+   <format> <integer/> </format>
+   <label> AP </label>
+</showvalue>
+
+<showvalue>
+   <row> 14.4 </row><col> 1 </col>
+   <name> VenCond </name>
+   <format> <integer/> </format>
+   <label> VenCond </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.4 </row><col> 1 </col>
+   <name> TPR </name>
+   <format><decimal> 4 </decimal></format>
+   <label> TPR </label>
+</showvalue>
+
+<infobutton>
+  <row> 17.2 </row><col> 1 </col>
+  <label> Normal Values </label>
+  <line> CO - 5240 mL / Min </line>
+  <line> SV - 73 mL </line>
+  <line> HR - 72 Beats / Min </line>
+  <line>  </line>
+  <line> EDV - 121 mL </line>
+  <line> ESV - 48 mL </line>
+  <line>  </line>
+  <line> EjectionFraction - 0.60 </line>
+  <line>  </line>
+  <line> EDP - 3.8 mmHg </line>
+</infobutton>
+
+Right-hand Side ===============================
+
+<infobutton>
+  <row> 0.5 </row><col> 30 </col>
+  <label> General Math </label>
+  <line> CO - Cardiac Output </line>
+  <line> EDV - End-Diastolic Volume </line>
+  <line> ESV - End-Systolic Volume </line>
+  <line> HR - Heart Rate </line>
+  <line> SV - Stroke Volume </line>
+  <line>  </line>
+  <line> CO = HR * SV </line>
+  <line> SV = EDV - ESV </line>
+</infobutton>
+
+Systole
+
+<groupbox>
+   <row> 2.0 </row><col> 30 </col>
+   <high> 5.0 </high><wide> 30 </wide>
+   <title> Systole </title>
+
+<repeatlist>
+  <name> EMax </name>
+  <repeat>
+    <reps> 50 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> EMax </name>
+  <listname> EMax </listname>
+  <label> EMax </label>
+</slidebar>
+
+<infobutton>
+  <row> 3.2 </row><col> 1 </col>
+  <label> Systolic Math </label>
+  <line> AP - Arterial Pressure </line>
+  <line> CO - Cardiac Output </line>
+  <line> EMax - Contractility </line>
+  <line> ESV - End-Systolic Volume </line>
+  <line> TPR - Total Peripheral Resistance </line>
+  <line>  </line>
+  <line> AP = CO * TPR </line>
+  <line> ESV = AP / EMax </line>
+</infobutton>
+
+</groupbox>
+
+Diastole
+
+<groupbox>
+   <row> 7.4 </row><col> 30 </col>
+   <high> 5.0 </high><wide> 30 </wide>
+   <title> Diastole </title>
+
+<repeatlist>
+  <name> Flaccid </name>
+  <repeat>
+    <reps> 50 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> Flaccid </name>
+  <listname> Flaccid </listname>
+  <label> Compliance </label>
+</slidebar>
+
+<infobutton>
+  <row> 3.2 </row><col> 1 </col>
+  <label> Diastolic Math </label>
+  <line> EDP - End-Diastolic Pressure </line>
+  <line> EDV - End-Diastolic Volume </line>
+  <line> K - Diastolic Complicance </line>
+  <line> MaxVol - Maximum EDV </line>
+  <line> PThorax - Thoracic Pressure </line>
+  <line> TMuralP - Transmural Pressure </line>
+  <line>  </line>
+  <line> EDP = f ( filling ) </line>
+  <line> TMuralP = EDP - PThorax </line>
+  <line> K = f ( Wall Complicance and Pericardial Compression ) </line>
+  <line> EDV = MaxVol * ( 1 - EXP ( -K * TMuralP )) </line>
+</infobutton>
+
+</groupbox>
+
+Pericardium
+
+<groupbox>
+   <row> 12.8 </row><col> 30 </col>
+   <high> 4.5 </high><wide> 30 </wide>
+   <title> Pericardium </title>
+
+<repeatlist>
+  <name> PCVol </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 25 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> PCVol </name>
+  <listname> PCVol </listname>
+  <label> PCVol </label>
+</slidebar>
+
+<showvalue>
+   <row> 2.9 </row><col> 1 </col>
+   <name> PCPres </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Pressure </label>
+</showvalue>
+
+</groupbox>
+
+Thorax
+
+<groupbox>
+   <row> 17.7 </row><col> 30 </col>
+   <high> 3.2 </high><wide> 30 </wide>
+   <title> Thorax </title>
+
+<repeatlist>
+  <name> PThorax </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> PThorax </name>
+  <listname> PThorax </listname>
+  <label> Pressure </label>
+</slidebar>
+
+</groupbox>
+
+</panel>
+</display>
+
+</model>
+
+End

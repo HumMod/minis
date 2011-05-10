@@ -1,0 +1,196 @@
+Kidney / Glomerlus Panel
+
+Created : 11-Oct-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+This panel shows the determinants
+of glomerular filtration.
+
+<panel><name> Glomerulus </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> GFR.GFR </name>
+   <format> <integer/> </format>
+   <label> GFR </label>
+</showvalue>
+
+<repeatlist>
+  <name> Kf </name>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.6 </row><col> 1 </col>
+  <name> GFR.Kf </name>
+  <listname> Kf </listname>
+  <label> Kf </label>
+</slidebar>
+
+<showvalue>
+   <row> 5.2 </row><col> 1 </col>
+   <name> GFR.DelP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Pressure Gradient </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.2 </row><col> 3 </col>
+   <name> GFR.Pres </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Glomerular Pressue </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.2 </row><col> 3 </col>
+   <name> COP.AveCOP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Average COP </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.2 </row><col> 3 </col>
+   <name> Flows.ProxTubePres </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Proximal Tubule Pressure </label>
+</showvalue>
+
+RENAL PELVIS
+
+<groupbox>
+   <row> 9.8 </row><col> 1 </col>
+   <high> 3.2 </high><wide> 30 </wide>
+   <title> Renal Pelvis </title>
+
+<repeatlist>
+  <name> PelvisPres </name>
+  <repeat>
+    <reps> 25 </reps>
+    <stepsize> 2 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> Flows.PelvisPres </name>
+  <listname> PelvisPres </listname>
+  <label> Pres </label>
+</slidebar>
+
+</groupbox>
+
+TUBULE BLOCK
+
+<groupbox>
+   <row> 13.4 </row><col> 1 </col>
+   <high> 3.2 </high><wide> 30 </wide>
+   <title> Tubule Block </title>
+
+<radiobuttons>
+  <row> 1.5 </row><col> 1 </col>
+  <name> GFR.Block </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+</groupbox>
+
+Right Side =====================================
+
+<showgraph>
+  <row> 2.0 </row><col> 35 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> GFR.GFR </name>
+      <label> GFR </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 120 </min><max> 130 </max></scale>
+  </yaxis>
+</showgraph>
+
+AFFERENT PROTEIN
+
+<groupbox>
+   <row> 9.5 </row><col> 35 </col>
+   <high> 4.3 </high><wide> 28 </wide>
+   <title> Afferent Protein </title>
+
+<repeatlist>
+  <name> APr </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <wide> 8 </wide>
+  <name> COP.APr </name>
+  <listname> APr </listname>
+  <label> [ Protein ] </label>
+</slidebar>
+
+<showvalue>
+   <row> 2.9 </row><col> 1 </col>
+   <name> COP.ACOP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> COP </label>
+</showvalue>
+
+</groupbox>
+
+EFFERENT PROTEIN
+
+<groupbox>
+   <row> 14.5 </row><col> 35 </col>
+   <high> 4.1 </high><wide> 28 </wide>
+   <title> Efferent Protein </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> COP.EPr </name>
+   <format><decimal> 3 </decimal></format>
+   <label> [ Protein ] </label>
+</showvalue>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> COP.ECOP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> COP </label>
+</showvalue>
+
+</groupbox>
+
+</panel>
+
+End

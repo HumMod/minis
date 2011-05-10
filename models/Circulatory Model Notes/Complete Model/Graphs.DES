@@ -1,0 +1,157 @@
+Graphs 
+
+Created : 21-Jun-09
+Last Modified : 24-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+Solver : Digital Human (V0.5)
+
+<panel><name> Graphs </name>
+
+<structurename> FluidVolumes </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showgraph>
+  <row> 2.0 </row><col> 1.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> AP </name>
+      <label> AP </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <yvar>
+      <name> RPP </name>
+      <label> RPP </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale>
+      <min> 0 </min><max> 200 </max>
+      <inc> 100 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 11.4 </row><col> 1.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> CardiacOutput.CO </name>
+      <label> CO </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale>
+      <min> 4000 </min><max> 8000 </max>
+      <inc> 1000 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 20.8 </row><col> 1.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> FlowAutoregulation.TPR </name>
+      <label> TPR </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale>
+      <min> 0.015 </min><max> 0.025 </max>
+      <inc> 0.005 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 2.0 </row><col> 32.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> AP </name>
+      <label> AP </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale>
+      <min> 50 </min><max> 150 </max>
+      <inc> 50 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 11.4 </row><col> 32.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> CardiacOutput.RAP </name>
+      <label> RAP </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale>
+      <min> -2 </min><max> 2 </max>
+      <inc> 2 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 20.8 </row><col> 32.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> BaroreceptorReflex.SYM </name>
+      <label> SYM </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale>
+      <min> 0.0 </min><max> 2.0 </max>
+      <inc> 1.0 </inc>
+    </scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

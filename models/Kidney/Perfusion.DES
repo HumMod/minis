@@ -1,0 +1,67 @@
+Kidney Model - Perfusion
+
+Created : 16-Aug-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+Renal perfusion pressure may be
+
+# Endogenous
+# Pumped
+# Stenosed
+
+<structure><name> RPP </name>
+
+<variables>
+
+<var>
+  <name> Pres </name>
+</var>
+
+<parm>
+  <name> PresDrop </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> PumpSwitch </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> PumpSetting </name>
+  <val> 100 </val>
+</parm>
+
+</variables>
+
+<definitions>
+<block><name> Dervs </name>
+
+Kidney Perfusion
+
+<conditional>
+  <name> Pres </name>
+  <test> PumpSwitch </test>
+  <true> PumpSetting </true>
+  <false> Circ.ArtyPres - PresDrop </false>
+</conditional>
+
+<if>
+  <test> Pres LT Circ.VenousPres </test>
+  <true>
+    <def>
+      <name> Pres </name>
+      <val> Circ.VenousPres </val>
+    </def>
+  </true>
+</if>
+
+</block>
+</definitions>
+</structure>
+
+End

@@ -1,0 +1,220 @@
+Kidney / Afferent Artery Panel
+
+Created : 11-Oct-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Afferent Artery </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> AffArty.Cond </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Cond </label>
+</showvalue>
+
+<repeatlist>
+  <name> AffCond </name>
+  <firstval> 10 </firstval>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.4 </row><col> 3 </col>
+  <name> AffArty.NormalCond </name>
+  <listname> AffCond </listname>
+  <label> Normal </label>
+</slidebar>
+
+<showvalue>
+   <row> 4.8 </row><col> 3 </col>
+   <name> Myogenic.Effect </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Myogenic Effect </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.8 </row><col> 3 </col>
+   <name> AffTGF.DelayOut </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Macula Densa Effect </label>
+</showvalue>
+
+<infobutton>
+  <row> 7.4 </row><col> 1 </col>
+  <line> A normal afferent artery </line>
+  <line> diameter was arbitrarily </line>
+  <line> selected as 20 u following </line>
+  <line> the work of Takenaka, etal. </line>
+  <line> Am. J. Physiol. 267:F879-887, </line>
+  <line> 1994. </line>
+</infobutton>
+
+<showvalue>
+   <row> 7.4 </row><col> 4 </col>
+   <name> AffArty.Diam </name>
+   <format> <integer/> </format>
+   <label> Diameter ( u ) </label>
+</showvalue>
+
+MACULA DENSA EFFECT
+
+<groupbox>
+  <row> 9.0 </row><col> 1 </col>
+   <high> 15 </high><wide> 29 </wide>
+   <title> Macula Densa Effect </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> AffTGF.Effect </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Effect </label>
+</showvalue>
+
+<radiobuttons>
+  <row> 2.8 </row><col> 1 </col>
+  <name> AffTGF.ClampSwitch </name>
+  <listname> Switch </listname>
+  <label> Clamp </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> AffTGF.ClampLevel </name>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 4.2 </row><col> 1 </col>
+  <name> AffTGF.ClampLevel </name>
+  <listname> AffTGF.ClampLevel </listname>
+  <label> Level </label>
+</slidebar>
+
+<repeatlist>
+  <name> AffTGF.DelayTau </name>
+  <firstval> 0.01 </firstval>
+  <repeat>
+    <reps> 19 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 0.10 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 5.6 </row><col> 1 </col>
+  <name> AffTGF.DelayTau </name>
+  <listname> AffTGF.DelayTau </listname>
+  <label> Delay </label>
+</slidebar>
+
+<showvalue>
+   <row> 7.0 </row><col> 1 </col>
+   <name> AffTGF.SteadyState </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Steady State </label>
+</showvalue>
+
+<showcurve>
+  <row> 8.4 </row><col> 1.0 </col>
+  <high> 6 </high><wide> 22 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> MD.Signal </name>
+    <label> MD Sig </label>
+    <scale><min> 0 </min><max> 4 </max><inc> 1 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> SS </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> AffTGF.SteadyState </curvename>
+</showcurve>
+
+</groupbox>
+
+Right Side ===================================
+
+<showgraph>
+  <row> 2.0 </row><col> 31 </col>
+  <high> 9 </high><wide> 30 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> AffArty.Cond </name>
+      <label> Cond </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 20 </min><max> 40 </max></scale>
+  </yaxis>
+</showgraph>
+
+MYOGENIC VS. MACULA DENSA EFFECT
+
+<infobutton>
+  <row> 12 </row><col> 31 </col>
+  <label> Myogenic vs. Macula Densa </label>
+  <line> The myogenic and macula densa </line>
+  <line> effects appear to contribute </line>
+  <line> equally to the hemodynamic </line>
+  <line> response to a step change in </line>
+  <line> perfusion pressure. </line>
+  <line>  </line>
+  <line> Takenaka, etal. Am. J. Physiol. </line>
+  <line> 67:F879-887, 1994. </line>
+</infobutton>
+
+<showcurve>
+  <row> 14 </row><col> 31 </col>
+  <high> 6 </high><wide> 22 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> Myogenic.PresChange </name>
+    <label> Del P </label>
+    <scale><min> -100 </min><max> 100 </max><inc> 100 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> Myo Eff </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> Myogenic.DelPEffect </curvename>
+</showcurve>
+
+</panel>
+
+End

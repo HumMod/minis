@@ -1,0 +1,94 @@
+Kidney Model - COP Parameters
+
+Created : 16-Aug-96
+Last Modified : 18-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+The Landis - Pappenheimer equation is
+
+   COP = A * [Pr] + B * [Pr]^2
+   where
+   A = 320
+   B = 1160
+
+   [Pr] - G/mL
+   COP - mmHg
+
+A paper from Navar's lab has coefficients.
+
+<structure><name> COP </name>
+<variables>
+
+<parm>
+  <name> A </name>
+  <val> 320 </val>
+</parm>
+
+<parm>
+  <name> B </name>
+  <val> 1160 </val>
+</parm>
+
+<parm>
+  <name> APr </name>
+  <val> 0.07 </val>
+</parm>
+
+<var>
+  <name> ACOP </name>
+</var>
+
+<var>
+  <name> EPr </name>
+</var>
+
+<var>
+  <name> ECOP </name>
+</var>
+
+<var>
+  <name> AveCOP </name>
+</var>
+
+</variables>
+
+The afferenet COP is parametric and is
+calculated in parameters.  The efferent
+COP is calculated after GFR concentrates
+the protein.
+
+<definitions>
+<block><name> CalcACOP </name>
+
+<def>
+  <name> ACOP </name>
+  <val> ( A * APr ) + ( B * ( APr ^ 2 ) ) </val>
+</def>
+
+</block>
+
+<block><name> CalcECOP </name>
+
+<def>
+  <name> EPr </name>
+  <val> APr / ( 1 - GFR.FiltFract ) </val>
+</def>
+
+<def>
+  <name> ECOP </name>
+  <val> ( A * EPr ) + ( B * ( EPr ^ 2 ) ) </val>
+</def>
+
+<def>
+  <name> AveCOP </name>
+  <val> ( ACOP + ECOP ) / 2 </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+End

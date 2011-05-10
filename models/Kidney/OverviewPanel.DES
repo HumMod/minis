@@ -1,0 +1,172 @@
+Kidney / OverView Data
+
+Created : 11-Oct-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+The is the first panel. It displays
+numerical values of key variables
+and graphs of arterial pressure and
+renal blood flow.
+
+<panel><name> Overview </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> Circ.ArtyPres </name>
+   <format> <integer/> </format>
+   <label> Arterial Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> RPP.Pres </name>
+   <format> <integer/> </format>
+   <label> Renal Perfusion Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> Flows.RBF </name>
+   <format> <integer/> </format>
+   <label> Renal Blood Flow </label>
+</showvalue>
+
+<showvalue>
+   <row> 5 </row><col> 1 </col>
+   <name> GFR.Pres </name>
+   <format> <integer/> </format>
+   <label> Glomerular Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 6 </row><col> 1 </col>
+   <name> GFR.GFR </name>
+   <format> <integer/> </format>
+   <label> Glomerular Filtration Rate </label>
+</showvalue>
+
+<showvalue>
+   <row> 7 </row><col> 1 </col>
+   <name> Prox.Reab </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Proximal Reabsorption </label>
+</showvalue>
+
+<showvalue>
+   <row> 8 </row><col> 1 </col>
+   <name> MD.Flow </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Macula Densa Flow </label>
+</showvalue>
+
+<showvalue>
+   <row> 9 </row><col> 1 </col>
+   <name> Dist.Reab </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Distal Reabsorption </label>
+</showvalue>
+
+<showvalue>
+   <row> 10 </row><col> 1 </col>
+   <name> CD.Reab </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Collecting Duct Reabsorption </label>
+</showvalue>
+
+<showvalue>
+   <row> 11 </row><col> 1 </col>
+   <name> Na.ExcretionRate </name>
+   <format><decimal> 3 </decimal></format>
+   <label> Sodium Excretion </label>
+</showvalue>
+
+<showvalue>
+   <row> 12.5 </row><col> 1 </col>
+   <name> PRA.Plasma[A2] </name>
+   <format> <integer/> </format>
+   <label> Plasma [AII] </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.5 </row><col> 1 </col>
+   <name> Aldo.PlasmaConc </name>
+   <format> <integer/> </format>
+   <label> Plasma [Aldo] </label>
+</showvalue>
+
+<showvalue>
+   <row> 14.5 </row><col> 1 </col>
+   <name> PRA.PlasmaReninActivity </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Plasma Renin Activity </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.5 </row><col> 1 </col>
+   <name> PRA.KidneyRenin(kiloGU) </name>
+   <format> <integer/> </format>
+   <label> Kidney Renin </label>
+</showvalue>
+
+Right Side ================================
+
+<showgraph>
+  <row> 2 </row><col> 34 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Circ.ArtyPres </name>
+      <label> AP </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 80 </min><max> 120 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 9.5 </row><col> 34 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Flows.RBF </name>
+      <label> RBF </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 1100 </min><max> 1300 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

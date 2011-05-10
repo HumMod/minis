@@ -1,0 +1,419 @@
+Predator-Prey
+
+Created : 24-Aug-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+The life of predators (wolves) depends
+on their success in consuming prey (moose).
+
+The independent variable is time in years.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Predator-Prey </basic></title>
+
+<structure><name> Model </name> =============
+
+<variables>
+
+<var><name> MooseBirths </name></var>
+<var><name> MooseDeaths </name></var>
+<var><name> WolfBirths </name></var>
+<var><name> WolfDeaths </name></var>
+
+<parm>
+  <name> InitialMooseCount </name>
+  <val> 1500 </val>
+</parm>
+
+<parm>
+  <name> InitialWolfCount </name>
+  <val> 50 </val>
+</parm>
+
+These next parameters define the moose and
+wolf interactions.
+
+<parm>
+  <name> MooseBirthRate </name>
+  <val> 0.1 </val>
+</parm>
+
+<var>
+  <name> MooseDeathRate </name>
+</var>
+
+<parm>
+  <name> WolfHuntingSkills </name>
+  <val> 0.002 </val>
+</parm>
+
+<parm>
+  <name> MooseFoodValue </name>
+  <val> 0.1 </val>
+</parm>
+
+<var><name> WolfBirthRate </name></var>
+
+<parm>
+  <name> WolfDeathRate </name>
+  <val> 0.2 </val>
+</parm>
+
+Use these variables to track maximum and
+minimum animal count.
+
+<var>
+  <name> FirstTime </name>
+  <val> TRUE </val>
+</var>
+
+<var>
+  <name> MinimumMoose </name>
+  <val> UNDEFINED </val>
+</var>
+
+<var>
+  <name> MaximumMoose </name>
+  <val> UNDEFINED </val>
+</var>
+
+<var>
+  <name> MinimumWolves </name>
+  <val> UNDEFINED </val>
+</var>
+
+<var>
+  <name> MaximumWolves </name>
+  <val> UNDEFINED </val>
+</var>
+
+</variables>
+
+<equations> ---------------------------------
+
+The moose and wolf head counts are equal
+to the integral over time of their net
+rate of change.
+
+<diffeq>
+  <name> MooseCount </name>
+  <integralname> MooseCount </integralname>
+  <initialval> 1500.0 </initialval>
+  <dervname> MooseCountChange </dervname>
+  <errorlim> 1E-2 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> WolfCount </name>
+  <integralname> WolfCount </integralname>
+  <initialval> 50.0 </initialval>
+  <dervname> WolfCountChange </dervname>
+  <errorlim> 1E-3 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> -----------------------------------
+
+<block> <name> Parms </name>
+
+<def>
+  <name> MooseCount </name>
+  <val> InitialMooseCount </val>
+</def>
+
+<def>
+  <name> WolfCount </name>
+  <val> InitialWolfCount </val>
+</def>
+
+</block>
+
+<block> <name> Dervs </name>
+
+Moose births is equal to the product of the birth
+rate and the number of living moose.
+
+<def>
+  <name> MooseBirths </name>
+  <val> MooseBirthRate * MooseCount </val>
+</def>
+
+Moose death rate is the product of wolf hunting
+skills and the size of the wolf population.
+
+<def>
+  <name> MooseDeathRate </name>
+  <val> WolfHuntingSkills * WolfCount </val>
+</def>
+
+Moose deaths is equal to the product of the death
+rate and the number of living moose.
+
+<def>
+  <name> MooseDeaths </name>
+  <val> MooseDeathRate * MooseCount </val>
+</def>
+
+Wolf birth rate is the product of the nutritional
+value of moose, wolf hunting skills and the size
+of the moose population.
+
+<def>
+  <name> WolfBirthRate </name>
+  <val> MooseFoodValue * WolfHuntingSkills * MooseCount </val>
+</def>
+
+Wolf births is equal to the product of the birth
+rate and the number of living wolves.
+
+<def>
+  <name> WolfBirths </name>
+  <val> WolfBirthRate * WolfCount </val>
+</def>
+
+Wolf deaths is equal to the product of the death
+rate and the number of living wolves.
+
+<def>
+  <name> WolfDeaths </name>
+  <val> WolfDeathRate * WolfCount </val>
+</def>
+
+<def>
+  <name> MooseCountChange </name>
+  <val> MooseBirths - MooseDeaths </val>
+</def>
+
+<def>
+  <name> WolfCountChange </name>
+  <val> WolfBirths - WolfDeaths </val>
+</def>
+
+<if><test> FirstTime </test>
+
+<true>
+
+  <def>
+    <name> FirstTime </name>
+    <val> FALSE </val>
+  </def>
+
+  <def>
+    <name> MinimumWolves </name>
+    <val> WolfCount </val>
+  </def>
+
+  <def>
+    <name> MaximumWolves </name>
+    <val> WolfCount </val>
+  </def>
+
+  <def>
+    <name> MinimumMoose </name>
+    <val> MooseCount </val>
+  </def>
+
+  <def>
+    <name> MaximumMoose </name>
+    <val> MooseCount </val>
+  </def>
+
+</true>
+
+<false>
+  <def>
+    <name> MinimumMoose </name>
+    <val> MinimumMoose MIN MooseCount </val>
+  </def>
+
+  <def>
+    <name> MaximumMoose </name>
+    <val> MaximumMoose MAX MooseCount </val>
+  </def>
+
+  <def>
+    <name> MinimumWolves </name>
+    <val> MinimumWolves MIN WolfCount </val>
+  </def>
+
+  <def>
+    <name> MaximumWolves </name>
+    <val> MaximumWolves MAX WolfCount </val>
+  </def>
+
+  </false>
+</if>
+</block>
+
+</definitions>
+</structure>
+
+<math> --------------------------------------
+
+<parms> Model.Parms </parms>
+<dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ---------------------------------------
+
+<gofor>
+  <solutionint> 100 </solutionint>
+  <displayint> 1 </displayint>
+  <storageint> 1 </storageint>
+</gofor>
+
+</control>
+
+<display> ---------------------------------------
+
+<panel><name> Predator-Prey </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+  <row> 2.5 </row><col> 1 </col>
+  <name> WolfCount </name>
+  <format><integer/></format>
+</showvalue>
+
+<showvalue>
+  <row> 3.5 </row><col> 4 </col>
+  <name> WolfBirths </name>
+  <format><integer/></format>
+</showvalue>
+
+<showvalue>
+  <row> 4.5 </row><col> 4 </col>
+  <name> WolfDeaths </name>
+  <format><integer/></format>
+</showvalue>
+
+<showvalue>
+  <row> 6.5 </row><col> 1 </col>
+  <name> MooseCount </name>
+  <format><integer/></format>
+</showvalue>
+
+<showvalue>
+  <row> 7.5 </row><col> 4 </col>
+  <name> MooseBirths </name>
+  <format><integer/></format>
+</showvalue>
+
+<showvalue>
+  <row> 8.5 </row><col> 4 </col>
+  <name> MooseDeaths </name>
+  <format><integer/></format>
+</showvalue>
+
+<editbox>
+  <row> 10.5 </row><col> 1 </col>
+  <name> InitialMooseCount </name>
+  <label> Initial Moose </label>
+</editbox>
+
+<editbox>
+  <row> 12.1 </row><col> 1 </col>
+  <name> InitialWolfCount </name>
+  <label> Initial Wolves </label>
+</editbox>
+
+Right-hand Side -------------------------
+
+<showvalue>
+  <row> 0.5 </row><col> 32 </col>
+  <name> System.X </name>
+  <format><integer/></format>
+  <label> Time </label>
+</showvalue>
+
+<infobutton>
+  <row> 0.5 </row><col> 49 </col>
+  <label> Reference </label>
+  <line> This model is the Lotka-Voltera </line>
+  <line> model.  Coefficients are from </line>
+  <line>  </line>
+  <line> Spain, J. </line>
+  <line> 1982 </line>
+  <line> BASIC Microcomputer Models in Biology </line>
+  <line> Addison-Wesley  Reading, MA </line>
+  <line> pp. 102-103 </line>
+</infobutton>
+
+<symbol>
+  <name> dot </name>
+  <style> CIRCLE </style>
+  <color> RED </color>
+  <size> 3 </size>
+</symbol>
+
+<showgraph>
+  <row> 3.0 </row><col> 32 </col>
+  <high> 14 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+    <name> WolfCount </name>
+    <label> Wolves </label>
+    <scale><min> 20 </min><max> 90 </max><inc> 10 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> MooseCount </name>
+      <label> Moose </label>
+      <linecolor> RED </linecolor>
+      <symbolname> dot </symbolname>
+    </yvar>
+    <scale><min> 600 </min><max> 1600 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+  <row> 18.5 </row><col> 32 </col>
+  <name> MinimumWolves </name>
+  <format><integer/></format>
+  <label> Wolves Min </label>
+</showvalue>
+
+<showvalue>
+  <row> 18.5 </row><col> 51 </col>
+  <name> MaximumWolves </name>
+  <format><integer/></format>
+  <label> Max </label>
+</showvalue>
+
+<showvalue>
+  <row> 19.5 </row><col> 32 </col>
+  <name> MinimumMoose </name>
+  <format><integer/></format>
+  <label> Moose Min </label>
+</showvalue>
+
+<showvalue>
+  <row> 19.5 </row><col> 51 </col>
+  <name> MaximumMoose </name>
+  <format><integer/></format>
+  <label> Max </label>
+</showvalue>
+
+</panel>
+</display>
+
+</model>
+
+End

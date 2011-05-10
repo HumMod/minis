@@ -1,0 +1,66 @@
+Kidney Model - Distal Tubule
+
+Created : 11-Oct-96
+Last Modified : 16-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+Distal tubule sodium reabsorption needs sodium
+flow from the macula densa and an aldo effect.
+
+<structure><name> Dist </name>
+<variables>
+
+<var>
+  <name> Load </name>
+</var>
+
+<parm>
+  <name> NormalFract </name>
+  <val> 0.5 </val>
+</parm>
+
+<var>
+  <name> FractReab </name>
+</var>
+
+<var>
+  <name> Reab </name>
+</var>
+
+<var>
+  <name> Outflow </name>
+</var>
+
+</variables>
+
+<definitions>
+<block><name> Dervs </name>
+
+<def>
+  <name> Load </name>
+  <val> MD.Flow </val>
+</def>
+
+<def>
+  <name> FractReab </name>
+  <val> NormalFract * Aldo.Effect </val>
+</def>
+
+<def>
+  <name> Reab </name>
+  <val> FractReab * Load </val>
+</def>
+
+<def>
+  <name> Outflow </name>
+  <val> Load - Reab </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+End

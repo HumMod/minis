@@ -1,0 +1,348 @@
+Time Delay
+
+Created : 25-Aug-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+A disturbance is not initially propagated from
+input to output.  As time passes, the output
+gradually increases to equal the input.
+
+A time delay is defined by
+
+   dOutput/dt = K * (Input - Output)
+
+K is the rate constant of the time delay.  The
+time constant (Tau) of the delay is the reciprocal
+of the rate constant.
+
+   Tau = 1 / K
+
+For a step change in input, when time = Tau,
+O = 0.63 * I.
+
+The half-time of the step response is the time
+required for the output go one-half way to its
+final value.
+
+   t 1/2 = 0.69 * Tau
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Time Delay </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> =======================================
+
+<parm>
+  <name> K </name>
+  <val> 0.2 </val>
+</parm>
+
+<parm>
+  <name> Amp </name>
+  <val> 1 </val>
+</parm>
+
+<parm>
+  <name> At </name>
+  <val> 4 </val>
+</parm>
+
+<var>
+  <name> Tau </name>
+</var>
+
+<var>
+  <name> t1/2 </name>
+</var>
+
+<var>
+  <name> I </name>
+</var>
+
+</variables>
+
+<equations> ======================================
+
+<diffeq>
+  <name> O </name>
+  <integralname> O </integralname>
+  <initialval>0.0  </initialval>
+  <dervname> dO/dt </dervname>
+</diffeq>
+
+</equations>
+
+<definitions> ====================================
+
+<block><name> Parms </name> ======================
+
+<def>
+  <name> Tau </name>
+  <val> INVERT K </val>
+</def>
+
+<def>
+  <name> t1/2 </name>
+  <val> 0.69 * Tau </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> ======================
+
+<conditional>
+  <name> I </name>
+  <test> System.X GE At </test>
+  <true> Amp </true>
+  <false> 0 </false>
+</conditional>
+
+<def>
+  <name> dO/dt </name>
+  <val> K * ( I - O ) </val>
+</def>
+
+</block>
+
+
+</definitions>
+</structure>
+
+<math>
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 0.5 </displayint>
+</gofor>
+
+<gofor>
+  <solutionint> 20 </solutionint>
+  <displayint> 0.5 </displayint>
+</gofor>
+
+</control>
+
+<display> =========================================
+
+<panel><name> Time Delay </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<infobutton>
+  <row> 0.5 </row><col> 13 </col>
+  <label> The Equation </label>
+  <line> The time-delay equation is </line>
+  <line>  </line>
+  <line> dO / dt = K * (I - O) </line>
+  <line>  </line>
+  <line> where I is input and O is output. </line>
+</infobutton>
+
+<infobutton>
+  <row> 0.5 </row><col> 28 </col>
+  <label> Rate Constant </label>
+  <line> K is the rate constant in </line>
+  <line> the time delay equation </line>
+  <line>  </line>
+  <line> dO / dt = K * (I - O) </line>
+  <line>  </line>
+  <line> The time constant (Tau) of </line>
+  <line> the delay is the reciprocal </line>
+  <line> of the rate constant. </line>
+  <line>  </line>
+  <line> Tau = 1 / K </line>
+  <line>  </line>
+  <line> For a step change in input, </line>
+  <line> when time is one time constant </line>
+  <line> beyond the step, the output is </line>
+  <line> 63% of the input. </line>
+  <line>  </line>
+  <line> The half-time of the step </line>
+  <line> response is the time required </line>
+  <line> for the output to go one-half </line>
+  <line> way to its final value. </line>
+  <line>  </line>
+  <line> t 1/2 = 0.69 * Tau </line>
+</infobutton>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> I </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Input </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> O </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Output </label>
+</showvalue>
+
+<showvalue>
+   <row> 5 </row><col> 1 </col>
+   <name> dO/dt </name>
+   <format><decimal> 2 </decimal></format>
+   <label> dO/dt </label>
+</showvalue>
+
+<groupbox>
+   <row> 6.6 </row><col> 1 </col>
+   <high> 4.5 </high><wide> 26 </wide>
+   <title> Step Input </title>
+
+<repeatlist>
+  <name> Amp </name>
+  <repeat>
+    <reps> 5 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> Amp </name>
+  <listname> Amp </listname>
+  <label> Size </label>
+</slidebar>
+
+<repeatlist>
+  <name> At </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> At </name>
+  <listname> At </listname>
+  <label> At </label>
+</slidebar>
+
+</groupbox>
+
+<groupbox>
+   <row> 11.9 </row><col> 1 </col>
+   <high> 5.5 </high><wide> 26 </wide>
+   <title> Rate Constant </title>
+
+<repeatlist>
+  <name> K </name>
+  <firstval> 0.01 </firstval>
+  <repeat>
+    <reps> 19 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> K </name>
+  <listname> K </listname>
+  <label> Size </label>
+</slidebar>
+
+<showvalue>
+   <row> 3.0 </row><col> 1 </col>
+   <name> Tau </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time Constant </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.0 </row><col> 1 </col>
+   <name> t1/2 </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Half-Life </label>
+</showvalue>
+
+</groupbox>
+
+Right-hand Side ==================================
+
+<showvalue>
+   <row> 0.5 </row><col> 45 </col>
+   <name> System.X </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.5 </row><col> 28 </col>
+  <high> 10 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> O </name>
+      <label> O </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <yvar>
+      <name> I </name>
+      <label> I </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 1 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 13 </row><col> 28 </col>
+  <high> 6 </high><wide> 32 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> dO/dt </name>
+      <label> dO/dt </label>
+    </yvar>
+    <scale><min> -0.10 </min><max> 0.2 </max><inc> 0.1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

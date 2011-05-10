@@ -1,0 +1,510 @@
+Furnace
+
+Created : 24-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+The house cools down, the thermostat clicks the
+furance on.  The furnace heats the house, the
+thermostat click offs.
+
+The temperature inside a house is directly
+proportional to the amount of heat in the house.
+The amount of heat is the integral over time
+of the net accumulation of heat in the house.
+Net accumulation is the difference between heat
+added by the furnace and heat lost to the
+outside world.  The furnace is controlled by
+a thermostat.
+
+The independent variable is time in minutes.
+
+Units for heat are kilocalories.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Furnace </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> =====================================
+
+Units for house volume are cubic meters.
+
+<parm>
+  <name> Volume </name>
+  <val> 400 </val>
+</parm>
+
+
+A thermostat senses temperature and
+controls the furnace.
+
+<parm>
+  <name> TempOn </name>
+  <val> 75 </val>
+</parm>
+
+<parm>
+  <name> TempOff </name>
+  <val> 80 </val>
+</parm>
+
+<parm>
+  <name> Burner </name>
+  <val> 25 </val>
+</parm>
+
+<parm>
+  <name> Leak </name>
+  <val> 0.2 </val>
+</parm>
+
+<parm>
+  <name> EnvTemp </name>
+  <val> 40 </val>
+</parm>
+
+<var>
+  <name> Switch </name>
+  <val> 0 </val>
+</var>
+
+<var>
+  <name> FirstTime </name>
+  <val> TRUE </val>
+</var>
+
+<var>
+  <name> MinTemp </name>
+  <val> UNDEFINED </val>
+</var>
+
+<var>
+  <name> MaxTemp </name>
+  <val> UNDEFINED </val>
+</var>
+
+<var>
+  <name> TempK </name>
+</var>
+
+<var>
+  <name> TempC </name>
+</var>
+
+<var>
+  <name> TempF </name>
+</var>
+
+<var>
+  <name> HeatGain </name>
+  <val> 0.0 </val>
+</var>
+
+<var>
+  <name> HeatLoss </name>
+</var>
+
+</variables>
+
+<equations> ====================================
+
+<diffeq>
+  <name> Heat </name>
+  <integralname> Heat </integralname>
+  <initialval> 26500.0 </initialval>
+  <dervname> NetHeat </dervname>
+  <errorlim> 100.0 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> FuelUsed </name>
+  <integralname> FuelUsed </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dFuelUsed/dt </dervname>
+</diffeq>
+
+</equations>
+
+<definitions> ==================================
+
+<block><name> Dervs </name> ====================
+
+It takes 4.98 kCal to heat 22.4 kMol of air 1
+degree K.  22.4 kMol of air occupies 22.4 cubic
+meters.  Thus, 1 kiloCal of heat in a cubic
+meter has a temperature of 4.5 degrees K.
+
+<def>
+  <name> TempK </name>
+  <val> 4.5 * Heat / Volume </val>
+</def>
+
+<def>
+  <name> TempC </name>
+  <val> TempK - 273 </val>
+</def>
+
+<def>
+  <name> TempF </name>
+  <val> ( ( 9 / 5 ) * TempC ) + 32 </val>
+</def>
+
+<if>
+  <test> TempF GE TempOff </test>
+  <true>
+    <def>
+      <name> Switch </name>
+      <val> FALSE </val>
+    </def>
+    <def>
+      <name> HeatGain </name>
+      <val> 0 </val>
+    </def>
+  </true>
+</if>
+
+<if>
+  <test> TempF LE TempOn </test>
+  <true>
+    <def>
+      <name> Switch </name>
+      <val> TRUE </val>
+    </def>
+    <def>
+      <name> HeatGain </name>
+      <val> Burner </val>
+    </def>
+  </true>
+</if>
+
+<def>
+  <name> dFuelUsed/dt </name>
+  <val> HeatGain </val>
+</def>
+
+<def>
+  <name> HeatLoss </name>
+  <val> Leak * ( TempF - EnvTemp ) </val>
+</def>
+
+<def>
+  <name> NetHeat </name>
+  <val> HeatGain - HeatLoss </val>
+</def>
+
+<if>
+  <test> FirstTime </test>
+  <true>
+    <def>
+      <name> FirstTime </name>
+      <val> FALSE </val>
+    </def>
+    <def>
+      <name> MinTemp </name>
+      <val> TempF </val>
+    </def>
+    <def>
+      <name> MaxTemp </name>
+      <val> TempF </val>
+    </def>
+  </true>
+  <false>
+    <conditional>
+      <name> MaxTemp </name>
+      <test> TempF GT MaxTemp </test>
+      <true> TempF </true>
+    </conditional>
+    <conditional>
+      <name> MinTemp </name>
+      <test> TempF LT MinTemp </test>
+      <true> TempF </true>
+    </conditional>
+  </false>
+</if>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ========================================
+
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> =====================================
+
+
+<gofor>
+  <solutionint> 60 </solutionint>
+  <displayint> 2 </displayint>
+</gofor>
+
+<gofor>
+  <solutionint> 120 </solutionint>
+  <displayint> 2 </displayint>
+</gofor>
+
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Furnace Heats a House </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 24 </col>
+   <name> System.X </name>
+</showclock>
+
+<maplist>
+  <name> Switch </name>
+  <map><val> 0 </val><img> Off </img></map>
+  <map><val> 1 </val><img> On </img></map>
+</maplist>
+
+<infobutton>
+  <row> 0.5 </row><col> 41 </col>
+  <label> Math </label>
+  <line> Heat - kiloCalories </line>
+  <line> Time - Min </line>
+  <line>  </line>
+  <line> 4.98 kCal are required to </line>
+  <line> heat 22.4 kMol or 22.4 M^3 </line>
+  <line> of air 1 degree K. Thus, 1 </line>
+  <line> kCal of heat in 1 M^3 of </line>
+  <line> air has a temperature of </line>
+  <line> 4.5 degrees Kelvin. </line>
+</infobutton>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> TempF </name>
+   <format> <integer/> </format>
+   <label> Temperature ( F ) </label>
+</showvalue>
+
+<showvalue>
+   <row> 2 </row><col> 21 </col>
+   <name> TempC </name>
+   <format> <integer/> </format>
+   <label> ( C ) </label>
+</showvalue>
+
+<showvalue>
+   <row> 2 </row><col> 30 </col>
+   <name> TempK </name>
+   <format> <integer/> </format>
+   <label> ( K ) </label>
+</showvalue>
+
+<infobutton>
+  <row> 2 </row><col> 41 </col>
+  <label> Conversions </label>
+  <line> C - Centigrade </line>
+  <line> F - Fahrenheit </line>
+  <line> K - Kelvin </line>
+  <line>  </line>
+  <line> C = K - 273 </line>
+  <line> F = ( 9 / 5 ) * C + 32 </line>
+</infobutton>
+
+<repeatlist>
+  <name> Temps </name>
+  <firstval> -100 </firstval>
+  <repeat>
+    <reps>16  </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 30 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 5 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+</repeatlist>
+
+Thermostat
+
+<groupbox>
+   <row> 3.5 </row><col> 1 </col>
+   <high> 5.5 </high><wide> 30 </wide>
+   <title> Thermostat </title>
+
+<slidebar>
+  <row> 1.4 </row><col> 1 </col>
+  <name> TempOff </name>
+  <listname> Temps </listname>
+  <label> Turn Off </label>
+</slidebar>
+
+<slidebar>
+  <row> 2.8 </row><col> 1 </col>
+  <name> TempOn </name>
+  <listname> Temps </listname>
+  <label> Turn On </label>
+</slidebar>
+
+<showvalue>
+   <row> 4.2 </row><col> 1 </col>
+   <name> Switch </name>
+   <format><list> Switch </list></format>
+   <label> Switch </label>
+</showvalue>
+
+</groupbox>
+
+Furnace
+
+<groupbox>
+   <row> 9.5 </row><col> 1 </col>
+   <high> 4.5 </high><wide> 30 </wide>
+   <title> Furnace </title>
+
+<repeatlist>
+  <name> Burner </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 5 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> Burner </name>
+  <listname> Burner </listname>
+  <label> Burner </label>
+</slidebar>
+
+<showvalue>
+   <row> 3.0 </row><col> 1 </col>
+   <name> FuelUsed </name>
+   <format><decimal> 0 </decimal></format>
+   <label> Fuel Used </label>
+</showvalue>
+
+</groupbox>
+
+Environment
+
+<groupbox>
+   <row> 14.5 </row><col> 1 </col>
+   <high> 4.8 </high><wide> 30 </wide>
+   <title> Environment </title>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> EnvTemp </name>
+  <listname> Temps </listname>
+  <label> Outdoor Temp </label>
+</slidebar>
+
+<maplist>
+  <name> Insulate </name>
+  <map><val> 0.04 </val><img> Best </img></map>
+  <map><val> 0.10 </val><img> Good </img></map>
+  <map><val> 0.20 </val><img> Normal </img></map>
+  <map><val> 0.50 </val><img> Poor </img></map>
+  <map><val> 1.00 </val><img> None </img></map>
+</maplist>
+
+<slidebar>
+  <row> 3.2 </row><col> 1 </col>
+  <name> Leak </name>
+  <listname> Insulate </listname>
+  <label> Insulation </label>
+</slidebar>
+
+</groupbox>
+
+Reference
+
+<infobutton>
+  <row> 20.4 </row><col> 1 </col>
+  <label> Reference </label>
+  <line> Shortley, G. and D. Williams </line>
+  <line> 1967 </line>
+  <line> Principles of College Physics </line>
+  <line> Prentice - Hall </line>
+  <line> Englewood Cliffs, NJ </line>
+</infobutton>
+
+Right-hand side ===============================
+
+<showgraph>
+  <row> 4.0 </row><col> 32 </col>
+  <high> 8 </high><wide> 30 </wide>
+  <leftmargin> 6 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 120 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> TempF </name>
+      <label> Temp </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 70 </min><max> 80 </max><inc> 10 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 12.5 </row><col> 32 </col>
+  <high> 4.7 </high><wide> 30 </wide>
+  <leftmargin> 6 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 120 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> Switch </name>
+      <label> Switch </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 1 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showvalue>
+   <row> 18.0 </row><col> 32 </col>
+   <name> MinTemp </name>
+   <format> <integer/> </format>
+   <label> Temperature Min </label>
+</showvalue>
+
+<showvalue>
+   <row> 18.0 </row><col> 51 </col>
+   <name> MaxTemp </name>
+   <format> <integer/> </format>
+   <label> Max </label>
+</showvalue>
+
+</panel>
+</display>
+
+</model>
+
+End

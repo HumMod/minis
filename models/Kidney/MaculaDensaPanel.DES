@@ -1,0 +1,106 @@
+Kidney / Macula Densa Panel
+
+Created : 11-Oct-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Macula Densa </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> MD.Signal </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Feedback Signal </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 3 </col>
+   <name> MD.FlowOnSignal </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Sodium Effect </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 3 </col>
+   <name> MD.A2OnSignal </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [ AII ] Effect </label>
+</showvalue>
+
+FEEDBACK CLAMP
+
+<groupbox>
+   <row> 5.4 </row><col> 1 </col>
+   <high> 4.5 </high><wide> 30 </wide>
+   <title> Feedback Clamp </title>
+
+<radiobuttons>
+  <row> 1.5 </row><col> 1 </col>
+  <name> MD.Switch </name>
+  <listname> Switch </listname>
+  <label> Switch </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> MD.Level </name>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1 </col>
+  <name> MD.Level </name>
+  <listname> MD.Level </listname>
+  <label> Level </label>
+</slidebar>
+
+</groupbox>
+
+Right Side =================================
+
+<label>
+  <row> 2 </row><col> 33 </col>
+  <text> Feedback Signal </text>
+</label>
+
+<showgraph>
+  <row> 3 </row><col> 33 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max>
+    </scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> MD.Signal </name>
+      <nolabel/>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

@@ -1,0 +1,186 @@
+Kidney / Efferent Artery Panel
+
+Created : 11-Oct-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Efferent Artery </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> EffArty.Cond </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Cond </label>
+</showvalue>
+
+<repeatlist>
+  <name> EffCond </name>
+  <firstval> 10 </firstval>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.4 </row><col> 3 </col>
+  <name> EffArty.NormalCond </name>
+  <listname> AffCond </listname>
+  <label> Normal </label>
+</slidebar>
+
+<showvalue>
+   <row> 4.8 </row><col> 3 </col>
+   <name> EffArty.A2Effect </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [ AII ] Effect </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.8 </row><col> 3 </col>
+   <name> EffTGF.DelayOut </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Macula Densa Effect </label>
+</showvalue>
+
+<infobutton>
+  <row> 7.4 </row><col> 1 </col>
+  <line> A normal efferent artery </line>
+  <line> diameter was arbitrarily </line>
+  <line> selected as 20 u following </line>
+  <line> the work of Takenaka, etal. </line>
+  <line> Am. J. Physiol. 267:F879-887, </line>
+  <line> 1994. </line>
+</infobutton>
+
+<showvalue>
+   <row> 7.4 </row><col> 4 </col>
+   <name> EffArty.Diam </name>
+   <format> <integer/> </format>
+   <label> Diameter ( u ) </label>
+</showvalue>
+
+MACULA DENSA EFFECT
+
+<groupbox>
+   <row> 9.0 </row><col> 1 </col>
+   <high> 15 </high><wide> 30 </wide>
+   <title> Macula Densa Effect </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> EffTGF.Effect </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Effect </label>
+</showvalue>
+
+<radiobuttons>
+  <row> 2.8 </row><col> 1 </col>
+  <name> EffTGF.ClampSwitch </name>
+  <listname> Switch </listname>
+  <label> Clamp </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> EffTGF.ClampLevel </name>
+  <repeat>
+    <reps> 40 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 4.2 </row><col> 1 </col>
+  <name> EffTGF.ClampLevel </name>
+  <listname> EffTGF.ClampLevel </listname>
+  <label> Level </label>
+</slidebar>
+
+<repeatlist>
+  <name> EffTGF.DelayTau </name>
+  <firstval> 0.01 </firstval>
+  <repeat>
+    <reps> 19 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 0.10 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 5.6 </row><col> 1 </col>
+  <name> EffTGF.DelayTau </name>
+  <listname> AffTGF.DelayTau </listname>
+  <label> Delay </label>
+</slidebar>
+
+<showvalue>
+   <row> 7.0 </row><col> 1 </col>
+   <name> EffTGF.SteadyState </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Steady State </label>
+</showvalue>
+
+<showcurve>
+  <row> 8.4 </row><col> 1.0 </col>
+  <high> 6 </high><wide> 22 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> MD.Signal </name>
+    <label> MD Sig </label>
+    <scale><min> 0 </min><max> 4 </max><inc> 1 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> SS </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> EffTGF.SteadyState </curvename>
+</showcurve>
+
+</groupbox>
+
+Right Side ===================================
+
+<showgraph>
+  <row> 2.0 </row><col> 31 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> EffArty.Cond </name>
+      <label> Cond </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 20 </min><max> 30 </max></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

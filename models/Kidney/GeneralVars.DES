@@ -1,0 +1,24 @@
+Kidney Model - General Vars
+
+Created : 16-Aug-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<structure><name> General </name>
+
+<variables>
+
+Need ECFV parm for PRA and [Aldo].
+
+<parm>
+  <name> ECFV </name>
+  <val> 15000 </val>
+</parm>
+
+</variables>
+</structure>
+
+End

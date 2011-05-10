@@ -1,0 +1,121 @@
+Kidney Model - GFR
+
+Created : 11-Oct-96
+Last Modified : 18-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+There is an implicit algebraic relationship here
+of the form
+
+   GFR = f(GFR)
+
+that is caused by the interaction of efferent
+protein and GFR.
+
+<structure><name> GFR </name>
+<variables>
+
+<var>
+  <name> Pres </name>
+</var>
+
+<var>
+  <name> FiltFract </name>
+</var>
+
+<parm>
+  <name> Block </name>
+  <val> FALSE </val>
+</parm>
+
+<parm>
+  <name> Kf </name>
+  <val> 16 </val>
+</parm>
+
+<var>
+  <name> DelP </name>
+</var>
+
+</variables>
+
+<equations>
+
+<impliciteq>
+  <name> GFR </name>
+  <startname> GFR </startname>
+  <initialval> 125 </initialval>
+  <endname> GFREnd </endname>
+  <errorlim> 1.25 </errorlim>
+  <searchminname> SearchMin </searchminname>
+</impliciteq>
+
+</equations>
+
+<definitions>
+
+<block><name> Startup </name>
+
+<def>
+  <name> SearchMin </name>
+  <val> 0 </val>
+</def>
+
+</block>
+
+<block><name> Wrapup </name>
+
+<def>
+  <name> Pres </name>
+  <val>
+        Circ.VenousPres
+      + ( Flows.RBF / Flows.VenousCond )
+      + ( Flows.RBF / EffArty.Cond )
+  </val>
+</def>
+
+Divide by 0 possible in filtration fraction at
+low perfusion pressures.  Trap it.
+
+<conditional>
+  <name> FiltFract </name>
+  <test> GFR EQ 0 </test>
+  <true> 0 </true>
+  <false> GFR / Flows.RPF </false>
+</conditional>
+
+<call> COP.CalcECOP </call>
+
+<def>
+  <name> Flows.ProxTubePres </name>
+  <val>
+      ( GFR
+      / Flows.TubeCond )
+      + Flows.PelvisPres
+  </val>
+</def>
+
+<def>
+  <name> DelP </name>
+  <val>
+        Pres
+      - Flows.ProxTubePres
+      - COP.AveCOP
+  </val>
+</def>
+
+<conditional>
+  <name> GFREnd </name>
+  <test> Block </test>
+  <true> 0 </true>
+  <false> ( Kf * DelP ) MAX 0 </false>
+</conditional>
+
+</block>
+</definitions>
+</structure>
+
+End

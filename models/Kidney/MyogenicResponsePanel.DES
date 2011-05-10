@@ -1,0 +1,148 @@
+Kidney / Myogenic Response Panel
+
+Created : 11-Oct-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Myogenic Response </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> RPP.Pres </name>
+   <format> <integer/> </format>
+   <label> Perfusion Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.0 </row><col> 1 </col>
+   <name> Myogenic.PresAdapt </name>
+   <format> <integer/> </format>
+   <label> Adapted Pres </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.0 </row><col> 1 </col>
+   <name> Myogenic.PresChange </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Pres Change </label>
+</showvalue>
+
+<repeatlist>
+  <name> Myogenic.AdaptTau </name>
+  <firstval> 60 </firstval>
+  <repeat>
+    <reps> 23 </reps>
+    <stepsize> 60 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 5.4 </row><col> 1 </col>
+  <name> Myogenic.AdaptTau </name>
+  <listname> Myogenic.AdaptTau </listname>
+  <label> Adapt Tau </label>
+</slidebar>
+
+<showvalue>
+   <row> 6.8 </row><col> 1 </col>
+   <name> Myogenic.LagIn </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Steady-State Effect </label>
+</showvalue>
+
+<repeatlist>
+  <name> Myogenic.LagTau </name>
+  <firstval> 0.01 </firstval>
+  <repeat>
+    <reps> 19 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 0.10 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 8.4 </row><col> 1 </col>
+  <name> Myogenic.LagTau </name>
+  <listname> Myogenic.LagTau </listname>
+  <label> Time Delay </label>
+</slidebar>
+
+<showvalue>
+   <row> 9.8 </row><col> 1 </col>
+   <name> Myogenic.LagOut </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Delayed Effect </label>
+</showvalue>
+
+<radiobuttons>
+  <row> 11.2 </row><col> 1 </col>
+  <name> Myogenic.ClampSwitch </name>
+  <listname> Switch </listname>
+  <label> Clamp </label>
+</radiobuttons>
+
+<repeatlist>
+  <name> Myogenic.ClampLevel </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 12.6 </row><col> 1 </col>
+  <name> Myogenic.ClampLevel </name>
+  <listname> Myogenic.ClampLevel </listname>
+  <label> Level </label>
+</slidebar>
+
+<showvalue>
+   <row> 14.0 </row><col> 1 </col>
+   <name> Myogenic.Effect </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Effect </label>
+</showvalue>
+
+Right Side ===================================
+
+<showgraph>
+  <row> 2.0 </row><col> 31 </col>
+  <high> 8 </high><wide> 30 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+ 
+ <yaxis>
+    <yvar>
+      <name> Myogenic.Effect </name>
+      <label> Effect </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

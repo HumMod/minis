@@ -1,0 +1,81 @@
+Complete Model
+
+Created : 21-Jun-09
+Last Modified : 23-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+Solver : Digital Human (V0.5)
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Complete Model </basic></title>
+
+<?include Cardiac Output.DES ?>
+<?include Fluid Volumes.DES ?>
+<?include Flow Autoregulation.DES ?>
+<?include Baroreceptor Reflex.DES ?>
+
+<structure><name> Model </name>
+
+<definitions> ===================================
+
+<block><name> Dervs </name> =====================
+
+  <call> FluidVolumes.CalcPartition </call>
+  <call> FlowAutoregulation.CalcTPR </call>
+
+  <implicitmath><name> BaroreceptorReflex.SYM </name>
+    <call> CardiacOutput.Dervs </call>
+    <call> FlowAutoregulation.Dervs </call>
+    <call> FluidVolumes.Dervs </call>
+    <call> BaroreceptorReflex.Dervs </call>
+  </implicitmath>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+  <dervs> Model.Dervs </dervs>
+</math>
+
+<control> =======================================
+
+<gofor>
+  <solutionint> 1440 </solutionint>
+  <displayint> 60 </displayint>
+  <menuitem> 1 Day </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10080 </solutionint>
+  <displayint> 60 </displayint>
+  <menuitem> 1 Week </menuitem>
+</gofor>
+
+</control>
+
+<display> =======================================
+
+<common>
+<addarrows/>
+
+<?include Tree.DES ?>
+
+</common>
+
+<?include Cardiac Output Panel.DES ?>
+<?include Fluid Volumes Panel.DES ?>
+<?include Flow Autoregulation Panel.DES ?>
+<?include Baroreceptor Reflex Panel.DES ?>
+
+<?include Graphs.DES ?>
+
+</display>
+</model>
+
+End

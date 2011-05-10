@@ -1,0 +1,95 @@
+Kidney Model - Collecting Duct
+
+Created : 11-Oct-96
+Last Modified : 16-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+The collecting duct takes sodium flow out
+of the distal tubule, does Na+ reabsorption,
+yields urinary excretion.
+
+<structure>
+<name> CD </name>
+
+<variables>
+
+<var>
+  <name> Load </name>
+</var>
+
+<parm>
+  <name> NormalFract </name>
+  <val> 0.93 </val>
+</parm>
+
+<var>
+  <name> LoadOnReab </name>
+</var>
+
+<var>
+  <name> FractReab </name>
+</var>
+
+<var>
+  <name> Reab </name>
+</var>
+
+<var>
+  <name> Outflow </name>
+</var>
+
+</variables>
+
+<functions> ====================================
+
+<curve>
+  <name> LoadOnReab </name>
+  <point>
+    <x> 0.5 </x><y> 1.07 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.8 </x><y> 1.00 </y><slope> -0.05 </slope>
+  </point>
+  <point>
+    <x> 10.0 </x><y> 0.80 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions>
+<block><name> Dervs </name>
+
+<def>
+  <name> Load </name>
+  <val> Dist.Outflow </val>
+</def>
+
+<def>
+  <name> LoadOnReab </name>
+  <val> LoadOnReab [ Load ] </val>
+</def>
+
+<def>
+  <name> FractReab </name>
+  <val> NormalFract * LoadOnReab </val>
+</def>
+
+<def>
+  <name> Reab </name>
+  <val> Load * FractReab </val>
+</def>
+
+<def>
+  <name> Outflow </name>
+  <val> Load - Reab </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+End

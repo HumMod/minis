@@ -1,0 +1,113 @@
+Kidney / Distal Tubule Panel
+
+Created : 11-Oct-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Distal Tubule </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> Dist.Load </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Inflow </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> Dist.Reab </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Reabsorption </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> Dist.Outflow </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Outflow </label>
+</showvalue>
+
+FRACTIONAL REABSORPTION
+
+<groupbox>
+   <row> 5.6 </row><col> 1 </col>
+   <high> 5.4 </high><wide> 30 </wide>
+   <title> Fractional Reabsorption </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> Dist.FractReab </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Fraction </label>
+</showvalue>
+
+<showvalue>
+   <row> 2.4 </row><col> 3 </col>
+   <name> Aldo.Effect </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [ Aldo ] Effect </label>
+</showvalue>
+
+<repeatlist>
+  <name> Dist.NormalFract </name>
+  <firstval> 0.4 </firstval>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.8 </row><col> 3 </col>
+  <name> Dist.NormalFract </name>
+  <listname> Dist.NormalFract </listname>
+  <label> Normal </label>
+</slidebar>
+
+</groupbox>
+
+Right Side ===================================
+
+<label>
+  <row> 2 </row><col> 33 </col>
+  <text> Distal Reabsorption </text>
+</label>
+
+<showgraph>
+  <row> 3 </row><col> 33 </col>
+  <high> 8 </high><wide> 30 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Dist.Reab </name>
+      <nolabel/>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 1 </min><max> 3 </max><inc> 1 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+End

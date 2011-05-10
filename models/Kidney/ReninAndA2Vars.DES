@@ -1,0 +1,301 @@
+Kidney Model - Renin And A2 Vars
+
+Created : 16-Aug-96
+Last Modified : 12-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+Synthesis and secretion need the macula
+densa signal.
+
+<structure><name> PRA </name>
+
+<variables>
+
+<parm>
+  <name> NormalReninSynRate </name>
+  <val> 1500 </val>
+</parm>
+
+<parm>
+  <name> NormalReninSec </name>
+  <val> 0.0001 </val>
+</parm>
+
+<var>
+  <name> MDOnSyn </name>
+</var>
+
+<var>
+  <name> ReninSynRate </name>
+</var>
+
+<var>
+  <name> MDOnSec </name>
+</var>
+
+<var>
+  <name> ReninSecFract </name>
+</var>
+
+<var>
+  <name> KidneyRenin(kiloGU) </name>
+</var>
+
+</variables>
+
+<equations> ===================================
+
+<diffeq>
+  <name> KidneyRenin </name>
+  <integralname> KidneyRenin </integralname>
+  <initialval> 15E6 </initialval>
+  <dervname> KidneyReninChange </dervname>
+  <errorlim> 15E4 </errorlim>
+</diffeq>
+
+</equations>
+
+<functions> ===================================
+
+<curve>
+  <name> MDOnSyn </name>
+  <point>
+    <x> 0.8 </x><y> 10.0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.0 </x><y> 1.0 </y><slope> -15.0 </slope>
+  </point>
+  <point>
+    <x> 1.2 </x><y> 0.0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+<curve>
+  <name> MDOnSec </name>
+  <point>
+    <x> 0.8 </x><y> 4.0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.0 </x><y> 1.0 </y><slope> -10.0 </slope>
+  </point>
+  <point>
+    <x> 1.2 </x><y> 0.2 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+Pool Renin
+
+<variables> ===================================
+
+<var>
+  <name> PlasmaReninActivity </name>
+</var>
+
+<var>
+  <name> ReninSec </name>
+</var>
+
+<var>
+  <name> ReninClear </name>
+</var>
+
+<parm>
+  <name> ReninClearK </name>
+  <val> 0.1 </val>
+</parm>
+
+</variables>
+
+<equations> ===================================
+
+<backwardeuler>
+  <name> ReninMass </name>
+  <integralname> ReninMass </integralname>
+  <initialval> 15000.0 </initialval>
+  <f1name> F1 </f1name>
+  <f2name> F2 </f2name>
+  <dervname> ReninMassChange </dervname>
+  <errorlim> 150.0 </errorlim>
+</backwardeuler>
+
+</equations>
+
+Plasma [A2]
+
+<variables> ===================================
+
+<parm>
+  <name> A2PumpSwitch </name>
+  <val> 0 </val>
+</parm>
+
+<parm>
+  <name> A2PumpSetting </name>
+  <val> 150 </val>
+</parm>
+
+<var>
+  <name> A2InfusionRate </name>
+</var>
+
+<parm>
+  <name> ConvertingEnzymeActivity </name>
+  <val> 100 </val>
+</parm>
+
+<var>
+  <name> A2EndogenousRate </name>
+</var>
+
+<var>
+  <name> A2FormationRate </name>
+</var>
+
+<var>
+  <name> Plasma[A2] </name>
+</var>
+
+<var>
+  <name> Log[A2] </name>
+</var>
+
+</variables>
+
+<definitions> ==================================
+
+<block><name> Parms </name> ====================
+
+<def>
+  <name> A2InfusionRate </name>
+  <val> A2PumpSwitch * A2PumpSetting </val>
+</def>
+
+</block>
+
+<block><name> Conc </name> ====================
+
+<def>
+  <name> PlasmaReninActivity </name>
+  <val>
+      ReninMass
+    / General.ECFV
+  </val>
+</def>
+
+<def>
+  <name> KidneyRenin(kiloGU) </name>
+  <val> 0.001 * KidneyRenin </val>
+</def>
+
+<def>
+  <name> A2EndogenousRate </name>
+  <val>
+      1.5
+    * ConvertingEnzymeActivity
+    * PlasmaReninActivity
+  </val>
+</def>
+
+<def>
+  <name> A2FormationRate </name>
+  <val>
+      A2EndogenousRate
+    + A2InfusionRate
+  </val>
+</def>
+
+<def>
+  <name> Plasma[A2] </name>
+  <val> 0.13 * A2FormationRate </val>
+</def>
+
+<def>
+  <name> Log[A2] </name>
+  <val> LOG10 ( Plasma[A2] MAX 1 ) </val>
+</def>
+
+Once the [A2] is known, we can move
+along to vasoconstriction and other
+[A2] dependent things.
+
+</block>
+
+<block><name> Dervs </name> ====================
+
+Renin Clearance And Pool Dervs
+
+<def>
+  <name> PRA.ReninClear </name>
+  <val>
+        PRA.ReninClearK
+      * PRA.ReninMass
+  </val>
+</def>
+
+Renin Synthesis And Secretion
+
+Requires signal from macula densa.
+
+<def>
+  <name> PRA.MDOnSyn </name>
+  <val> PRA.MDOnSyn [ MD.Signal ] </val>
+</def>
+
+<def>
+  <name> PRA.ReninSynRate </name>
+  <val>
+        PRA.NormalReninSynRate
+      * PRA.MDOnSyn
+  </val>
+</def>
+
+<def>
+  <name> PRA.MDOnSec </name>
+  <val> PRA.MDOnSec [ MD.Signal ] </val>
+</def>
+
+<def>
+  <name> PRA.ReninSecFract </name>
+  <val>
+        PRA.NormalReninSec
+      * PRA.MDOnSec
+  </val>
+</def>
+
+<def>
+  <name> PRA.ReninSec </name>
+  <val>
+        PRA.ReninSecFract
+      * PRA.KidneyRenin
+  </val>
+</def>
+
+<def>
+  <name> PRA.KidneyReninChange </name>
+  <val>
+        PRA.ReninSynRate
+      - PRA.ReninSec
+  </val>
+</def>
+
+<def>
+  <name> PRA.F1 </name>
+  <val> PRA.ReninSec </val>
+</def>
+
+<def>
+  <name> PRA.F2 </name>
+  <val> PRA.ReninClearK </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+End

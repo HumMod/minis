@@ -1,0 +1,1053 @@
+Circulatory Model
+
+Created : 15-Aug-96
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Circulatory Model </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ======================================
+
+Parms and vars for volumes
+
+<parm>
+  <name> Intake </name>
+  <val> 1.0 </val>
+</parm>
+
+<parm>
+  <name> MCFPV0 </name>
+  <val> 3600.0 </val>
+</parm>
+
+<var>
+  <name> BV </name>
+</var>
+
+<var>
+  <name> MCFP </name>
+</var>
+
+Parms and vars for TPR
+
+<parm>
+  <name> MetaTau </name>
+  <val> 4000.0 </val>
+</parm>
+
+<parm>
+  <name> MetaNeed </name>
+  <val> 5400.0 </val>
+</parm>
+
+<var>
+  <name> TPR </name>
+</var>
+
+<var>
+  <name> RVR </name>
+</var>
+
+Parms and vars for heart
+
+<parm>
+  <name> HS </name>
+  <val> 1.0 </val>
+</parm>
+
+<var>
+  <name> RAP </name>
+</var>
+
+<var>
+  <name> BasicCO </name>
+</var>
+
+Parms and vars for kidney
+
+<parm>
+  <name> PresDrop </name>
+  <val> 0.0 </val>
+</parm>
+
+<parm>
+  <name> KidMass </name>
+  <val> 1.0  </val>
+</parm>
+
+<var>
+  <name> BasicUO </name>
+</var>
+
+<var>
+  <name> UO </name>
+</var>
+
+<var>
+  <name> RenPP </name>
+</var>
+
+Basic hemodynamics
+
+<var>
+  <name> AP </name>
+</var>
+
+</variables>
+
+<equations> =====================================
+
+The differential equations are ECFV and a delay in the
+changes in TPR.
+
+<diffeq>
+  <name> ECFV </name>
+  <integralname> ECFV </integralname>
+  <initialval> 15000.0 </initialval>
+  <dervname> dECFV/dt </dervname>
+  <errorlim> 150.0 </errorlim>
+</diffeq>
+
+<delay>
+  <name> NormFlowEff </name>
+  <outputname> NormFlowEff </outputname>
+  <initialval> 1.0 </initialval>
+  <inputname> NormFlow </inputname>
+  <rateconstname> MetaTauK </rateconstname>
+  <errorlim> 0.01 </errorlim>
+</delay>
+
+There is also an implicit algebraic
+equation for cardiac output and venous
+return.
+
+<impliciteq>
+  <name> CO </name>
+  <startname> CO </startname>
+  <initialval> 5400.0 </initialval>
+  <endname> COEnd </endname>
+  <errorlim> 10.0 </errorlim>
+</impliciteq>
+
+</equations>
+
+<functions> ====================================
+
+This curve calculates blood volume from ECFV.
+
+<curve>
+  <name> BVCurve </name>
+  <point>
+    <x> 0 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 15000 </x><y> 5000 </y><slope> 0.40 </slope>
+  </point>
+  <point>
+    <x> 22000 </x><y> 7500 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+This curve calculates TPR as a function of normal flow.
+
+<curve>
+  <name> TPRCurve </name>
+  <point>
+    <x> 0.8 </x><y> 0.004 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.0 </x><y> 0.019 </y><slope> 0.25 </slope>
+  </point>
+  <point>
+    <x> 1.2 </x><y> 0.05 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+This is the Frank-Starling curve.
+
+<curve>
+  <name> StarlingCurve </name>
+  <point>
+    <x> -4 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 0 </x><y> 5400 </y><slope> 2000 </slope>
+  </point>
+  <point>
+    <x> 10 </x><y> 12500 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+This is the renal function curve.
+
+<curve>
+  <name> BasicUOCurve </name>
+  <point>
+    <x> 80 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 100 </x><y> 1.0 </y><slope> 0.1 </slope>
+  </point>
+  <point>
+    <x> 140 </x><y> 5.0 </y><slope> 0.1 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions> ====================================
+
+<block><name> Parms </name> ======================
+
+<def>
+  <name> MetaTauK </name>
+  <val> INVERT MetaTau </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> ======================
+
+Start with volumes
+
+<def>
+  <name> BV </name>
+  <val> BVCurve [ ECFV ] </val>
+</def>
+
+<def>
+  <name> MCFP </name>
+  <val> 0.005 * ( BV - MCFPV0 ) </val>
+</def>
+
+Switch over to TPR
+
+<def>
+  <name> TPR </name>
+  <val> TPRCurve [ NormFlowEff ] </val>
+</def>
+
+<def>
+  <name> RVR </name>
+  <val> ( 0.035 * TPR ) + 0.00065 </val>
+</def>
+
+Next cardiac output -- CO = f(CO)
+
+<implicitmath><name> CO </name>
+
+<def>
+  <name> RAP </name>
+  <val> MCFP - ( CO * RVR ) </val>
+</def>
+
+<def>
+  <name> BasicCO </name>
+  <val> StarlingCurve [ RAP ] </val>
+</def>
+
+<def>
+  <name> COEnd </name>
+  <val> HS * BasicCO </val>
+</def>
+
+</implicitmath>
+
+<def>
+  <name> NormFlow </name>
+  <val> CO / MetaNeed </val>
+</def>
+
+The kidney
+
+<def>
+  <name> AP </name>
+  <val> CO * TPR </val>
+</def>
+
+<def>
+  <name> RenPP </name>
+  <val> AP - PresDrop </val>
+</def>
+
+<def>
+  <name> BasicUO </name>
+  <val> BasicUOCurve [ RenPP ] </val>
+</def>
+
+<def>
+  <name> UO </name>
+  <val> KidMass * BasicUO </val>
+</def>
+
+<def>
+  <name> dECFV/dt </name>
+  <val> Intake - UO </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ===========================================
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+Time units are minutes
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 1 </displayint>
+  <menuitem> 10 Min</menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 60 </solutionint>
+  <displayint> 5 </displayint>
+  <menuitem> 1 Hour </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 1440 </solutionint>
+  <displayint> 120 </displayint>
+  <menuitem> 1 Day </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10080 </solutionint>
+  <displayint> 120 </displayint>
+  <menuitem> 1 Week </menuitem>
+</gofor>
+
+</control>
+
+<display> =========================================
+
+<common>
+
+<tree>
+
+<branch>
+  <name> Panels </name>
+  <label> Panels </label>
+  <parent> MAINMENU </parent>
+</branch>
+
+<leaf>
+  <name> Summary </name>
+  <label> Summary </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Hemodynamics </name>
+  <label> Hemodynamics </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Body Fluids </name>
+  <label> Body Fluids </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Kidney Function </name>
+  <label> Kidney Function </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Autoregulation </name>
+  <label> Autoregulation </label>
+  <parent> Panels </parent>
+</leaf>
+
+</tree>
+
+</common>
+
+<panel><name> Summary </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+  <row> 0.5 </row><col> 26 </col>
+  <name> System.X </name>
+  <days/>
+</showclock>
+
+<infobutton>
+  <row> 0.5 </row><col> 50 </col>
+  <label> Units </label>
+  <line> Units for this model are </line>
+  <line>  </line>
+  <line> Pressure - mmHg </line>
+  <line> Volume - mL </line>
+  <line> Flow - mL / Min </line>
+  <line> Resistance - mmHg / ( mL / Min ) </line>
+  <line> Time - Min </line>
+</infobutton>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> AP </name>
+   <format> <integer/> </format>
+   <label> AP </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> CO </name>
+   <format> <integer/> </format>
+   <label> CO </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> TPR </name>
+   <format><decimal> 2 </decimal></format>
+   <label> TPR </label>
+</showvalue>
+
+<showvalue>
+   <row> 5 </row><col> 1 </col>
+   <name> ECFV </name>
+   <format> <integer/> </format>
+   <label> ECFV </label>
+</showvalue>
+
+<showvalue>
+   <row> 6 </row><col> 1 </col>
+   <name> UO </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Water Excretion </label>
+</showvalue>
+
+<showvalue>
+   <row> 7 </row><col> 1 </col>
+   <name> BV </name>
+   <format> <integer/> </format>
+   <label> Blood Volume </label>
+</showvalue>
+
+<showvalue>
+   <row> 8 </row><col> 1 </col>
+   <name> MCFP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> MCFP </label>
+</showvalue>
+
+<showgraph>
+  <row> 2 </row><col> 31 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> AP </name>
+      <label> AP </label>
+    </yvar>
+    <scale><min> 80 </min><max> 120 </max><inc> 20 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+<panel><name> Hemodynamics </name> ============================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+  <row> 0.5 </row><col> 26 </col>
+  <name> System.X </name>
+  <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> CO </name>
+   <format> <integer/> </format>
+   <label> Cardiac Output </label>
+</showvalue>
+
+<repeatlist>
+  <name> HS </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 15 </reps>
+    <stepsize> 0.2 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.8 </row><col> 1 </col>
+  <name> HS </name>
+  <listname> HS </listname>
+  <label> Heart Strength </label>
+</slidebar>
+
+<showvalue>
+   <row> 5.2 </row><col> 1 </col>
+   <name> BasicCO </name>
+   <format> <integer/> </format>
+   <label> Basic Cardiac Output </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.2 </row><col> 1 </col>
+   <name> RAP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Right Atrial Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.6 </row><col> 1 </col>
+   <name> MCFP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> MCFP </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.6 </row><col> 1 </col>
+   <name> BV </name>
+   <format> <integer/> </format>
+   <label> Blood Volume </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.6 </row><col> 3 </col>
+   <name> MCFPV0 </name>
+   <format> <integer/> </format>
+   <label> V0 </label>
+</showvalue>
+
+<showcurve>
+  <row> 11 </row><col> 1.0 </col><high> 7 </high><wide> 22 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+    <name> RAP </name>
+    <label> RAP </label>
+    <scale><min> -5 </min><max> 20 </max><inc> 5 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> CO </label>
+    <scale><min> 0 </min><max> 15000 </max></scale>
+  </yaxis>
+
+  <curvename> StarlingCurve </curvename>
+</showcurve>
+
+<infobutton>
+  <row> 2.4 </row><col> 30 </col>
+  <label> Math </label>
+  <line> BV - Blood Volume ( mL ) </line>
+  <line> CO - Cardiac Output ( mL / Min ) </line>
+  <line> HS - Heart Strength ( x Normal ) </line>
+  <line> MCFP - Mean Circulatory Filling Pressure ( mmHg ) </line>
+  <line> RAP - Right Atrial Pressure ( mmHg ) </line>
+  <line> RVR - Resistance to Venous Return </line>
+  <line> ( mmHg / ( mL / Min ) ) </line>
+  <line> VR - Venous Return ( mL / Min ) </line>
+  <line> V0 - Unstressed Volume ( mL ) </line>
+  <line>  </line>
+  <line> MCFP = ( 1 / Compliance ) * ( BV - V0 ) </line>
+  <line> CO = HS * f ( RAP ) </line>
+  <line> VR = ( MCFP - RAP ) / RVR </line>
+  <line> CO = VR </line>
+</infobutton>
+
+<showgraph>
+  <row> 4.4 </row><col> 30 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> CO </name>
+      <label> CO </label>
+    </yvar>
+    <scale><min> 4000 </min><max> 6000 </max><inc> 1000 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 11.8 </row><col> 30 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> RAP </name>
+      <label> RAP </label>
+    </yvar>
+    <scale><min> -2 </min><max> 2 </max><inc> 2 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+<panel><name> Body Fluids </name> ============================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+  <row> 0.5 </row><col> 26 </col>
+  <name> System.X </name>
+  <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> ECFV </name>
+   <format> <integer/> </format>
+   <label> ECFV </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.4 </row><col> 4 </col>
+   <name> dECFV/dt </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Change </label>
+</showvalue>
+
+<repeatlist>
+  <name> Intake </name>
+  <repeat>
+    <reps> 50 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 5.0 </row><col> 1 </col>
+  <name> Intake </name>
+  <listname> Intake </listname>
+  <label> Water Intake </label>
+</slidebar>
+
+<showvalue>
+   <row> 6.8 </row><col> 1 </col>
+   <name> UO </name>
+   <format> <integer/> </format>
+   <label> Water Excretion </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.8 </row><col> 1 </col>
+   <name> BV </name>
+   <format> <integer/> </format>
+   <label> Blood Volume </label>
+</showvalue>
+
+<showcurve>
+  <row> 10.8 </row><col> 1.0 </col><high> 6 </high><wide> 20 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+    <name> ECFV </name>
+    <label> ECFV </label>
+    <scale><min> 0 </min><max> 20000 </max><inc> 1000 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> BV </label>
+    <scale><min> 0 </min><max> 8000 </max><inc> 1000 </inc></scale>
+  </yaxis>
+
+  <curvename> BVCurve </curvename>
+</showcurve>
+
+<infobutton>
+  <row> 2.4 </row><col> 30 </col>
+  <label> Math </label>
+  <line> BV - Blood Volume ( mL ) </line>
+  <line> ECFV - Extracellular Fluid Volume ( mL ) </line>
+  <line>  </line>
+  <line> ECFV = integral ( Water Intake - Water </line>
+  <line> Excretion ) </line>
+  <line> BV = f ( ECFV ) </line>
+</infobutton>
+
+<showgraph>
+  <row> 4.4 </row><col> 30 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> ECFV </name>
+      <label> ECFV </label>
+    </yvar>
+    <scale><min> 14000 </min><max> 16000 </max><inc> 1000 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 11.8 </row><col> 30 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> BV </name>
+      <label> BV </label>
+    </yvar>
+    <scale><min> 4000 </min><max> 6000 </max><inc> 1000 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+
+<panel><name> Kidney Function </name> ============================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+  <row> 0.5 </row><col> 26 </col>
+  <name> System.X </name>
+  <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> AP </name>
+   <format> <integer/> </format>
+   <label> Arterial Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.4 </row><col> 1 </col>
+   <name> RenPP </name>
+   <format> <integer/> </format>
+   <label> Perfusion Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.4 </row><col> 1 </col>
+   <name> UO </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Water Excretion </label>
+</showvalue>
+
+<showcurve>
+  <row> 7.4 </row><col> 1.0 </col><high> 6 </high><wide> 20 </wide>
+  <leftmargin> 3 </leftmargin>
+
+  <xaxis>
+    <name> RenPP </name>
+    <label> RPP </label>
+    <scale><min> 0 </min><max> 150 </max><inc> 10 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> UO </label>
+    <scale><min> 0 </min><max> 6 </max><inc> 2 </inc></scale>
+  </yaxis>
+
+  <curvename> BasicUOCurve </curvename>
+</showcurve>
+
+<infobutton>
+  <row> 2.4 </row><col> 30 </col>
+  <label> Math </label>
+  <line> AP - Arterial Pressure ( mmHg ) </line>
+  <line> DelP - Renal Artery Pressure Drop ( mmHg ) </line>
+  <line> RM - Kidney Mass ( x Normal ) </line>
+  <line> RPP - Renal Perfusion Pressure ( mmHg ) </line>
+  <line> UO - Water Excretion ( mL / Min ) </line>
+  <line>  </line>
+  <line> RPP = AP - DelP </line>
+  <line> UO = RM * f ( RPP ) </line>
+</infobutton>
+
+Renal Artery Stenosis
+
+<groupbox>
+   <row> 4.4 </row><col> 30 </col>
+   <high> 3.2 </high><wide> 25 </wide>
+   <title> Renal Artery Stenosis </title>
+
+<repeatlist>
+  <name> PresDrop </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 18 </reps>
+    <stepsize> 5 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> PresDrop </name>
+  <listname> PresDrop </listname>
+  <label> Gradient </label>
+</slidebar>
+
+</groupbox>
+
+Nephrectomy
+
+<groupbox>
+   <row> 8.0 </row><col> 30 </col>
+   <high> 3.2 </high><wide> 25 </wide>
+   <title> Nephrectomy </title>
+
+<repeatlist>
+  <name> KidMass </name>
+  <repeat>
+    <reps> 10 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> KidMass </name>
+  <listname> KidMass </listname>
+  <label> Mass </label>
+</slidebar>
+
+</groupbox>
+
+</panel>
+
+<panel><name> Autoregulation </name> ============================
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+  <row> 0.5 </row><col> 26 </col>
+  <name> System.X </name>
+  <days/>
+</showclock>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> AP </name>
+   <format> <integer/> </format>
+   <label> Arterial Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.4 </row><col> 1 </col>
+   <name> CO </name>
+   <format> <integer/> </format>
+   <label> Cardiac Output </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.4 </row><col> 1 </col>
+   <name> TPR </name>
+   <format><decimal> 3 </decimal></format>
+   <label> TPR </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.4 </row><col> 1 </col>
+   <name> NormFlow </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Normalized Flow </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.4 </row><col> 1 </col>
+   <name> NormFlowEff </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Normalized Effect </label>
+</showvalue>
+
+<showcurve>
+  <row> 9.4 </row><col> 1.0 </col><high> 6 </high><wide> 20 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> NormFlow </name>
+    <label> CO </label>
+    <scale><min> 0 </min><max> 2 </max><inc> 1 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> TPR </label>
+    <scale><min> 0 </min><max> 0.08 </max></scale>
+  </yaxis>
+
+  <curvename> TPRCurve </curvename>
+</showcurve>
+
+<infobutton>
+  <row> 2.4 </row><col> 30 </col>
+  <label> Math </label>
+  <line> CO - Cardiac Output ( mL / Min ) </line>
+  <line> EFFECT - Normalized Flow Effect ( x Normal ) </line>
+  <line> NORM_FLOW - Normalized Flow </line>
+  <line> NEED - Flow Need ( mL / Min ) </line>
+  <line> TPR - Total Peripheral Resistance </line>
+  <line> ( mmHg / ( mL / Min ) ) </line>
+  <line>  </line>
+  <line> NORM_FLOW = CO / NEED </line>
+  <line> EFFECT = delay ( NORM_FLOW ) </line>
+  <line> TPR = f ( EFFECT ) </line>
+</infobutton>
+
+Metabolic Need
+
+<groupbox>
+   <row> 4.4 </row><col> 30 </col>
+   <high> 3.2 </high><wide> 25 </wide>
+   <title> Metabolic Need </title>
+
+<repeatlist>
+  <name> MetaNeed </name>
+  <firstval> 1000 </firstval>
+  <repeat>
+    <reps> 3 </reps>
+    <stepsize> 1000 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 15 </reps>
+    <stepsize> 200 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 3 </reps>
+    <stepsize> 1000 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> MetaNeed </name>
+  <listname> MetaNeed </listname>
+  <label> Flow </label>
+</slidebar>
+
+</groupbox>
+
+Delayed response
+
+<groupbox>
+   <row> 8.0 </row><col> 30 </col>
+   <high> 3.2 </high><wide> 25 </wide>
+   <title> Delayed Response </title>
+
+<repeatlist>
+  <name> MetaTau </name>
+  <firstval> 1000 </firstval>
+  <repeat>
+    <reps> 9 </reps>
+    <stepsize> 1000 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> MetaTau </name>
+  <listname> MetaTau </listname>
+  <label> Tau </label>
+</slidebar>
+
+</groupbox>
+
+TPR Graph
+
+<showgraph>
+  <row> 11.6 </row><col> 30 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 7 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> TPR </name>
+      <label> TPR </label>
+    </yvar>
+    <scale><min> 0.01 </min><max> 0.03 </max><inc> 0.01 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

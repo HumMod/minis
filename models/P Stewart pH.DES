@@ -1,0 +1,571 @@
+P Stewart pH
+
+Created : 22-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Peter Stewart pH </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ========================================
+
+Values represent plasma at 37C.  Units
+are Eq / L.
+
+Water dissociation
+
+   [H+] * [OH-] = K'w
+   K'w = 4.4e-14
+
+<parm>
+  <name> K'w </name>
+  <val> 4.4e-14 </val>
+</parm>
+
+Weak acid dissociation
+
+   [H+] * [A-] = Ka * [HA]
+   Ka = 2.0e-7
+
+<parm>
+  <name> Ka </name>
+  <val> 2.0e-7 </val>
+</parm>
+
+Weak acid conservation
+
+   [HA] + [A-] = [ATot]
+
+Bicarbonate formation
+
+   [H+] * [HCO3-] = Kc * pCO2
+   Kc = 2.58e-11
+
+<parm>
+  <name> Kc </name>
+  <val> 2.58e-11 </val>
+</parm>
+
+Carbonate formation
+
+   [H+] * [CO3--] = K3 * [HCO3-]
+   K3 = 6.0e-11
+
+<parm>
+  <name> K3 </name>
+  <val> 6.0e-11 </val>
+</parm>
+
+Electrical neutrality
+
+   [SID] + [H+] - [HCO3-] - [A-] - [CO3--] - [OH-] = 0
+
+Now some inputs.
+
+<parm>
+  <name> ATotmEq </name>
+  <val> 20 </val>
+</parm>
+
+<parm>
+  <name> pCO2 </name>
+  <val> 45.0 </val>
+</parm>
+
+<parm>
+  <name> SIDmEq </name>
+  <val> 42 </val>
+</parm>
+
+<var>
+  <name> OH- </name>
+</var>
+
+<var>
+  <name> ATot </name>
+</var>
+
+<var>
+  <name> A- </name>
+</var>
+
+<var>
+  <name> HCO3- </name>
+</var>
+
+<var>
+  <name> CO3-- </name>
+</var>
+
+<var>
+  <name> SID </name>
+</var>
+
+<var>
+  <name> CO3Eq </name>
+</var>
+
+<var>
+  <name> HA </name>
+</var>
+
+<var>
+  <name> Sc </name>
+</var>
+
+<var>
+  <name> CO2 </name>
+</var>
+
+<var>
+  <name> K'c </name>
+</var>
+
+<var>
+  <name> H2CO3 </name>
+</var>
+
+<var>
+  <name> HIon </name>
+</var>
+
+<var>
+  <name> pH </name>
+</var>
+
+<var>
+  <name> OHIon </name>
+</var>
+
+<var>
+  <name> A-mEq </name>
+</var>
+
+<var>
+  <name> HAmEq </name>
+</var>
+
+<var>
+  <name> CO2mMol </name>
+</var>
+
+<var>
+  <name> CO2Gas </name>
+</var>
+
+<var>
+  <name> H2CO3uMol </name>
+</var>
+
+<var>
+  <name> HCO3-mEq </name>
+</var>
+
+<var>
+  <name> CO3--uMol </name>
+</var>
+
+<var>
+  <name> CO3--uEq </name>
+</var>
+
+</variables>
+
+<equations> =====================================
+
+The rate constants and conditions of
+electric neutrality lead to a big
+implicit algebraic equation.
+
+<impliciteq>
+  <name> H </name>
+  <startname> H </startname>
+  <initialval> 4.2e-8 </initialval>
+  <endname> HEnd </endname>
+  <errorlim> 4e-10 </errorlim>
+  <searchminname> SearchMin </searchminname>
+</impliciteq>
+
+</equations>
+
+<definitions> =====================================
+
+<block><name> Dervs </name> =======================
+
+<def>
+  <name> SearchMin </name>
+  <val> 1.0e-50 </val>
+</def>
+
+Model starts here with H+ = f(H+)
+
+<implicitmath><name> H </name>
+
+<def>
+  <name> OH- </name>
+  <val> K'w / H </val>
+</def>
+
+<def>
+  <name> ATot </name>
+  <val> 0.001 * ATotmEq </val>
+</def>
+
+<def>
+  <name> A- </name>
+  <val> ( Ka * ATot ) / ( H + Ka ) </val>
+</def>
+
+<def>
+  <name> HCO3- </name>
+  <val> ( Kc * pCO2 ) / H </val>
+</def>
+
+<def>
+  <name> CO3-- </name>
+  <val> ( K3 * HCO3- ) / H </val>
+</def>
+
+<def>
+  <name> SID </name>
+  <val> 0.001 * SIDmEq </val>
+</def>
+
+<def>
+  <name> CO3Eq </name>
+  <val> 2.0 * CO3-- </val>
+</def>
+
+<def>
+  <name> HEnd </name>
+  <val> A- + OH- + HCO3- + CO3Eq - SID </val>
+</def>
+
+</implicitmath>
+
+Additional Calculations
+
+<def>
+  <name> HA </name>
+  <val> ATot - A- </val>
+</def>
+
+<def>
+  <name> Sc </name>
+  <val> 3.0e-5 </val>
+</def>
+
+<def>
+  <name> CO2 </name>
+  <val> Sc * pCO2 </val>
+</def>
+
+<def>
+  <name> K'c </name>
+  <val> 3.1e-3 </val>
+</def>
+
+<def>
+  <name> H2CO3 </name>
+  <val> K'c * CO2 </val>
+</def>
+
+Scale Up
+
+<def>
+  <name> HIon </name>
+  <val> 1e9 * H </val>
+</def>
+
+<def>
+  <name> pH </name>
+  <val> LOG10 ( 1.0 / H ) </val>
+</def>
+
+<def>
+  <name> OHIon </name>
+  <val> 1e9 * OH- </val>
+</def>
+
+<def>
+  <name> A-mEq </name>
+  <val> 1000.0 * A- </val>
+</def>
+
+<def>
+  <name> HAmEq </name>
+  <val> 1000.0 * HA </val>
+</def>
+
+<def>
+  <name> CO2mMol </name>
+  <val> 1000.0 * CO2 </val>
+</def>
+
+<def>
+  <name> CO2Gas </name>
+  <val> 22.4 * CO2mMol </val>
+</def>
+
+<def>
+  <name> H2CO3uMol </name>
+  <val> 1.0e6 * H2CO3 </val>
+</def>
+
+<def>
+  <name> HCO3-mEq </name>
+  <val> 1000.0 * HCO3- </val>
+</def>
+
+<def>
+  <name> CO3--uMol </name>
+  <val> 1e6 * CO3-- </val>
+</def>
+
+<def>
+  <name> CO3--uEq </name>
+  <val>  2.0 * CO3--uMol</val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+<dervs> Model.Dervs </dervs>
+</math>
+
+<display> =========================================
+<panel>
+
+<name> Peter Stewart's pH Calculator </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> pH </name>
+   <format><decimal> 2 </decimal></format>
+   <label> pH </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> HIon </name>
+   <format> <integer/> </format>
+   <label> [ H+ ] nEq / L </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> OHIon </name>
+   <format> <integer/> </format>
+   <label> [ OH- ] nEq / L </label>
+</showvalue>
+
+<repeatlist>
+  <name> ATotmEq </name>
+  <repeat>
+    <reps> 50 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 5 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 9 </reps>
+    <stepsize> 100 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 6 </row><col> 1 </col>
+  <name> ATotmEq </name>
+  <listname> ATotmEq </listname>
+  <label> Total Weak Acid (mEq/L) </label>
+</slidebar>
+
+<showvalue>
+   <row> 7.2 </row><col> 1 </col>
+   <name> A-mEq </name>
+   <format> <integer/> </format>
+   <label> [ A- ] mEq / L </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.2 </row><col> 1 </col>
+   <name> HAmEq </name>
+   <format> <integer/> </format>
+   <label> [ HA ] mMol / L </label>
+</showvalue>
+
+<repeatlist>
+  <name> SIDmEq </name>
+  <repeat>
+    <reps> 100 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+  <repeat>
+    <reps> 9 </reps>
+    <stepsize> 100 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 10.0 </row><col> 1 </col>
+  <name> SIDmEq </name>
+  <listname> SIDmEq </listname>
+  <label> Strong Ion Difference (mEq/L) </label>
+</slidebar>
+
+<repeatlist>
+  <name> pCO2 </name>
+  <repeat>
+    <reps> 100 </reps>
+    <stepsize> 1 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 12 </row><col> 1 </col>
+  <name> pCO2 </name>
+  <listname> pCO2 </listname>
+  <label> pCO2 ( mmHg ) </label>
+</slidebar>
+
+<showvalue>
+   <row> 13.2 </row><col> 3 </col>
+   <name> CO2mMol </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Dissolved CO2 ( mMol / L ) </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.2 </row><col> 33 </col>
+   <name> CO2Gas </name>
+   <format> <integer/> </format>
+   <label> ( mL / L ) </label>
+</showvalue>
+
+<showvalue>
+   <row> 15 </row><col> 1 </col>
+   <name> H2CO3uMol </name>
+   <format><decimal> 1 </decimal></format>
+   <label> [ H2CO3 ] uMol / L </label>
+</showvalue>
+
+<showvalue>
+   <row> 16 </row><col> 1 </col>
+   <name> HCO3-mEq </name>
+   <format> <integer/> </format>
+   <label> [ HCO3- ] mEq / L </label>
+</showvalue>
+
+<showvalue>
+   <row> 17 </row><col> 1 </col>
+   <name> CO3--uMol </name>
+   <format> <integer/> </format>
+   <label> [ CO3- - ] uMol / L </label>
+</showvalue>
+
+<showvalue>
+   <row> 17 </row><col> 22 </col>
+   <name> CO3--uEq </name>
+   <format> <integer/> </format>
+   <label> uEq / L </label>
+</showvalue>
+
+Right-hand Side ===================================
+
+<label>
+  <row> 0.5 </row><col> 41 </col>
+  <text> Math </text>
+</label>
+
+<infobutton>
+  <row> 2.5 </row><col> 41 </col>
+  <label> General </label>
+  <line> The determinants of pH are </line>
+  <line>  </line>
+  <line> * Water Dissociation </line>
+  <line> * Weak Acid Dissociation and Conservation </line>
+  <line> * Bicarbonate and Carbonate Formation </line>
+  <line> * Electrical Neutrality </line>
+  <line>  </line>
+  <line> Values represent plasma at 37C. Units are </line>
+  <line> Eq / L. </line>
+</infobutton>
+
+<infobutton>
+  <row> 3.9 </row><col> 41 </col>
+  <label> Water Dissociation </label>
+  <line> Water Dissociation </line>
+  <line>  </line>
+  <line> [ H+ ] * [ OH- ] = K'w </line>
+  <line> K'w = 4.4e-14 </line>
+</infobutton>
+
+<infobutton>
+  <row> 5.3 </row><col> 41 </col>
+  <label> Weak Acids </label>
+  <line> Weak Acid Dissociation </line>
+  <line>  </line>
+  <line> [ H+ ] * [ A- ] = Ka * [ HA ] </line>
+  <line> Ka = 2.0e-7 </line>
+  <line>  </line>
+  <line> Weak Acid Conservation </line>
+  <line>  </line>
+  <line> [ HA ] + [ A- ] = [ ATot ] </line>
+</infobutton>
+
+<infobutton>
+  <row> 6.7 </row><col> 41 </col>
+  <label> [ HCO3- ] and [ CO3- - ] </label>
+  <line> Bicarbonate Formation </line>
+  <line>  </line>
+  <line> [ H+ ] * [ HCO3- ] = Kc * pCO2 </line>
+  <line> Kc = 2.58e-11 </line>
+  <line>  </line>
+  <line> Carbonate Formation </line>
+  <line>  </line>
+  <line> [ H+ ] * [ CO3- - ] = K3 * [ HCO3- ] </line>
+  <line> K3 = 6.0e-11 </line>
+</infobutton>
+
+<infobutton>
+  <row> 8.1 </row><col> 41 </col>
+  <label> Electrical Neutrality </label>
+  <line> Electrical Neutrality </line>
+  <line>  </line>
+  <line> + [ SID ] </line>
+  <line> + [ H+ ] </line>
+  <line> - [ HCO3- ] </line>
+  <line> - [ A- ] </line>
+  <line> - [ CO3- - ] </line>
+  <line> - [ OH- ] </line>
+  <line>  </line>
+  <line> = 0 </line>
+</infobutton>
+
+</panel>
+</display>
+
+</model>
+
+End

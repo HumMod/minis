@@ -1,0 +1,40 @@
+Kidney Model - Control
+
+Created : 16-Aug-96
+Last Modified : 12-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<gofor>
+  <solutionint> 1 </solutionint>
+  <displayint> 0.1 </displayint>
+  <menuitem> 1 Min </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 1 </displayint>
+  <menuitem> 10 Min </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 60 </solutionint>
+  <displayint> 5 </displayint>
+  <menuitem> 1 Hour </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 1440 </solutionint>
+  <displayint> 120 </displayint>
+  <menuitem> 1 Day </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10080 </solutionint>
+  <displayint> 1440 </displayint>
+  <menuitem> 1 Week </menuitem>
+</gofor>
+
+End

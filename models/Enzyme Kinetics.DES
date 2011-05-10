@@ -1,0 +1,312 @@
+Enzyme Kinetics
+
+Created : 22-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+Substrate (S) and enzyme (E) combine to form the
+enzyme/substrate complex (ES).  The complex then
+dissociates to yield enzyme (E) plus product (P).
+
+          k1       k3
+   E + S ----} ES ----} E + P
+        {----    {----
+	      k2       k4
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Enzyme Kinetics </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ===================================
+
+The principal parameters are reaction
+rate constants.
+
+<parm>
+  <name> K1 </name>
+  <val> 0.10 </val>
+</parm>
+
+<parm>
+  <name> K2 </name>
+  <val> 0.01 </val>
+</parm>
+
+<parm>
+  <name> K3 </name>
+  <val> 0.10 </val>
+</parm>
+
+<parm>
+  <name> K4 </name>
+  <val> 0.01 </val>
+</parm>
+
+</variables>
+
+<equations> ===================================
+
+There are 4 differential equations,
+representing
+
+   E  - Enzyme
+   S  - Substrate
+   ES - Enzyme/Substrate Complex
+   P  - Product
+
+<diffeq>
+  <name> E </name>
+  <integralname> E </integralname>
+  <initialval> 1.0 </initialval>
+  <dervname> EDot </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> S </name>
+  <integralname> S </integralname>
+  <initialval> 1.0 </initialval>
+  <dervname> SDot </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> ES </name>
+  <integralname> ES </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> ESDot </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> P </name>
+  <integralname> P </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> PDot </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> =================================
+
+<block><name> Dervs </name> ===================
+
+<def>
+  <name> EDot </name>
+  <val>
+      ( K2 * ES )
+    + ( K3 * ES )
+    - ( K1 * E * S )
+    - ( K4 * E * P )
+  </val>
+</def>
+
+<def>
+  <name> SDot </name>
+  <val>
+      ( K2 * ES )
+    - ( K1 * E * S )
+  </val>
+</def>
+
+<def>
+  <name> ESDot </name>
+  <val>
+      ( K1 * E * S )
+    + ( K4 * E * P )
+    - ( K2 * ES )
+    - ( K3 * ES )
+  </val>
+</def>
+
+<def>
+  <name> PDot </name>
+  <val>
+      ( K3 * ES )
+    - ( K4 * E * P )
+  </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ========================================
+
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> =====================================
+
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 2 </displayint>
+</gofor>
+
+<gofor>
+  <solutionint> 50 </solutionint>
+  <displayint> 2 </displayint>
+</gofor>
+
+
+</control>
+
+<display> =====================================
+
+<panel><name> Enzyme Kinetics </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 0.5 </row><col> 40 </col>
+   <name> System.X </name>
+   <format> <integer/> </format>
+   <label> Time </label>
+</showvalue>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> E </name>
+   <format><decimal> 2 </decimal></format>
+   <label> E </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> S </name>
+   <format><decimal> 2 </decimal></format>
+   <label> S </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> ES </name>
+   <format><decimal> 2 </decimal></format>
+   <label> ES </label>
+</showvalue>
+
+<showvalue>
+   <row> 5 </row><col> 1 </col>
+   <name> P </name>
+   <format><decimal> 2 </decimal></format>
+   <label> P </label>
+</showvalue>
+
+<repeatlist>
+  <name> ForwardK </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 6.6 </row><col> 1 </col>
+  <name> K1 </name>
+  <listname> ForwardK </listname>
+  <label> K1 </label>
+</slidebar>
+
+<repeatlist>
+  <name> BackwardK </name>
+  <repeat>
+    <reps> 20 </reps>
+    <stepsize> 0.001 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 8.2 </row><col> 1 </col>
+  <name> K2 </name>
+  <listname> BackwardK </listname>
+  <label> K2 </label>
+</slidebar>
+
+<slidebar>
+  <row> 9.8 </row><col> 1 </col>
+  <name> K3 </name>
+  <listname> ForwardK </listname>
+  <label> K3 </label>
+</slidebar>
+
+<slidebar>
+  <row> 11.4 </row><col> 1 </col>
+  <name> K4 </name>
+  <listname> BackwardK </listname>
+  <label> K4 </label>
+</slidebar>
+
+<showgraph>
+  <row> 2.0 </row><col> 30 </col>
+  <high> 13 </high><wide> 28 </wide>
+  <leftmargin> 4 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 50 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> E </name>
+      <label> E </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+    <yvar>
+      <name> S </name>
+      <label> S </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <yvar>
+      <name> ES </name>
+      <label> ES </label>
+      <linecolor> MAGENTA </linecolor>
+    </yvar>
+    <yvar>
+      <name> P </name>
+      <label> P </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 1 </max>
+    </scale>
+  </yaxis>
+</showgraph>
+
+<infobutton>
+  <row> 16 </row><col> 30 </col>
+  <label> Names </label>
+  <line> E - Enzyme </line>
+  <line> S - Substrate </line>
+  <line> ES - Enzyme/Substrate Complex </line>
+  <line> P - Product </line>
+  <line>  </line>
+  <line> K - Rate Constant </line>
+  <line>  </line>
+  <line> K1 - K for E + S ---} ES </line>
+  <line> K2 - K for E + S {--- ES </line>
+  <line> K3 - K for ES ---} E + P </line>
+  <line> K4 - K for ES {--- E + P </line>
+</infobutton>
+
+</panel>
+</display>
+
+</model>
+
+End

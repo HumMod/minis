@@ -1,0 +1,136 @@
+Kidney Model - Myogenic Response
+
+Created : 16-Aug-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+The myogenic response is the effect of
+renal perfusion pressure on afferent
+conductance.
+
+The myogenic response shows a slight
+delay in onset and a slower adaptation.
+
+The slight delay at onset is implemented
+using a lag.
+
+<structure><name> Myogenic </name>
+
+<variables>
+
+<var>
+  <name> PresChange </name>
+</var>
+
+<var>
+  <name> Effect </name>
+</var>
+
+<parm>
+  <name> AdaptTau </name>
+  <val> 240 </val>
+</parm>
+
+<parm>
+  <name> LagTau </name>
+  <val> 0.15 </val>
+</parm>
+
+<parm>
+  <name> ClampSwitch </name>
+  <val> FALSE </val>
+</parm>
+
+<parm>
+  <name> ClampLevel </name>
+  <val> 1.0 </val>
+</parm>
+
+</variables>
+
+<equations>
+
+<delay>
+  <name> PresAdapt </name>
+  <outputname> PresAdapt </outputname>
+  <initialval> 100.0 </initialval>
+  <inputname> AdaptIn </inputname>
+  <rateconstname> AdaptK </rateconstname>
+</delay>
+
+<lag>
+  <name> LagOut </name>
+  <outputname> LagOut </outputname>
+  <initialval> 1.0 </initialval>
+  <inputname> LagIn </inputname>
+  <rateconstname> LagK </rateconstname>
+</lag>
+
+</equations>
+
+<functions> ====================================
+
+<curve>
+  <name> DelPEffect </name>
+  <point>
+    <x> -30 </x><y> 1.4 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 0 </x><y> 1.0 </y><slope> -0.01 </slope>
+  </point>
+  <point>
+    <x> 80 </x><y> 0.6 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions>
+<block><name> Parms </name>
+
+<def>
+  <name> AdaptK </name>
+  <val> INVERT AdaptTau </val>
+</def>
+
+<def>
+  <name> LagK </name>
+  <val> INVERT LagTau </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name>
+
+<def>
+  <name> AdaptIn </name>
+  <val> RPP.Pres </val>
+</def>
+
+<def>
+  <name> PresChange </name>
+  <val> AdaptIn - PresAdapt </val>
+</def>
+
+<def>
+  <name> LagIn </name>
+  <val> DelPEffect [ PresChange ] </val>
+</def>
+
+<calclag> LagOut </calclag>
+
+<conditional>
+  <name> Effect </name>
+  <test> ClampSwitch </test>
+  <true> ClampLevel </true>
+  <false> LagOut </false>
+</conditional>
+
+</block>
+</definitions>
+</structure>
+
+End

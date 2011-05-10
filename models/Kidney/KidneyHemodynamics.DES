@@ -1,0 +1,84 @@
+Kidney Model - Kidney Hemodynamics
+
+Created : 11-Oct-96
+Last Modified : 18-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<structure>
+<name> Flows </name>
+
+<variables> ==================================
+
+<parm>
+  <name> TubeCond </name>
+  <val> 6.25 </val>
+</parm>
+
+<parm>
+  <name> PelvisPres </name>
+  <val> 0 </val>
+</parm>
+
+<var>
+  <name> ProxTubePres </name>
+</var>
+
+Renal Blood Flow
+
+Renal blood flow is a function of the perfusion
+pressure gradient and the afferent, efferent and
+venous conductances.
+
+<parm>
+  <name> VenousCond </name>
+  <val> 200 </val>
+</parm>
+
+<var>
+  <name> TotalCond </name>
+</var>
+
+<var>
+  <name> RBF </name>
+</var>
+
+<var>
+  <name> RPF </name>
+</var>
+
+</variables>
+
+<definitions>
+<block><name> Dervs </name>
+
+<def>
+  <name> Flows.TotalCond </name>
+  <val>
+        INVERT ( INVERT AffArty.Cond
+      + INVERT EffArty.Cond
+      + INVERT Flows.VenousCond )
+  </val>
+</def>
+
+<def>
+  <name> Flows.RBF </name>
+  <val>
+        ( RPP.Pres
+      - Circ.VenousPres )
+      * Flows.TotalCond
+  </val>
+</def>
+
+<def>
+  <name> Flows.RPF </name>
+  <val> Flows.RBF * ( 1 - Circ.HctFract ) </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+End

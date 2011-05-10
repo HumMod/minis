@@ -1,0 +1,38 @@
+Model Library (V1.2) Notes.TXT
+
+Created : 04-Jun-09
+Last Modified : 04-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+
+Version 1.1 of the Model Library was not compatible
+with the Model Navigator for several reasons. Version 1.2
+of the Model Library is compatible.
+
+The full schema for model title is
+
+<title>
+   <basic> Basic model title goes here. </basic>
+   <navigator> Model title for display in navigator goes here </navigator>
+</title>
+
+The navigator element is optional.
+
+The current version of the Model Navigator cannot include files
+with spaces in the file name. The kidney model had many files
+with spaces in the name. These files have been renamed.
+
+The kidney model in Version 1.1 of the Model Library did not
+have the proper child elements in the showclock element.
+
+The proper elements in showclock are
+
+<showclock>
+   ...
+   <ampm/>
+   <secs/>
+   <days/>
+</showclock>
+
+End

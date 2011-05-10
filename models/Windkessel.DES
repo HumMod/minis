@@ -1,0 +1,463 @@
+Windkessel
+
+Created : 08-Aug-96
+Last Modified : 29-Nov-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Windkessel </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables>
+
+<parm><name> HR         </name><val> 72   </val></parm>
+<parm><name> Comp       </name><val> 1.4  </val></parm>
+<parm><name> V0         </name><val> 800  </val></parm>
+<parm><name> SystolicK  </name><val> 0.24 </val></parm>
+<parm><name> DiastolicK </name><val> 0.01 </val></parm>
+<parm><name> FordCond   </name><val> 70   </val></parm>
+<parm><name> BackCond   </name><val> 0    </val></parm>
+<parm><name> VenPres    </name><val> 7    </val></parm>
+<parm><name> PeriCond   </name><val> 0.97 </val></parm>
+
+<var><name> SBP </name><val> UNDEFINED </val></var>
+<var><name> DBP </name><val> UNDEFINED </val></var>
+
+<var><name> VPIso          </name></var>
+<var><name> AP             </name></var>
+<var><name> DelP           </name></var>
+<var><name> VelK           </name></var>
+<var><name> ValveCond      </name></var>
+<var><name> InFlow         </name></var>
+<var><name> OutFlow        </name></var>
+<var><name> PulsePressure </name></var>
+
+</variables>
+
+<equations>
+
+<diffeq>
+  <name> Vol </name>
+  <integralname> Vol </integralname>
+  <initialval> 925.0 </initialval>
+  <dervname> dV/dt </dervname>
+  <errorlim> 10.0 </errorlim>
+</diffeq>
+
+<impliciteq>
+  <name> VP </name>
+  <startname> VP </startname>
+  <initialval> 0.0 </initialval>
+  <endname> VPEnd </endname>
+  <errorlim> 1.0 </errorlim>
+</impliciteq>
+
+</equations>
+
+<definitions> =======================================================
+
+<block><name> Dervs </name> =========================================
+
+<def>
+  <name> AP </name>
+  <val> ( 1 / Comp ) * ( Vol - V0 ) </val>
+</def>
+
+<def>
+  <name> VPIso </name>
+  <val> 200 * SIN ( 2 * System.Pi * ( HR / 60 ) * System.X ) MAX 0 </val>
+</def>
+
+<implicitmath><name> VP </name>
+
+<def>
+  <name> DelP </name>
+  <val> VP - AP </val>
+</def>
+
+<conditional>
+  <name> VelK </name>
+  <test> DelP GT 0 </test>
+  <true> SystolicK </true>
+  <false> DiastolicK </false>
+</conditional>
+
+<conditional>
+  <name> ValveCond </name>
+  <test> DelP GT 0 </test>
+  <true> FordCond </true>
+  <false> BackCond </false>
+</conditional>
+
+<def>
+  <name> InFlow </name>
+  <val> DelP * ValveCond </val>
+</def>
+
+<def>
+  <name> VPEnd </name>
+  <val> VPIso - ( VelK * InFlow ) </val>
+</def>
+
+</implicitmath>
+
+<def>
+  <name> OutFlow </name>
+  <val> ( AP - VenPres ) * PeriCond </val>
+</def>
+
+<def>
+  <name> dV/dt </name>
+  <val> InFlow - OutFlow </val>
+</def>
+
+Track max and min AP for ABP and DBP.
+
+<if><test> System.X EQ 0 </test>
+<true>
+  <def><name> SBP </name><val> AP </val></def>
+  <def><name> DBP </name><val> AP </val></def>
+</true>
+
+<false>
+
+  <andif><test> AP GT SBP </test>
+  <true>
+    <def><name> SBP </name><val> AP </val></def>
+  </true>
+  </andif>
+
+  <andif><test> AP LT DBP </test>
+  <true>
+    <def><name> DBP </name><val> AP </val></def>
+  </true>
+  </andif>
+
+</false>
+</if>
+
+Pulse pressure for display.
+
+<def><name> PulsePressure </name><val> SBP - DBP </val></def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 1 </solutionint>
+  <displayint> 0.05 </displayint>
+</gofor>
+
+<gofor>
+  <solutionint> 2 </solutionint>
+  <displayint> 0.05 </displayint>
+</gofor>
+
+<gofor>
+  <solutionint> 4 </solutionint>
+  <displayint> 0.1 </displayint>
+</gofor>
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Windkessel Model </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2.0 </row><col> 1.0 </col>
+   <name> VPIso </name>
+   <format> <integer/> </format>
+   <label> Isometric VP </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.0 </row><col> 1.0 </col>
+   <name> VP </name>
+   <format> <integer/> </format>
+   <label> Ventricular Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 4.0 </row><col> 1.0 </col>
+   <name> AP </name>
+   <format> <integer/> </format>
+   <label> Arterial Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.5 </row><col> 1.0 </col>
+   <name> SBP </name>
+   <format> <integer/> </format>
+   <label> SBP </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.5 </row><col> 1.0 </col>
+   <name> DBP </name>
+   <format> <integer/> </format>
+   <label> DBP </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.5 </row><col> 1.0 </col>
+   <name> PulsePressure </name>
+   <format> <integer/> </format>
+   <label> Pulse Pressure </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.0 </row><col> 1.0 </col>
+   <name> InFlow </name>
+   <format> <integer/> </format>
+   <label> In Flow </label>
+</showvalue>
+
+<showvalue>
+   <row> 10.0 </row><col> 1.0 </col>
+   <name> OutFlow </name>
+   <format> <integer/> </format>
+   <label> Out Flow </label>
+</showvalue>
+
+Valve Conductance
+
+<groupbox>
+   <row> 11.5 </row><col> 1.0 </col>
+   <high> 4.5 </high><wide> 30 </wide>
+   <title> Valve Conductance </title>
+
+<repeatlist>
+  <name> FordCond </name>
+  <repeat><reps> 20 </reps><stepsize> 10 </stepsize></repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1.0 </col>
+  <name> FordCond </name>
+  <listname> FordCond </listname>
+  <label> Forward </label>
+</slidebar>
+
+<repeatlist>
+  <name> BackCond </name>
+  <repeat><reps> 20 </reps><stepsize> 0.5 </stepsize></repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.0 </row><col> 1.0 </col>
+  <name> BackCond </name>
+  <listname> BackCond </listname>
+  <label> Backward </label>
+</slidebar>
+
+</groupbox>
+
+Windkessel
+
+<groupbox>
+   <row> 16.4 </row><col> 1.0 </col>
+   <high> 5.5 </high><wide> 30 </wide>
+   <title> Windkessel </title>
+
+<repeatlist>
+  <name> Comp </name>
+  <repeat><reps> 30 </reps><stepsize> 0.1 </stepsize></repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1.0 </col>
+  <name> Comp </name>
+  <listname> Comp </listname>
+  <label> Compliance </label>
+</slidebar>
+
+<showvalue>
+   <row> 2.9 </row><col> 1.0 </col>
+   <name> Vol </name>
+   <format> <integer/> </format>
+   <label> Volume </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.9 </row><col> 1.0 </col>
+   <name> V0 </name>
+   <format> <integer/> </format>
+   <label> Unstressed Volume </label>
+</showvalue>
+
+</groupbox>
+
+Info Stack
+
+<infobutton>
+  <row> 23.0 </row><col> 1.0 </col>
+  <label> Ventricle Math </label>
+  <line> HR - Heart Rate </line>
+  <line> InFlow - Ventricle OutFlow and Windkessel Inflow </line>
+  <line> K - Velocity Constant </line>
+  <line> VP - Ventricular Pressure </line>
+  <line> VPIso - Isometric VP </line>
+  <line> VPMax - Maximum VP </line>
+  <line></line>
+  <line> Sin = sin ( 2 * PI * ( HR / 60 ) * Time ) </line>
+  <line> VPIso = VPMax * Sin for Sin >= 0 </line>
+  <line> VP = VPIso - K * Inflow </line>
+</infobutton>
+
+<infobutton>
+  <row> 24.6 </row><col> 1.0 </col>
+  <label> Valve Math </label>
+  <line> AP - Arterial Pressure </line>
+  <line> BackCond - Backward Valve Conduct </line>
+  <line> Cond - Current Valve Conductance </line>
+  <line> DelP - Valve Pressure Gradient </line>
+  <line> FordCond - Forward Valve Conductance </line>
+  <line> InFlow - Ventricle OutFlow and Windkessel Inflow </line>
+  <line> VP - Ventricular Pressure </line>
+  <line></line>
+  <line> DelP = VP - AP </line>
+  <line> if ( DelP > 0 ) </line>
+  <line> Cond = FordCond </line>
+  <line> else </line>
+  <line> Cond = BackCond </line>
+  <line> InFlow = DelP * Cond </line>
+</infobutton>
+
+<infobutton>
+  <row> 26.2 </row><col> 1.0 </col>
+  <label> Windkessel Math </label>
+  <line> AP - Arterial Pressure </line>
+  <line> C - Compliance </line>
+  <line> Vol - Arterial Volume </line>
+  <line> V0 - Unstressed Volume </line>
+  <line></line>
+  <line> AP = ( 1 / C ) * ( Vol - V0 ) </line>
+</infobutton>
+
+<infobutton>
+  <row> 27.8 </row><col> 1.0 </col>
+  <label> Periphery Math </label>
+  <line> AP - Arterial or Windkessel Pressure </line>
+  <line> Cond - Peripheral Conductance </line>
+  <line> OutFlow - Windkessel Outflow </line>
+  <line></line>
+  <line> OutFlow = ( AP - VP ) * Cond </line>
+</infobutton>
+
+Right-hand Side --------------------------------------------
+
+<showvalue>
+   <row> 0.5 </row><col> 35.0 </col>
+   <name> System.X </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Time (Sec) </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.0 </row><col> 32.0 </col>
+  <high> 14 </high><wide> 28 </wide><leftmargin> 7 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 2 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> InFlow </name>
+      <label> In Flow </label>
+      <linetype> DOT </linetype>
+    </yvar>
+    <yvar>
+      <name> VP </name>
+      <label> VP </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> AP </name>
+      <label> AP </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 500 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 16.4 </row><col> 32.0 </col>
+  <high> 7 </high><wide> 28 </wide><leftmargin> 7 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 2 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> InFlow </name>
+      <label> In Flow </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> OutFlow </name>
+      <label> Out Flow </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 500 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 23.8 </row><col> 32.0 </col>
+  <high> 5 </high><wide> 28 </wide><leftmargin> 7 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 2 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> ValveCond </name>
+      <label> Valve </label>
+    </yvar>
+    <scale><min> 0 </min><max> 100 </max></scale>
+  </yaxis>
+</showgraph>
+
+Show file at bottom.
+
+<showfile>
+  <row> 30.0 </row><col> 4.0 </col>
+  <wide> 62 </wide>
+</showfile>
+
+</panel>
+</display>
+
+</model>
+
+End

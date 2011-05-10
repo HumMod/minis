@@ -1,0 +1,386 @@
+First-Order DE
+
+Created : 25-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<?xml version = '1.0' ?>
+
+DE is a contraction of differential equation.
+
+The dependent variable here is Y and the independent
+variable is X.  The equation is
+
+   dY/dX = - K * Y
+
+with Y0 being the initial value of Y.
+
+K is known as the rate constant. When the independent
+variable is time, the time constant is the reciprocal
+of the rate constant.
+
+   Tau = 1 / K
+
+When X = Tau, Y = 0.37 * Y0.
+
+The half-time is the time required for Y to go
+one-half way from its initial value to its final
+value.
+
+   t 1/2 = 0.69 * Tau
+
+The exact solution of this equation is
+
+   Exact Y = Y0 * exp (-K * X)
+
+The error in the calculated solution is
+
+   Error = Exact Y - Calculated Y
+
+<model>
+
+<title><basic> First-Order DE </basic></title>
+
+<structure> <name> Model </name>
+
+<variables> ------------------------------------
+
+<parm><name> K </name><val> 0.1 </val></parm>
+<var><name> Tau </name></var>
+<var><name> t1/2 </name></var>
+<var><name> ExactY </name></var>
+<var><name> Error </name></var>
+
+</variables>
+
+<equations> ------------------------------------
+
+<diffeq>
+  <name> Y </name>
+  <integralname> Y </integralname>
+  <initialval> 1.0 </initialval>
+  <dervname> dY/dX </dervname>
+</diffeq>
+
+</equations>
+
+<definitions> ----------------------------------
+
+<block><name> Parms </name>
+
+<def>
+  <name> Tau </name>
+  <val> INVERT K </val>
+</def>
+
+<def>
+  <name> t1/2 </name>
+  <val> 0.69 * Tau </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name>
+
+<def>
+  <name> dY/dX </name>
+  <val> - K * Y </val>
+</def>
+
+<def>
+  <name> ExactY </name>
+  <val> EXP ( - K * System.X ) </val>
+</def>
+
+<def>
+  <name> Error </name>
+  <val> ExactY - Y </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+<math> --------------------------------------
+
+<parms> Model.Parms </parms>
+<dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ---------------------------------------
+
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 2 </displayint>
+  <menuitem> Big Steps </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 1 </displayint>
+  <menuitem> Medium Steps </menuitem>
+</gofor>
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 0.2 </displayint>
+  <menuitem> Small Steps </menuitem>
+</gofor>
+
+
+</control>
+
+<display> ---------------------------------------
+
+<panel> <name> First-Order DE </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<infobutton>
+  <row> 14 </row><col> 1 </col>
+  <label> The Equation </label>
+  <line> The equation is </line>
+  <line>  </line>
+  <line> dY / dX = - K * Y </line>
+  <line>  </line>
+  <line> X is the independent variable, </line>
+  <line> Y is the dependent variable, </line>
+  <line> and Y0 is the initial value </line>
+  <line> of Y. </line>
+</infobutton>
+
+<infobutton>
+  <row> 15.6 </row><col> 1 </col>
+  <label> Rate Constant </label>
+  <line> K is known as the rate </line>
+  <line> constant in the equation </line>
+  <line>  </line>
+  <line> dY / dX = - K * Y </line>
+  <line>  </line>
+  <line> When the independent variable </line>
+  <line> is time, the time constant </line>
+  <line> (Tau) is the reciprocal of </line>
+  <line> the rate constant. </line>
+  <line>  </line>
+  <line> Tau = 1 / K </line>
+  <line>  </line>
+  <line> When X = Tau, Y = 0.37 * Y0. </line>
+  <line>  </line>
+  <line> The half-time is the time </line>
+  <line> required for Y to go one-half </line>
+  <line> way from its initial value to </line>
+  <line> its final value. </line>
+  <line>  </line>
+  <line> t 1/2 = 0.69 * Tau </line>
+</infobutton>
+
+<infobutton>
+  <row> 17.2 </row><col> 1 </col>
+  <label> Exact Solution </label>
+  <line> The equation </line>
+  <line>  </line>
+  <line> dY / dX = - K * Y with </line>
+  <line> initial Y0 </line>
+  <line>  </line>
+  <line> is one of only a few </line>
+  <line> differential equations that </line>
+  <line> have known exact solutions. </line>
+  <line> The exact solution is </line>
+  <line>  </line>
+  <line> Y = Y0 * exp ( -K * X ) </line>
+</infobutton>
+
+<infobutton>
+  <row> 18.8 </row><col> 1 </col>
+  <label> Solution Error </label>
+  <line> The calculated solution is </line>
+  <line> only approximate.  The error </line>
+  <line> in this calculation is the </line>
+  <line> difference between the exact </line>
+  <line> solution and the calculated </line>
+  <line> solution. </line>
+</infobutton>
+
+<showvalue>
+  <row> 2 </row><col> 1 </col>
+  <name> Y </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Y </label>
+</showvalue>
+
+<showvalue>
+  <row> 3 </row><col> 1 </col>
+  <name> dY/dX </name>
+  <format><decimal> 2 </decimal></format>
+  <label> dY/dX </label>
+</showvalue>
+
+<showvalue>
+  <row> 4 </row><col> 1 </col>
+  <name> ExactY </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Exact Y </label>
+</showvalue>
+
+<showvalue>
+  <row> 5 </row><col> 1 </col>
+  <name> Error </name>
+  <format><decimal> 3 </decimal></format>
+  <label> Error </label>
+</showvalue>
+
+Rate constant
+
+<groupbox>
+   <row> 7 </row><col> 1 </col>
+   <high> 5.5 </high><wide> 26 </wide>
+   <title> Rate Constant </title>
+
+<repeatlist>
+  <name> RateConst </name>
+  <firstval> 0.01 </firstval>
+
+  <repeat>
+    <reps> 19 </reps>
+    <stepsize> 0.01 </stepsize>
+  </repeat>
+
+  <repeat>
+    <reps> 8 </reps>
+    <stepsize> 0.1 </stepsize>
+  </repeat>
+
+</repeatlist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> K </name>
+  <listname> RateConst </listname>
+  <label> K </label>
+</slidebar>
+
+<showvalue>
+  <row> 3.0 </row><col> 1 </col>
+  <name> Tau </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Time Constant </label>
+</showvalue>
+
+<showvalue>
+  <row> 4.0 </row><col> 1 </col>
+  <name> t1/2 </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Half-Life </label>
+</showvalue>
+
+</groupbox>
+
+Right-hand Side ---------------------------------
+
+<showvalue>
+  <row> 0.5 </row><col> 37 </col>
+  <name> System.X </name>
+  <format><decimal> 1 </decimal></format>
+</showvalue>
+
+<symbol>
+  <name> Box </name>
+  <style> BOX </style>
+  <color> RED </color>
+  <size> 2 </size>
+  <linewidth> 1 </linewidth>
+</symbol>
+
+<showgraph>
+  <row> 2.5 </row><col> 28 </col>
+  <high> 7 </high><wide> 32 </wide>
+  <leftmargin> 8 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> X </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Y </name>
+      <label> Y </label>
+    </yvar>
+			   
+    <yvar>
+      <name> ExactY </name>
+      <label> Exact Y </label>
+      <linetype> NULL </linetype>
+      <linecolor> RED </linecolor>
+      <symbolname> Box </symbolname>
+    </yvar>
+
+    <scale><min> 0 </min><max> 1 </max></scale>
+  </yaxis>
+
+</showgraph>
+
+<showgraph>
+  <row> 10.0 </row><col> 28 </col>
+  <high> 7 </high><wide> 32 </wide>
+  <leftmargin> 8 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> X </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> dY/dX </name>
+      <label> dY/dX </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+
+    <scale><min> -0.1 </min><max> 0 </max></scale>
+  </yaxis>
+
+</showgraph>
+
+<showgraph>
+  <row> 17.5 </row><col> 28 </col>
+  <high> 7 </high><wide> 32 </wide>
+  <leftmargin> 8 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> X </label>
+    <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Error </name>
+      <label> Error </label>
+      <linetype> DOT </linetype>
+      <linecolor> MAGENTA </linecolor>
+    </yvar>
+			   
+    <scale><min> -0.01 </min><max> +0.01 </max></scale>
+  </yaxis>
+
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

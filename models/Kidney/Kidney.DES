@@ -1,0 +1,175 @@
+Kidney 2005
+
+Created : 16-Aug-96
+Last Modified : 14-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Kidney Model </basic></title>
+
+<?include ReninAndA2Vars.DES ?>
+<?include COP.DES ?>
+<?include GFR.DES ?>
+<?include GeneralVars.DES ?>
+<?include Na.DES ?>
+<?include Circulation.DES ?>
+<?include Perfusion.DES ?>
+<?include MyogenicResponse.DES ?>
+<?include AldosteroneVars.DES ?>
+<?include ProximalTubule.DES ?>
+<?include MaculaDensa.DES ?>
+<?include DistalTubule.DES ?>
+<?include CollectingDuct.DES ?>
+<?include AfferentArtery.DES ?>
+<?include AfferentTGF.DES ?>
+<?include EfferentArtery.DES ?>
+<?include EfferentTGF.DES ?>
+<?include KidneyHemodynamics.DES ?>
+
+<structure>
+<name> Model </name>
+
+<definitions> ===================================
+
+<block><name> Parms </name> =====================
+  <call> PRA.Parms </call>
+  <call> Na.Parms </call>
+  <call> Myogenic.Parms </call>
+  <call> COP.CalcACOP </call>
+  <call> Aldo.Parms </call>
+  <call> AffTGF.Parms </call>
+  <call> EffTGF.Parms </call>
+</block>
+
+<block><name> Dervs </name> =====================
+
+  <call> PRA.Conc </call>
+  <call> Aldo.Conc </call>
+  <call> Circ.Dervs </call>
+  <call> RPP.Dervs </call>
+  <call> Myogenic.Dervs </call>
+
+  There is an implicit algebraic relationship
+  here of the form
+
+     GFR = f(GFR)
+
+  that is caused by the interaction of efferent
+  protein and GFR and by GFR and GP via
+  tubuloglomerular feedback.
+
+  <call> GFR.Startup </call>
+  <implicitmath><name> GFR.GFR </name>
+
+  <call> Prox.Dervs </call>
+  <call> MD.Dervs </call>
+
+  <call> AffTGF.Dervs </call>
+  <call> AffArty.Dervs </call>
+
+  <call> EffTGF.Dervs </call>
+  <call> EffArty.Dervs </call>
+
+  <call> Flows.Dervs </call>
+  <call> GFR.Wrapup </call>
+
+  </implicitmath>
+
+  <call> Dist.Dervs </call>
+  <call> CD.Dervs </call>
+  <call> Na.Dervs </call>
+  <call> PRA.Dervs </call>
+  <call> Aldo.Dervs </call>
+  <call> Na.Dervs </call>
+
+</block>
+
+<block><name> Wrapup </name> ====================
+
+  None right now.
+
+</block>
+
+</definitions>
+</structure>
+
+<math> ==========================================
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+  <wrapup> Model.Wrapup </wrapup>
+
+</math>
+
+<control> =======================================
+
+<?include Control.DES ?>
+
+</control>
+
+<display> =======================================
+<common>
+
+<addarrows/>
+<?include Tree.DES ?>
+
+<maplist>
+  <name> Switch </name>
+  <map><val> 0 </val><img> Off </img></map>
+  <map><val> 1 </val><img> On </img></map>
+</maplist>
+
+</common>
+
+Panels are
+
+   Overview
+   Hemodynamics
+      General Hemodynamics
+      Afferent Artery
+      Myogenic Response
+      Efferent Artery
+   Glomerulus
+   Tubes
+      Proximal
+      Macula Densa
+      Distal
+      Collecting Duct
+   Hormones
+      Angiotensin
+      Aldosterone
+      Circulating Renin
+      Renal Renin
+   Circulation
+
+<?include OverviewPanel.DES ?>
+
+<?include HemodynamicsPanel.DES ?>
+<?include AfferentArteryPanel.DES ?>
+<?include MyogenicResponsePanel.DES ?>
+<?include EfferentArteryPanel.DES ?>
+
+<?include GlomerulusPanel.DES ?>
+
+<?include ProximalTubulePanel.DES ?>
+<?include MaculaDensaPanel.DES ?>
+<?include DistalTubulePanel.DES ?>
+<?include CollectingDuctPanel.DES ?>
+
+<?include AngiotensinPanel.DES ?>
+<?include AldosteronePanel.DES ?>
+<?include CirculatingReninPanel.DES ?>
+<?include KidneyReninPanel.DES ?>
+
+<?include CirculationPanel.DES ?>
+
+</display>
+</model>
+
+End

@@ -1,0 +1,150 @@
+Tree DES
+
+Created : 14-Oct-04
+Last Modified : 02-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+Panels are
+
+   Overview
+   Hemodynamics
+      General
+      Afferent Artery
+      Myogenic Response
+      Efferent Artery
+   Glomerulus
+   Tubules
+      Proximal
+      Macula Densa
+      Distal
+      Collecting Duct
+   Hormones
+      Angiotensin
+      Aldosterone
+      Circulating Renin
+      Renal Renin
+   Circulation
+
+<tree>
+
+<branch>
+  <name> Panels </name>
+  <label> Panels </label>
+  <parent> MAINMENU </parent>
+</branch>
+
+<leaf>
+  <name> Overview </name>
+  <label> Overview </label>
+  <parent> Panels </parent>
+</leaf>
+
+<branch>
+  <name> Hemodynamics </name>
+  <label> Hemodynamics </label>
+  <parent> Panels </parent>
+</branch>
+
+<leaf>
+  <name> General Hemodynamics </name>
+  <label> General </label>
+  <parent> Hemodynamics </parent>
+</leaf>
+
+<leaf>
+  <name> Afferent Artery </name>
+  <label> Afferent Artery </label>
+  <parent> Hemodynamics </parent>
+</leaf>
+
+<leaf>
+  <name> Myogenic Response </name>
+  <label> Myogenic Response </label>
+  <parent> Hemodynamics </parent>
+</leaf>
+
+<leaf>
+  <name> Efferent Artery </name>
+  <label> Efferent Artery </label>
+  <parent> Hemodynamics </parent>
+</leaf>
+
+<leaf>
+  <name> Glomerulus </name>
+  <label> Glomerulus </label>
+  <parent> Panels </parent>
+</leaf>
+
+<branch>
+  <name> Tubules </name>
+  <label> Tubules </label>
+  <parent> Panels </parent>
+</branch>
+
+<leaf>
+  <name> Proximal Tubule </name>
+  <label> Proximal Tubule </label>
+  <parent> Tubules </parent>
+</leaf>
+
+<leaf>
+  <name> Macula Densa </name>
+  <label> Macula Densa </label>
+  <parent> Tubules </parent>
+</leaf>
+
+<leaf>
+  <name> Distal Tubule </name>
+  <label> Distal Tubule </label>
+  <parent> Tubules </parent>
+</leaf>
+
+<leaf>
+  <name> Collecting Duct </name>
+  <label> Collecting Duct </label>
+  <parent> Tubules </parent>
+</leaf>
+
+<branch>
+  <name> Hormones </name>
+  <label> Hormones </label>
+  <parent> Panels </parent>
+</branch>
+
+<leaf>
+  <name> Angiotensin </name>
+  <label> Angiotensin </label>
+  <parent> Hormones </parent>
+</leaf>
+
+<leaf>
+  <name> Aldosterone </name>
+  <label> Aldosterone </label>
+  <parent> Hormones </parent>
+</leaf>
+
+<leaf>
+  <name> Circulating Renin </name>
+  <label> Circulating Renin </label>
+  <parent> Hormones </parent>
+</leaf>
+
+<leaf>
+  <name> Kidney Renin </name>
+  <label> Kidney Renin </label>
+  <parent> Hormones </parent>
+</leaf>
+
+<leaf>
+  <name> Circulation </name>
+  <label> Circulation </label>
+  <parent> Panels </parent>
+</leaf>
+
+</tree>
+
+End

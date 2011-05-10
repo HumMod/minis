@@ -1,0 +1,227 @@
+Cardiac Output and Venous Return
+
+Created : 12-Aug-96
+Last Modified : 30-Nov-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+On the average, cardiac output and venous return are
+equal.  Each is determined by a unique set of factors.
+
+Cardiac output (CO) is determined by the right atrial
+pressure (RAP), heart strength, and shape of the Frank-
+Starling curve.
+
+   CO = f (RAP) * Heart Strength                  ( 1 )
+
+Venous return is determined by right atrial pressure,
+mean circulatory filling pressure and the resistance
+to venous return.
+
+   VR = (MCFP - RAP) * RVR                        ( 2 )
+
+We assume that cardiac output (CO) is equal to venous
+return (VR).
+
+   CO = VR                                        ( 3 )   
+
+Equations (1), (2) and (3) can be combined to form an
+implicit algebraic equation.
+
+   CO = f (MCFP - CO / RVR) * Hrt Strngth
+
+This equation has the form of Y = f(Y).  It can be
+solved numerically using
+
+   YEnd = f(YStart)
+
+with a root denoted by
+
+   | YEnd - YStart | LE ErrLimit
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Windkessel Model </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ====================================
+
+<parm>
+  <name> RVR </name>
+  <val> 0.0013 </val>
+</parm>
+
+<parm>
+  <name> MCFP </name>
+  <val> 7.0 </val>
+</parm>
+
+<parm>
+  <name> HeartStrength </name>
+  <val> 1.0 </val>
+</parm>
+
+<var><name> DelP </name></var>
+<var><name> RAP </name></var>
+
+</variables>
+
+<equations> ====================================
+
+<impliciteq>
+  <name> CO </name>
+  <startname> CO </startname>
+  <initialval> 5400.0 </initialval>
+  <endname> COEnd </endname>
+  <errorlim> 10.0 </errorlim>
+</impliciteq>
+
+</equations>
+
+<functions> ====================================
+
+<curve>
+  <name> Frank-Starling </name>
+  <point><x> -4 </x><y>     0 </y><slope> 0 </slope></point>
+  <point><x>  0 </x><y>  5400 </y><slope> 1500 </slope></point>
+  <point><x> 10 </x><y> 12500 </y><slope> 0 </slope></point>
+</curve>
+
+</functions>
+
+<definitions> =======================================================
+
+<block><name> Dervs </name> =========================================
+
+<implicitmath><name> CO </name>
+
+<def>
+  <name> DelP </name>
+  <val> CO * RVR </val>
+</def>
+
+<def>
+  <name> RAP </name>
+  <val> MCFP - DelP </val>
+</def>
+
+<call> Pump </call>
+
+</implicitmath>
+
+</block>
+
+<block><name> Pump </name>
+
+<def>
+  <name> COEnd </name>
+  <val> Frank-Starling [ RAP ] * HeartStrength </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+  <dervs> Model.Dervs </dervs>
+</math>
+
+There is no control section because this is
+purely an algebraic relationship.  The
+independent variable X is not involved.
+
+<display> =======================================
+<panel>
+
+<name> Frank-Starling Calculation </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<editbox>
+  <row> 3 </row><col> 1 </col>
+  <name> MCFP </name>
+  <label> MCFP </label>
+  <min> -5 </min>
+  <max> 30 </max>
+</editbox>
+
+<showvalue>
+   <row> 4.6 </row><col> 1 </col>
+   <name> CO </name>
+   <format> <integer/> </format>
+   <label> CO </label>
+</showvalue>
+
+<showvalue>
+   <row> 5.6 </row><col> 1 </col>
+   <name> DelP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Pressure Gradient </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.6 </row><col> 1 </col>
+   <name> RAP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> RAP </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.6 </row><col> 1 </col>
+   <name> RVR </name>
+   <format><decimal> 4 </decimal></format>
+   <label> RVR </label>
+</showvalue>
+
+<repeatlist>
+  <name> HeartStrength </name>
+  <repeat><reps> 20 </reps><stepsize>  0.1 </stepsize></repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 9.0 </row><col> 1.0 </col>
+  <name> HeartStrength </name>
+  <listname> HeartStrength </listname>
+  <label> Heart Strength </label>
+</slidebar>
+
+===============================================
+
+<showmap>
+  <row> 2.0 </row><col> 30.0 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 8 </leftmargin>
+
+  <xaxis>
+    <name> RAP </name>
+    <label> RAP </label>
+    <scale><min> -5 </min><max> 20 </max><inc> 5 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <name> COEnd </name>
+    <label> CO </label>
+    <scale><min> 0 </min><max> 15000 </max><inc> 5000 </inc></scale>
+  </yaxis>
+
+  <blockname> Pump </blockname>
+</showmap>
+
+</panel>
+</display>
+
+</model>
+
+End

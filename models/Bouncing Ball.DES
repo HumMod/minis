@@ -1,0 +1,335 @@
+Bouncing Ball Model
+
+Created : 11-Aug-96
+Last Modified : 30-Nov-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+The ball is released above a hard surface.  It
+accelerates downward until it strikes the surface.
+Then, velocity reverses as a function of its
+elasticity and it bounces back up again.
+
+Distance is the integral of velocity
+over time while velocity is the integral
+of acceleration over time.
+
+This model is two-dimensional.  Acceleration,
+velocity and distance are described using
+vertical and horizontal components.
+
+Horizontal acceleration is zero.  Horizontal
+velocity is the integral of horizontal
+acceleration, and it should be constant.  Horizontal
+distance is the integral of horizontal velocity.
+Thus, we have two differential equations in the
+horizontal direction.
+
+Vertical acceleration is produced by gravity and
+is constant.  Vertical velocity is the integral
+of vertical acceleration while vertical distance
+is the integral of vertical velocity.  Thus, we
+have two differential equations in the vertical
+direction.
+
+The ball is elastic.  It reverses velocity
+when it hits the ground.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Bouncing Ball </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ---------------------------------------
+
+Horizontal acceleration is 0 while vertical
+(upward) acceleration due to gravity is
+-9.8 m/sec^2 at the earth's surface.
+
+<constant>
+  <name> HorzAcc </name>
+  <val> 0.0 </val>
+</constant>
+
+<constant>
+  <name> VertAcc </name>
+  <val> -9.8 </val>
+</constant>
+
+<parm>
+  <name> Elasticity </name>
+  <val> 0.8 </val>
+</parm>
+
+</variables>
+
+<equations> ----------------------------------
+
+Define velocity before distance, since the
+definition of velocity is referred to in the
+definition of distance.
+
+<diffeq>
+  <name> HorzVel </name>
+  <integralname> HorzVel </integralname>
+  <initialval> 1.0 </initialval>
+  <dervname> dHV/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> HorzDis </name>
+  <integralname> HorzDis </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dHD/dt </dervname>
+  <errorlim> 0.1 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> VertVel </name>
+  <integralname> VertVel </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dVV/dt </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> VertDis </name>
+  <integralname> VertDis </integralname>
+  <initialval> 10.0 </initialval>
+  <dervname> dVD/dt </dervname>
+  <errorlim> 0.01 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> -----------------------------------
+
+This is strange, but the derivative code is mainly
+deciding when to reverse the vertical velocity, that
+is, when to make the ball bounce.
+
+<block><name> Dervs </name> ====================
+
+<def>
+  <name> dHV/dt </name>
+  <val> HorzAcc </val>
+</def>
+
+<def>
+  <name> dHD/dt </name>
+  <val> HorzVel </val>
+</def>
+
+<def>
+  <name> dVV/dt </name>
+  <val> VertAcc </val>
+</def>
+
+<def>
+  <name> dVD/dt </name>
+  <val> VertVel </val>
+</def>
+
+</block>
+
+<block><name> Wrapup </name> ====================
+
+<if><test> VertDis LE 0 </test>
+<true>
+
+  <def>
+    <name> VertDis </name>
+    <val> 0.0 </val>
+  </def>
+
+  <def>
+    <name> dVD/dt </name>
+    <val> ABS ( VertVel ) * Elasticity </val>
+  </def>
+
+  <def>
+    <name> VertVel </name>
+    <val> dVD/dt </val>
+  </def>
+
+</true>
+</if>
+
+</block>
+</definitions>
+</structure>
+
+<math>
+  <dervs> Model.Dervs </dervs>
+  <wrapup> Model.Wrapup </wrapup>
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 1 </solutionint>
+  <displayint> 0.1 </displayint>
+</gofor>
+
+<goto>
+  <solutionint> 10 </solutionint>
+  <displayint> 0.1 </displayint>
+  <menuitem> Go To 10 </menuitem>
+</goto>
+
+</control>
+
+<display> =========================================
+
+<panel><name> Bouncing Ball </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<repeatlist>
+  <name> elastics </name>
+  <repeat><reps> 20 </reps><stepsize> 0.1 </stepsize></repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 2.4 </row><col> 1 </col>
+  <name> Elasticity </name>
+  <listname> elastics </listname>
+  <label> Elasticity </label>
+</slidebar>
+
+Vertical
+
+<groupbox>
+   <row> 4.0 </row><col> 1 </col>
+   <high> 5.0 </high><wide> 24 </wide>
+   <title> Vertical </title>
+
+<showvalue>
+  <row> 1.4 </row><col> 1 </col>
+  <name> VertDis </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Distance </label>
+</showvalue>
+
+<showvalue>
+  <row> 2.4 </row><col> 1 </col>
+  <name> VertVel </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Velocity </label>
+</showvalue>
+
+<showvalue>
+  <row> 3.4 </row><col> 1 </col>
+  <name> VertAcc </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Acceleration </label>
+</showvalue>
+
+</groupbox>
+
+Horizontal
+
+<groupbox>
+   <row> 10.0 </row><col> 1 </col>
+   <high> 5.0 </high><wide> 24 </wide>
+   <title> Horizontal </title>
+
+<showvalue>
+  <row> 1.4 </row><col> 1 </col>
+  <name> HorzDis </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Distance </label>
+</showvalue>
+
+<showvalue>
+  <row> 2.4 </row><col> 1 </col>
+  <name> HorzVel </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Velocity </label>
+</showvalue>
+
+<showvalue>
+  <row> 3.4 </row><col> 1 </col>
+  <name> HorzAcc </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Acceleration </label>
+</showvalue>
+
+</groupbox>
+
+Units
+
+<infobutton>
+  <row> 16 </row><col> 1 </col>
+  <label> Units </label>
+  <line> Time - Sec </line>
+  <line> Distance - M </line>
+  <line> Velocity - M / Sec </line>
+  <line> Acceleration - M / Sec^2 </line>
+</infobutton>
+
+Right-hand Side --------------------------------
+
+<showvalue>
+   <row> 0.5 </row><col> 27 </col>
+   <name> System.X </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.0 </row><col> 27 </col>
+  <high> 12 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> HorzDis </name>
+    <label> X </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> VertDis </name>
+      <label> Y </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row>14.9 </row><col> 27 </col>
+  <high> 7 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> HorzDis </name>
+    <label> X </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> VertVel </name>
+      <label> dY/dt </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> -15 </min><max> 15 </max><inc> 15 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End  

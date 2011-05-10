@@ -1,0 +1,56 @@
+Kidney Model - Afferent Artery
+
+Created : 16-Aug-96
+Last Modified : 18-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+Afferent conductance is determined
+by
+
+# A myogenic response
+# Macula densa feedback
+
+<structure><name> AffArty </name>
+
+<variables>
+
+<parm>
+  <name> NormalCond </name>
+  <val> 30 </val>
+</parm>
+
+<var>
+  <name> Diam </name>
+</var>
+
+<var>
+  <name> Cond </name>
+</var>
+
+</variables>
+
+<definitions>
+<block><name> Dervs </name>
+
+<def>
+  <name> AffArty.Cond </name>
+  <val>
+        AffArty.NormalCond
+      * AffTGF.Effect
+      * Myogenic.Effect
+  </val>
+</def>
+
+<def>
+  <name> AffArty.Diam </name>
+  <val> ( AffArty.Cond ^ INVERT 3 ) * 6.1 </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+End

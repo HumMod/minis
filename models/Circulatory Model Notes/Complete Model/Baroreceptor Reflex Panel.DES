@@ -1,0 +1,157 @@
+Baroreceptor Reflex Panel
+
+Created : 21-Jun-09
+Last Modified : 23-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+Solver : Digital Human (V0.5)
+
+<panel><name> Baroreceptor Reflex </name>
+
+<structurename> BaroreceptorReflex </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<editbox>
+   <row> 2.0 </row><col> 1 </col>
+   <name> CDROP </name>
+   <label> CDROP </label>
+</editbox>
+
+<showvalue>
+   <row> 3.4 </row><col> 1 </col>
+   <name> CP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> CP </label>
+</showvalue>
+
+<editbox>
+   <row> 5.0 </row><col> 1 </col>
+   <name> KBARO </name>
+   <label> KBARO </label>
+</editbox>
+
+<showvalue>
+   <row> 6.4 </row><col> 1 </col>
+   <name> CPAD </name>
+   <format><decimal> 1 </decimal></format>
+   <label> CPAD </label>
+</showvalue>
+
+<showvalue>
+   <row> 8.0 </row><col> 1 </col>
+   <name> DELP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> DELP </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.6 </row><col> 1 </col>
+   <name> AFFNA </name>
+   <format><decimal> 1 </decimal></format>
+   <label> AFFNA </label>
+</showvalue>
+
+<editbox>
+   <row> 11.2 </row><col> 1 </col>
+   <name> SCLAMP </name>
+   <label> SCLAMP </label>
+</editbox>
+
+<editbox>
+   <row> 12.8 </row><col> 1 </col>
+   <name> SYMFXD </name>
+   <label> SYMFXD </label>
+</editbox>
+
+<showvalue>
+   <row> 14.4 </row><col> 1 </col>
+   <name> SYM </name>
+   <format><decimal> 2 </decimal></format>
+   <label> SYM </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.4 </row><col> 1 </col>
+   <name> SYMEnd </name>
+   <format><decimal> 2 </decimal></format>
+   <label> SYMEnd </label>
+</showvalue>
+
+<groupbox>
+   <row> 17.0 </row><col> 1.0 </col>
+   <high> 3.0 </high><wide> 30.0 </wide>
+   <title> Connections </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> FluidVolumes.AP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> AP </label>
+</showvalue>
+
+</groupbox>
+
+<showgraph>
+  <row> 2.0 </row><col> 32 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> SYM </name>
+      <label> SYM </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showcurve>
+  <row> 11.4 </row><col> 32.0 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> DELP </name>
+    <label> DELP </label>
+    <scale><min> -50 </min><max> 50 </max><inc> 10 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> AFFNA </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> AffNa </curvename>
+</showcurve>
+
+<showcurve>
+  <row> 18.8 </row><col> 32.0 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> AFFNA </name>
+    <label> AFFNA </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> SYM </label>
+    <scale><min> 0 </min><max> 2 </max></scale>
+  </yaxis>
+
+  <curvename> Symps </curvename>
+</showcurve>
+
+</panel>
+
+End

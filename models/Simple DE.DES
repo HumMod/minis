@@ -1,0 +1,114 @@
+Simple DE
+
+Created : 30-Mar-09
+Last Modified : 30-Mar-09
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Simple DE </basic></title>
+
+<structure> <name> Model </name>
+
+<variables> ------------------------------------
+
+<parm><name> K </name><val> 0.1 </val></parm>
+
+</variables>
+
+<equations> ------------------------------------
+
+<diffeq>
+  <name> Y </name>
+  <integralname> Y </integralname>
+  <initialval> 1.0 </initialval>
+  <dervname> dY/dX </dervname>
+</diffeq>
+
+</equations>
+
+<definitions> ----------------------------------
+
+<block><name> Dervs </name>
+
+<def>
+  <name> dY/dX </name>
+  <val> - K * Y </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+<math> --------------------------------------
+
+<dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ---------------------------------------
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 1 </displayint>
+  <menuitem> 10 </menuitem>
+</gofor>
+
+</control>
+
+<display> ---------------------------------------
+
+<panel> <name> Simple DE </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+  <row> 2 </row><col> 1 </col>
+  <name> Y </name>
+  <format><decimal> 1 </decimal></format>
+  <label> Y </label>
+</showvalue>
+
+<showvalue>
+  <row> 3 </row><col> 1 </col>
+  <name> dY/dX </name>
+  <format><decimal> 2 </decimal></format>
+  <label> dY/dX </label>
+</showvalue>
+
+<showgraph>
+  <row> 2.5 </row><col> 28 </col>
+  <high> 7 </high><wide> 32 </wide>
+  <leftmargin> 8 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> X </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Y </name>
+      <label> Y </label>
+    </yvar>
+			   
+    <scale><min> 0 </min><max> 1 </max></scale>
+  </yaxis>
+
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End

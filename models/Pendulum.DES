@@ -1,0 +1,321 @@
+Pendulum
+
+Created : 12-Aug-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+A pendulum accellerates downward gaining
+momentum.  After it passes the bottom, it
+loses momentum and slows, eventually changing
+direstion.
+
+Of interest: A pendulum oscillates at a regular
+interval.
+
+Since the trajectory of a pendulum is restricted
+to an arc on a circle, use of polar coordinates
+is appropriate.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Pendulum </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ========================================
+
+<parm>
+  <name> InitAngle </name>
+  <val> -30 </val>
+</parm>
+
+Acceleration for this pendulum in the y direction
+is gravity.  The length of the pendulum is a factor.
+
+<parm>
+  <name> Length </name>
+  <val> 1.0 </val>
+</parm>
+
+<parm>
+  <name> Gravity </name>
+  <val> 9.8 </val>
+</parm>
+
+<var>
+  <name> XPos </name>
+</var>
+
+<var>
+  <name> YPos </name>
+</var>
+
+<var>
+  <name> AngleAcc </name>
+</var>
+
+<var>
+  <name> AngleDeg </name>
+</var>
+
+<var>
+  <name> VelocityDeg </name>
+</var>
+
+</variables>
+
+<equations> ========================================
+
+Angular velocity is the integral over time of
+acceleration.
+
+<diffeq>
+  <name> Velocity </name>
+  <integralname> Velocity </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dVelocity/dt </dervname>
+  <errorlim> 1E-3 </errorlim>
+</diffeq>
+
+The angular position of the pendulum is the integral
+over time of its angular velocity.
+
+<diffeq>
+  <name> Angle </name>
+  <integralname> Angle </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dAngle/dt </dervname>
+  <errorlim> 1E-5 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> =======================================
+
+<block><name> Parms </name> =======================
+
+The initial angle can be adusted.
+
+<def>
+  <name> Angle </name>
+  <val> DEGTORAD ( InitAngle ) </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> =========================
+
+Calculate the X and Y coordinates.
+
+<def>
+  <name> XPos </name>
+  <val> Length * COS ( Angle ) </val>
+</def>
+
+<def>
+  <name> YPos </name>
+  <val> - Length * SIN ( Angle ) </val>
+</def>
+
+Angular acceleration.  It's a derivative.
+
+<def>
+  <name> dVelocity/dt </name>
+  <val> ( Gravity / Length ) * COS Angle </val>
+</def>
+
+<def>
+  <name> dAngle/dt </name>
+  <val> Velocity </val>
+</def>
+
+Acceleration and velocity in degrees for display.
+
+<def>
+  <name> AngleDeg </name>
+  <val> RADTODEG ( Angle ) </val>
+</def>
+
+<def>
+  <name> VelocityDeg </name>
+  <val> RADTODEG ( Velocity ) </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 2.0 </solutionint>
+  <displayint> 0.2 </displayint>
+  <storageint> 0.1 </storageint>
+</gofor>
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Pendulum </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+Initial Angle
+
+<groupbox>
+   <row> 2 </row><col> 1 </col>
+   <high> 3.5 </high><wide> 28 </wide>
+   <title> Initial Angle </title>
+
+<repeatlist>
+  <name> InitAngle </name>
+  <firstval> -90 </firstval>
+  <repeat>
+    <reps> 36 </reps>
+    <stepsize> 10 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <wide> 8 </wide>
+  <name> InitAngle </name>
+  <listname> InitAngle </listname>
+  <label> Degrees </label>
+</slidebar>
+
+</groupbox>
+
+Length
+
+<groupbox>
+   <row> 6.0 </row><col> 1 </col>
+   <high> 3.5 </high><wide> 28 </wide>
+   <title> Length </title>
+
+<repeatlist>
+  <name> Length </name>
+  <firstval> 0.5 </firstval>
+  <repeat>
+    <reps> 9 </reps>
+    <stepsize> 0.5 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.5 </row><col> 1 </col>
+  <name> Length </name>
+  <listname> Length </listname>
+  <label> Length </label>
+</slidebar>
+
+</groupbox>
+
+<showvalue>
+   <row> 10 </row><col> 1 </col>
+   <name> AngleDeg </name>
+   <format> <integer/> </format>
+   <label> Angle (Deg) </label>
+</showvalue>
+
+<infobutton>
+  <row> 11.5 </row><col> 1 </col>
+  <line> Multiply degrees by PI / 180 </line>
+  <line> to convert to radians. </line>
+</infobutton>
+
+<showvalue>
+   <row> 11.5 </row><col> 4 </col>
+   <name> Angle </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Angle (Rad) </label>
+</showvalue>
+
+<showvalue>
+   <row> 13 </row><col> 1 </col>
+   <name> VelocityDeg </name>
+   <format> <integer/> </format>
+   <label> VelocityDeg </label>
+</showvalue>
+
+<showvalue>
+   <row> 14 </row><col> 1 </col>
+   <name> Velocity </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Velocity </label>
+</showvalue>
+
+<showvalue>
+   <row> 15.5 </row><col> 1 </col>
+   <name> System.X </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Time </label>
+</showvalue>
+
+Right-hand Side ===================================
+
+<symbol>
+  <name> Box </name>
+  <style> BOX </style>
+  <color> RED </color>
+</symbol>
+
+<showgraph>
+  <row> 2.0 </row><col> 32 </col>
+  <high> 14 </high><wide> 34 </wide>
+  <leftmargin> 4 </leftmargin>
+
+  <xaxis>
+    <name> XPos </name>
+    <label> X </label>
+    <scale><min> -1.3 </min><max> 1.3 </max><inc> 1.0 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> YPos </name>
+      <label> Y </label>
+      <linetype> NULL </linetype>
+      <symbolname> Box </symbolname>
+    </yvar>
+    <scale><min> -1.3 </min><max> 1.3 </max><inc> 1.0 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<label>
+  <row> 18 </row><col> 32 </col>
+  <text> Zero degrees in this model is </text>
+</label>
+
+<label>
+  <row> 19 </row><col> 32 </col>
+  <text> horizontal and to the right. </text>
+</label>
+
+</panel>
+</display>
+
+</model>
+
+End

@@ -1,0 +1,291 @@
+Epidemic
+
+Created : 24-Aug-96
+Last Modified : 28-Nov-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+Members of the population reside in one of
+three classes:
+
+# Healthy (H)
+# Contagious (C)
+# Recovered (R)
+
+Contagious persons can infect healthy persons.
+Recovered persons are either dead or immune
+and cannot be reinfected.
+
+The independent variable is time in days.
+
+The healthy, contagious and recovered populations
+are equal to the integral over time of their net
+rate of change.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Epidemic </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ======================================
+
+The rate of contagion is equal to a virulence factor
+multiplied by the populations of healthy and
+contagious persons.  Contagion decreases the healthy
+population.
+
+<parm><name> Virulence </name><val> 0.001 </val></parm>
+
+The rate of recovery is equal to a recovery factor
+multiplied by the contagious population.
+
+<parm><name> RecoverySpeed </name><val> 0.1 </val></parm>
+
+We can also define the initial infection count.
+
+<parm><name> InitCount </name><val> 5.0 </val></parm>
+
+</variables>
+
+<equations> =====================================
+
+<diffeq>
+  <name> H </name>
+  <integralname> H </integralname>
+  <initialval> 1000.0 </initialval>
+  <dervname> dH/dt </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> C </name>
+  <integralname> C </integralname>
+  <initialval> 5.0 </initialval>
+  <dervname> dC/dt </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> R </name>
+  <integralname> R </integralname>
+  <initialval> 0.0 </initialval>
+  <dervname> dR/dt </dervname>
+  <errorlim> 1.0 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions> ===================================
+
+<block><name> Parms </name> ===================
+
+<def>
+  <name> C </name>
+  <val> InitCount </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> =====================
+
+<def>
+  <name> dH/dt </name>
+  <val> - ( Virulence * H * C ) </val>
+</def>
+
+<def>
+  <name> dR/dt </name>
+  <val> RecoverySpeed * C </val>
+</def>
+
+<def>
+  <name> dC/dt </name>
+  <val> - dH/dt - dR/dt </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+<parms> Model.Parms </parms>
+<dervs> Model.Dervs </dervs>
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 20 </solutionint>
+  <displayint> 0.5 </displayint>
+</gofor>
+
+</control>
+
+<display> =========================================
+
+<panel><name> Epidemic Model </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showbargraph>
+  <row> 2.4 </row><col> 1.0 </col>
+  <high> 5 </high><wide> 26 </wide>
+  <leftmargin> 3 </leftmargin>
+  <title> People </title>
+  <showinitialvalues/>
+
+  <bar><name> H </name><label> H </label><color> BLUE </color></bar>
+  <bar><name> C </name><label> C </label><color> RED </color></bar>
+  <bar><name> R </name><label> R </label><color> BLACK </color></bar>
+
+  <scale><min> 0 </min><max> 1000 </max></scale>
+</showbargraph>
+
+<showvalue>
+   <row> 8.0 </row><col> 1 </col>
+   <name> H </name>
+   <format><integer/></format>
+   <label> Healthy </label>
+</showvalue>
+
+<showvalue>
+   <row> 9.0 </row><col> 1 </col>
+   <name> C </name>
+   <format><integer/></format>
+   <label> Contagious </label>
+</showvalue>
+
+<showvalue>
+   <row> 10.0 </row><col> 1 </col>
+   <name> R </name>
+   <format><integer/></format>
+   <label> Recovered </label>
+</showvalue>
+
+Initial Infection
+
+<groupbox>
+   <row> 11.5 </row><col> 1 </col>
+   <high> 3.5 </high>
+   <wide> 24 </wide>
+   <title> Initial Infection </title>
+
+<repeatlist>
+  <name> InitCount </name>
+  <repeat><reps> 25 </reps><stepsize> 1 </stepsize></repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <wide> 8 </wide>
+  <name> InitCount </name>
+  <listname> InitCount </listname>
+  <label> Count </label>
+</slidebar>
+
+</groupbox>
+
+Virulence
+
+<groupbox>
+   <row> 15.5 </row><col> 1 </col>
+   <high> 3.5 </high>
+   <wide> 24 </wide>
+   <title> Virulence </title>
+
+<maplist>
+  <name> Virulence </name>
+  <map><val> 0.0    </val><img> None </img></map>
+  <map><val> 0.0004 </val><img> Low </img></map>
+  <map><val> 0.001  </val><img> Normal </img></map>
+  <map><val> 0.004  </val><img> High </img></map>
+  <map><val> 0.01   </val><img> Very High </img></map>
+</maplist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> Virulence </name>
+  <listname> Virulence </listname>
+  <nolabel/>
+</slidebar>
+
+</groupbox>
+
+Recovery
+
+<groupbox>
+   <row> 19.5 </row><col> 1 </col>
+   <high> 3.5 </high>
+   <wide> 24 </wide>
+   <title> Recovery </title>
+
+<maplist>
+  <name> RecoverySpeed </name>
+  <map><val> 0.0  </val><img> None </img></map>
+  <map><val> 0.04 </val><img> Slow </img></map>
+  <map><val> 0.1  </val><img> Normal </img></map>
+  <map><val> 0.4  </val><img> Fast </img></map>
+  <map><val> 1.0  </val><img> Very Fast </img></map>
+</maplist>
+
+<slidebar>
+  <row> 1.6 </row><col> 1 </col>
+  <name> RecoverySpeed </name>
+  <listname> RecoverySpeed </listname>
+  <nolabel/>
+</slidebar>
+
+</groupbox>
+
+===============================================
+
+<showclock>
+  <row> 0.5 </row><col> 28 </col>
+  <name> System.X </name>
+  <timebase> DAY </timebase>
+  <days/>
+</showclock>
+
+<showgraph>
+  <row> 2.0 </row><col> 28 </col>
+  <high> 12 </high><wide> 32 </wide>
+  <leftmargin> 4 </leftmargin>
+  <xaxis>
+     <name> System.X </name><label> Days </label>
+     <scale><min> 0 </min><max> 20 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar><name> H </name><label> H </label><linecolor> BLUE </linecolor></yvar>
+    <yvar><name> C </name><label> C </label><linecolor> RED </linecolor></yvar>
+    <yvar><name> R </name><label> R </label></yvar>
+
+    <scale><min> 0 </min><max> 1000 </max></scale>
+  </yaxis>
+</showgraph>
+
+<infobutton>
+  <row> 14.5 </row><col> 28 </col>
+  <label> Populations </label>
+  <line> H - Healthy </line>
+  <line> C - Contagious </line>
+  <line> R - Recovered and Immune </line>
+</infobutton>
+
+</panel>
+</display>
+
+</model>
+
+End

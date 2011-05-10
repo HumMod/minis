@@ -1,0 +1,72 @@
+Kidney Model - Na
+
+Created : 16-Aug-96
+Last Modified : 12-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<structure><name> Na </name>
+
+<variables>
+
+<parm>
+  <name> PlasmaConc </name>
+  <val> 0.144 </val>
+</parm>
+
+<parm>
+  <name> DailyIntake </name>
+  <val> 180 </val>
+</parm>
+
+<var>
+  <name> IntakeRate </name>
+</var>
+
+<var>
+  <name> ExcretionRate </name>
+</var>
+
+</variables>
+
+<equations>
+
+<diffeq>
+  <name> Mass </name>
+  <integralname> Mass </integralname>
+  <initialval> 2160.0 </initialval>
+  <dervname> Change </dervname>
+  <errorlim> 22.0 </errorlim>
+</diffeq>
+
+</equations>
+
+<definitions>
+<block><name> Parms </name>
+
+<def>
+  <name> IntakeRate </name>
+  <val> DailyIntake / 1440 </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name>
+
+<def>
+  <name> ExcretionRate </name>
+  <val> CD.Outflow </val>
+</def>
+
+<def>
+  <name> Change </name>
+  <val> IntakeRate - ExcretionRate </val>
+</def>
+
+</block>
+</definitions>
+</structure>
+
+End

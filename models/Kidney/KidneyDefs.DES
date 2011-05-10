@@ -1,0 +1,50 @@
+Kidney Model - Kidney Defs
+
+Created : 16-Aug-96
+Last Modified : 17-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+<structure><name> Temp </name>
+<definitions>
+
+<block><name> Dervs </name>
+
+There is an implicit algebraic relationship
+here of the form
+
+   GFR = f(GFR)
+
+that is caused by the interaction of efferent
+protein and GFR and by GFR and GP via
+tubuloglomerular feedback.
+
+<implicitmath><name> GFR.GFR </name>
+<call> Prox.Dervs </call>
+<call> MD.Dervs </call>
+
+<call> AffTGF.Dervs </call>
+<call> AffArty.Dervs </call>
+
+<call> EffTGF.Dervs </call>
+<call> EffArty.Dervs </call>
+
+<call> Flows.Dervs </call>
+<call> GFR.Wrapup </call>
+
+</implicitmath>
+
+<call> Dist.Dervs </call>
+<call> CD.Dervs </call>
+<call> Na.Dervs </call>
+<call> PRA.Dervs </call>
+<call> Aldo.Dervs </call>
+
+</block>
+
+</definitions>
+</structure>
+
+End

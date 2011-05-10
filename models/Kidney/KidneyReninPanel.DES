@@ -1,0 +1,175 @@
+Kidney / Kidney Renin
+
+Created : 29-Sep-96
+Last Modified : 04-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+<panel><name> Kidney Renin </name>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showclock>
+   <row> 0.5 </row><col> 36 </col>
+   <name> System.X </name>
+   <days/>
+</showclock>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> PRA.KidneyRenin </name>
+   <format> <integer/> </format>
+   <label> Quantity </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 3 </col>
+   <name> PRA.KidneyReninChange </name>
+   <format> <integer/> </format>
+   <label> Change </label>
+</showvalue>
+
+RENIN SYSTHESIS
+
+<groupbox>
+   <row> 4.6 </row><col> 1 </col>
+   <high> 6.0 </high><wide> 30 </wide>
+   <title> Renin Synthesis </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> PRA.ReninSynRate </name>
+   <format> <integer/> </format>
+   <label> Synthesis </label>
+</showvalue>
+
+<repeatlist>
+  <name> ReninSyn </name>
+  <repeat>
+    <reps> 100 </reps>
+    <stepsize> 50 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 2.9 </row><col> 1 </col>
+  <name> PRA.NormalReninSynRate </name>
+  <listname> ReninSyn </listname>
+  <label> Normal </label>
+</slidebar>
+
+<showvalue>
+   <row> 4.4 </row><col> 1 </col>
+   <name> PRA.MDOnSyn </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Macula Densa Effect </label>
+</showvalue>
+
+</groupbox>
+
+RENIN SECRETION
+
+<groupbox>
+   <row> 11.2 </row><col> 1 </col>
+   <high> 6.8 </high><wide> 30 </wide>
+   <title> Renin Secretion </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> PRA.ReninSec </name>
+   <format> <integer/> </format>
+   <label> Secretion </label>
+</showvalue>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> PRA.ReninSecFract </name>
+   <format><decimal> 5 </decimal></format>
+   <label> Fraction </label>
+</showvalue>
+
+<repeatlist>
+  <name> ReninSec </name>
+  <repeat>
+    <reps> 30 </reps>
+    <stepsize> 1e-5 </stepsize>
+  </repeat>
+</repeatlist>
+
+<slidebar>
+  <row> 3.9 </row><col> 1 </col>
+  <name> PRA.NormalReninSec </name>
+  <listname> ReninSec </listname>
+  <label> Normal </label>
+</slidebar>
+
+<showvalue>
+   <row> 5.4 </row><col> 1 </col>
+   <name> PRA.MDOnSec </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Macula Densa Effect </label>
+</showvalue>
+
+</groupbox>
+
+Right Side =================================
+
+<showgraph>
+  <row> 2.0 </row><col> 33 </col>
+  <high> 6 </high><wide> 28 </wide>
+  <leftmargin> 10 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> PRA.KidneyRenin </name>
+      <label> Mass </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 14E6 </min><max> 16E6 </max><inc> 1E6 </inc></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 8.6 </row><col> 33 </col>
+  <high> 6 </high><wide> 28 </wide>
+  <leftmargin> 10 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> PRA.ReninSec </name>
+      <label> Secretion </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <scale><min> 1000 </min><max> 2000 </max></scale>
+  </yaxis>
+</showgraph>
+
+<infobutton>
+  <row> 15.6 </row><col> 33 </col>
+  <label> Units </label>
+  <line> Renin Units </line>
+  <line>  </line>
+  <line> Quantity - ( nG AI / Hr ) / 1000 </line>
+  <line> Flux - ( nG AI / Hr ) / Min </line>
+</infobutton>
+
+</panel>
+
+End

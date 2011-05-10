@@ -1,0 +1,93 @@
+Kidney Model - Macula Densa
+
+Created : 11-Oct-96
+Last Modified : 16-Oct-04
+Author : Tom Coleman
+Copyright Status : In Public Domain
+Solver : DES 2005
+Schema : 2005.0
+
+The feedback signal is a function of sodium
+flow between the proximal and distal tubules
+ and a [AII] effect.
+
+<structure>
+<name> MD </name>
+
+<variables>
+
+<var>
+  <name> Flow </name>
+</var>
+
+<parm>
+  <name> Switch </name>
+  <val> FALSE </val>
+</parm>
+
+<parm>
+  <name> Level </name>
+  <val> 1 </val>
+</parm>
+
+<var>
+  <name> FlowOnSignal </name>
+</var>
+
+<var>
+  <name> A2OnSignal </name>
+</var>
+
+<var>
+  <name> Signal </name>
+</var>
+
+</variables>
+
+<functions>
+
+<curve>
+  <name> A2OnSignal </name>
+  <point>
+    <x> 0.0 </x><y> 0.90 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 1.3 </x><y> 1.00 </y><slope> 0.3 </slope>
+  </point>
+  <point>
+    <x> 2.5 </x><y> 5.00 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions>
+<block><name> Dervs </name>
+
+<def>
+  <name> Flow </name>
+  <val> Prox.Outflow </val>
+</def>
+
+<def>
+  <name> FlowOnSignal </name>
+  <val> 0.28 * Flow </val>
+</def>
+
+<def>
+  <name> A2OnSignal </name>
+  <val> A2OnSignal [ PRA.Log[A2] ] </val>
+</def>
+
+<conditional>
+  <name> Signal </name>
+  <test> Switch </test>
+  <true> Setting </true>
+  <false> FlowOnSignal * A2OnSignal </false>
+</conditional>
+
+</block>
+</definitions>
+</structure>
+
+End

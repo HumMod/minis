@@ -1,0 +1,266 @@
+Heart P-V
+
+Created : 25-Nov-96
+Last Modified : 01-Dec-08
+Author : Tom Coleman
+Copyright : 2008-2009
+By : University of Mississippi Medical Center
+Solver : Digital Human V0.4
+Schema : DES V1.0
+
+P-V data is in Guyton, p. 150, taken
+from Starling.
+
+There are no differential or implicit
+equations in this model.  Instead,
+independent variable X is the volume.
+It is run through some algebraic equations
+to get length and tension.
+
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Heart P-V Curve </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ===================================
+
+<parm>
+  <name> Stiff </name>
+  <val> 4.6 </val>
+</parm>
+
+<parm>
+  <name> Inotrop </name>
+  <val> 1.0 </val>
+</parm>
+
+<parm>
+  <name> Thick </name>
+  <val> 1.0 </val>
+</parm>
+
+<var>
+  <name> R </name>
+</var>
+
+<var>
+  <name> L </name>
+</var>
+
+<var>
+  <name> RT </name>
+</var>
+
+<var>
+  <name> BasAT </name>
+</var>
+
+<var>
+  <name> AT </name>
+</var>
+
+<var>
+  <name> TT </name>
+</var>
+
+<var>
+  <name> PDynes </name>
+</var>
+
+<var>
+  <name> P </name>
+</var>
+
+</variables>
+
+<functions> ====================================
+
+<curve>
+  <name> BasAT </name>
+  <point>
+    <x> 1.0 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 2.2 </x><y> 12e5 </y><slope> 0 </slope>
+  </point>
+  <point>
+    <x> 3.7 </x><y> 0 </y><slope> 0 </slope>
+  </point>
+</curve>
+
+</functions>
+
+<definitions> =================================
+
+<block><name> Dervs </name> ===================
+
+<def>
+  <name> R </name>
+  <val> SQRT ( System.X / 21 ) </val>
+</def>
+
+<def>
+  <name> L </name>
+  <val> 0.88 * R </val>
+</def>
+
+<def>
+  <name> RT </name>
+  <val> EXP ( Stiff * L ) - 1 </val>
+</def>
+
+<def>
+  <name> BasAT </name>
+  <val> BasAT [ L ] </val>
+</def>
+
+<def>
+  <name> AT </name>
+  <val> Inotrop * BasAT </val>
+</def>
+
+<def>
+  <name> TT </name>
+  <val> AT + RT </val>
+</def>
+
+<conditional>
+  <name> PDynes </name>
+  <test> R GT 0 </test>
+  <true> TT * Thick / R </true>
+  <false> UNDEFINED </false>
+</conditional>
+
+<conditional>
+  <name> P </name>
+  <test> PDynes EQ UNDEFINED </test>
+  <true> UNDEFINED </true>
+  <false> PDynes / 1330 </false>
+</conditional>
+
+</block>
+
+</definitions>
+</structure>
+
+<math>
+  <dervs> Model.Dervs </dervs>
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 270 </solutionint>
+  <displayint> 10 </displayint>
+</gofor>
+
+</control>
+
+<display> =========================================
+<panel>
+
+<name> Heart Pressure-Volume </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2 </row><col> 1 </col>
+   <name> System.X </name>
+   <format> <integer/> </format>
+   <label> Volume </label>
+</showvalue>
+
+<showvalue>
+   <row> 3 </row><col> 1 </col>
+   <name> R </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Radius </label>
+</showvalue>
+
+<showvalue>
+   <row> 4 </row><col> 1 </col>
+   <name> L </name>
+   <format><decimal> 1 </decimal></format>
+   <label> Sarcomere Length </label>
+</showvalue>
+
+<showvalue>
+   <row> 5 </row><col> 1 </col>
+   <name> RT </name>
+   <format> <integer/> </format>
+   <label> RT </label>
+</showvalue>
+
+<showvalue>
+   <row> 6 </row><col> 1 </col>
+   <name> AT </name>
+   <format> <integer/> </format>
+   <label> AT </label>
+</showvalue>
+
+<showvalue>
+   <row> 7 </row><col> 1 </col>
+   <name> TT </name>
+   <format> <integer/> </format>
+   <label> TT </label>
+</showvalue>
+
+<showvalue>
+   <row> 8 </row><col> 1 </col>
+   <name> PDynes </name>
+   <format> <integer/> </format>
+   <label> PDynes </label>
+</showvalue>
+
+<showvalue>
+   <row> 9 </row><col> 1 </col>
+   <name> P </name>
+   <format> <integer/> </format>
+   <label> P </label>
+</showvalue>
+
+Right-hand Side ===============================
+
+<showgraph>
+  <row> 1.0 </row><col> 21 </col>
+  <high> 16 </high><wide> 40 </wide>
+  <leftmargin> 7 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> Volume </label>
+    <scale><min> 0 </min><max> 300 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> RT </name>
+      <label> RT </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <yvar>
+      <name> AT </name>
+      <label> AT </label>
+      <linecolor> RED </linecolor>
+    </yvar>
+    <yvar>
+      <name> TT </name>
+      <label> TT </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 3000000 </max><inc> 1000000 </inc></scale>
+  </yaxis>
+</showgraph>
+
+</panel>
+</display>
+
+</model>
+
+End
