@@ -1,12 +1,10 @@
 Spring
 
-Created : 29-Aug-96
-Last Modified : 02-Dec-08
+Created : 1996-08-29
+Last Modified : 2011-06-29
 Author : Tom Coleman
-Copyright : 2008-2009
+Copyright : 2008-2011
 By : University of Mississippi Medical Center
-Solver : Digital Human V0.4
-Schema : DES V1.0
 
 A mass is suspended by a spring.  The forces
 acting on the mass are due to gravity and the
@@ -139,7 +137,7 @@ of its velocity.
 
 <gofor>
   <solutionint> 5 </solutionint>
-  <displayint> 5 </displayint>
+  <displayint> 0.1 </displayint>
 </gofor>
 
 </control>
