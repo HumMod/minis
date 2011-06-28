@@ -1,17 +1,24 @@
-Kidney 2005
+Kidney.DES
 
-Created : 16-Aug-96
-Last Modified : 14-Oct-04
+Created : 1996-08-16
+Last Modified : 2011-06-28
 Author : Tom Coleman
-Copyright Status : In Public Domain
-Solver : DES 2005
-Schema : 2005.0
+Copyright : 2008-2011
+By : University of Mississippi Medical Center
+
+Notice the path processing instruction. I'm
+assuming that this file, Kidney.DES (the model's
+root file) is located in a subfolder named
+Kidney while Model Editor.EXE and DESolver.EXE
+are in Kidney.DES's parent folder.
 
 <?xml version = '1.0' ?>
 
 <model>
 
 <title><basic> Kidney Model </basic></title>
+
+<?path Kidney ?>
 
 <?include ReninAndA2Vars.DES ?>
 <?include COP.DES ?>
