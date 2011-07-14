@@ -1,0 +1,61 @@
+Tree
+
+Created : 21-Jun-09
+Last Modified : 23-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+Solver : Digital Human (V0.5)
+
+Panels are
+
+   Cardiac Output
+   Fluid Volumes
+   Flow Autoregulation
+   Baroreceptor Reflex
+
+<tree>
+
+<branch>
+  <name> Panels </name>
+  <label> Panels </label>
+  <parent> MAINMENU </parent>
+</branch>
+
+<leaf>
+  <name> Cardiac Output </name>
+  <label> Cardiac Output </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Fluid Volumes </name>
+  <label> Fluid Volumes </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Flow Autoregulation </name>
+  <label> Flow Autoregulation </label>
+  <parent> Panels </parent>
+</leaf>
+
+<leaf>
+  <name> Baroreceptor Reflex </name>
+  <label> Baroreceptor Reflex </label>
+  <parent> Panels </parent>
+</leaf>
+
+<separatorbar>
+  <parent> Panels </parent>
+</separatorbar>
+
+<leaf>
+  <name> Graphs </name>
+  <label> Graphs </label>
+  <parent> Panels </parent>
+</leaf>
+
+</tree>
+
+End

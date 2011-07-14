@@ -1,0 +1,166 @@
+Fluid Volumes Panel
+
+Created : 21-Jun-09
+Last Modified : 23-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+Solver : Digital Human (V0.5)
+
+<panel><name> Fluid Volumes </name>
+
+<structurename> FluidVolumes </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<showvalue>
+   <row> 2.0 </row><col> 1 </col>
+   <name> AP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> AP </label>
+</showvalue>
+
+<editbox>
+   <row> 3.4 </row><col> 1 </col>
+   <name> RDrop </name>
+   <label> RDrop </label>
+</editbox>
+
+<showvalue>
+   <row> 5.0 </row><col> 1 </col>
+   <name> RPP </name>
+   <format><decimal> 1 </decimal></format>
+   <label> RPP </label>
+</showvalue>
+
+<showvalue>
+   <row> 6.6 </row><col> 1 </col>
+   <name> ECFV </name>
+   <format><decimal> 1 </decimal></format>
+   <label> ECFV </label>
+</showvalue>
+
+<showvalue>
+   <row> 7.6 </row><col> 3 </col>
+   <name> Change </name>
+   <format><decimal> 2 </decimal></format>
+   <label> Change </label>
+</showvalue>
+
+<editbox>
+   <row> 9.2 </row><col> 1 </col>
+   <name> Intake </name>
+   <label> Intake </label>
+</editbox>
+
+<showvalue>
+   <row> 10.8 </row><col> 1 </col>
+   <name> UOB </name>
+   <format><decimal> 1 </decimal></format>
+   <label> UOB </label>
+</showvalue>
+
+<showvalue>
+   <row> 11.8 </row><col> 1 </col>
+   <name> UO </name>
+   <format><decimal> 1 </decimal></format>
+   <label> UO </label>
+</showvalue>
+
+<showvalue>
+   <row> 13.4 </row><col> 1 </col>
+   <name> BV </name>
+   <format><decimal> 1 </decimal></format>
+   <label> BV </label>
+</showvalue>
+
+<groupbox>
+   <row> 15.0 </row><col> 1.0 </col>
+   <high> 5.0 </high><wide> 30.0 </wide>
+   <title> Connections </title>
+
+<showvalue>
+   <row> 1.4 </row><col> 1 </col>
+   <name> CardiacOutput.CO </name>
+   <format><integer/></format>
+   <label> CO </label>
+</showvalue>
+
+<showvalue>
+   <row> 2.4 </row><col> 1 </col>
+   <name> FlowAutoregulation.TPR </name>
+   <format><decimal> 4 </decimal></format>
+   <label> TPR </label>
+</showvalue>
+
+<showvalue>
+   <row> 3.4 </row><col> 1 </col>
+   <name> BaroreceptorReflex.SYM </name>
+   <format><decimal> 1 </decimal></format>
+   <label> SYM </label>
+</showvalue>
+
+</groupbox>
+
+<showgraph>
+  <row> 2.0 </row><col> 32 </col>
+  <high> 9 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+  <xaxis>
+     <name> System.X </name>
+     <label> Time </label>
+     <scale><min> 0 </min><max> 1440 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> ECFV </name>
+      <label> ECFV </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 14000 </min><max> 16000 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showcurve>
+  <row> 11.4 </row><col> 32.0 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> RPP </name>
+    <label> RPP </label>
+    <scale><min> 50 </min><max> 150 </max><inc> 10 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> UOB </label>
+    <scale><min> 0 </min><max> 5 </max></scale>
+  </yaxis>
+
+  <curvename> BasicUrine </curvename>
+</showcurve>
+
+<showcurve>
+  <row> 18.8 </row><col> 32.0 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 6 </leftmargin>
+
+  <xaxis>
+    <name> ECFV </name>
+    <label> ECFV </label>
+    <scale><min> 0 </min><max> 25000 </max><inc> 1000 </inc></scale>
+  </xaxis>
+
+  <yaxis>
+    <label> BV </label>
+    <scale><min> 0 </min><max> 8000 </max></scale>
+  </yaxis>
+
+  <curvename> FluidPartition </curvename>
+</showcurve>
+
+</panel>
+
+End

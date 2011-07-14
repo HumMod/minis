@@ -1,0 +1,97 @@
+Fluid Volumes
+
+Created : 21-Jun-09
+Last Modified : 23-Jun-09
+Author : Tom Coleman
+Copyright : 2009
+By : University of Mississippi Medical Center
+Solver : Digital Human (V0.5)
+
+<structure>
+<name> FluidVolumes </name>
+
+<variables> =====================================
+
+<var><name> AP </name></var>
+<parm><name> RDrop </name><val> 0.0 </val></parm>
+<var><name> RPP </name></var>
+<var><name> UOB </name></var>
+<var><name> UO </name></var>
+<var><name> BV </name></var>
+<parm><name> Intake </name><val> 1.0 </val></parm>
+
+</variables>
+
+<equations> =====================================
+
+<diffeq>
+  <name> ECFV </name>
+  <integralname> ECFV </integralname>
+  <initialval> 15000.0 </initialval>
+  <dervname> Change </dervname>
+  <errorlim> 150.0 </errorlim>
+</diffeq>
+
+</equations>
+
+<functions> =====================================
+
+<curve>
+	<name> BasicUrine </name>
+	<point><x>  80 </x><y> 0 </y><slope> 0 </slope></point>
+	<point><x> 100 </x><y> 1 </y><slope> 0.1 </slope></point>
+</curve>
+
+<curve>
+	<name> FluidPartition </name>
+	<point><x>     0 </x><y>    0 </y><slope> 0 </slope></point>
+	<point><x> 15000 </x><y> 5000 </y><slope> 0.5 </slope></point>
+	<point><x> 22000 </x><y> 7500 </y><slope> 0 </slope></point>
+</curve>
+
+</functions>
+
+<definitions> ===================================
+
+<block><name> CalcPartition </name> =============
+
+<def>
+  <name> BV </name>
+  <val> FluidPartition [ ECFV ] </val>
+</def>
+
+</block>
+
+<block><name> Dervs </name> =====================
+
+<def>
+  <name> AP </name>
+  <val> CardiacOutput.CO * FlowAutoregulation.TPR </val>
+</def>
+
+<def>
+  <name> RPP </name>
+  <val> AP - RDrop </val>
+</def>
+
+<def>
+  <name> UOB </name>
+  <val> BasicUrine [ RPP ] </val>
+</def>
+
+<def>
+  <name> UO </name>
+  <val> UOB / BaroreceptorReflex.SYM </val>
+</def>
+
+<def>
+  <name> Change </name>
+  <val> Intake - UO </val>
+</def>
+
+</block>
+
+</definitions>
+</structure>
+
+End

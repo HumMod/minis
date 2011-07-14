@@ -13,6 +13,7 @@ Solver : Digital Human (V0.5)
 
 <title><basic> Complete Model </basic></title>
 
+<?path Components ?>
 <?include Cardiac Output.DES ?>
 <?include Fluid Volumes.DES ?>
 <?include Flow Autoregulation.DES ?>
@@ -67,7 +68,7 @@ Solver : Digital Human (V0.5)
 <?include Tree.DES ?>
 
 </common>
-
+<?path Components ?>
 <?include Cardiac Output Panel.DES ?>
 <?include Fluid Volumes Panel.DES ?>
 <?include Flow Autoregulation Panel.DES ?>
