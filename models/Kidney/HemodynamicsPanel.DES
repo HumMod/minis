@@ -1,12 +1,11 @@
 Kidney / Hemodynamics Panel
 
 Created : 31-Oct-96
-Last Modified : 02-Dec-08
+Last Modified : 2011-10-04
 Author : Tom Coleman
-Copyright : 2008-2009
+Copyright : 2008-2011
 By : University of Mississippi Medical Center
-Solver : Digital Human V0.4
-Schema : DES V1.0
+Solver : DESolver
 
 <panel><name> General Hemodynamics </name>
 
@@ -78,33 +77,6 @@ VASCULAR CONDUCTANCE
 
 </groupbox>
 
-Right Side =================================
-
-RBF GRAPH
-
-<showgraph>
-  <row> 2 </row><col> 31 </col>
-  <high> 7 </high><wide> 28 </wide>
-  <leftmargin> 4 </leftmargin>
-
-  <xaxis>
-    <name> System.X </name>
-    <label> Time </label>
-    <scale><min> 0 </min><max> 60 </max></scale>
-  </xaxis>
-
-  <yaxis>
-    <yvar>
-      <name> Flows.RBF </name>
-      <label> RBF </label>
-      <linecolor> BLUE </linecolor>
-    </yvar>
-    <scale><min> 1100 </min><max> 1300 </max><inc> 100 </inc></scale>
-  </yaxis>
-</showgraph>
-
-Full Width ==================================
-
 Renal perfusion pressure may be
 
 # Endogenous
@@ -115,7 +87,7 @@ PUMP
 
 <groupbox>
    <row> 13 </row><col> 1 </col>
-   <high> 10.5 </high><wide> 64 </wide>
+   <high> 4.6 </high><wide> 29 </wide>
    <title> Pump </title>
 
 <radiobuttons>
@@ -153,7 +125,7 @@ PUMP
 STENOSIS
 
 <groupbox>
-   <row> 6.5 </row><col> 1 </col>
+   <row> 18.0 </row><col> 1 </col>
    <high> 3.2 </high><wide> 29 </wide>
    <title> Stenosis </title>
 
@@ -178,19 +150,44 @@ STENOSIS
 
 </groupbox>
 
+Right Side =================================
+
+RBF GRAPH
+
+<showgraph>
+  <row> 2 </row><col> 31 </col>
+  <high> 7 </high><wide> 28 </wide>
+  <leftmargin> 5 </leftmargin>
+
+  <xaxis>
+    <name> System.X </name>
+    <label> Time </label>
+    <scale><min> 0 </min><max> 60 </max></scale>
+  </xaxis>
+
+  <yaxis>
+    <yvar>
+      <name> Flows.RBF </name>
+      <label> RBF </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+    <scale><min> 1100 </min><max> 1300 </max><inc> 100 </inc></scale>
+  </yaxis>
+</showgraph>
+
 PERFUSION PRESSURE
 
 <showvalue>
-   <row> 1.4 </row><col> 31 </col>
+   <row> 9.4 </row><col> 31 </col>
    <name> RPP.Pres </name>
    <format> <integer/> </format>
    <label> Perfusion Pres </label>
 </showvalue>
 
 <showgraph>
-  <row> 2.4 </row><col> 31 </col>
+  <row> 10.4 </row><col> 31 </col>
   <high> 7 </high><wide> 28 </wide>
-  <leftmargin> 4 </leftmargin>
+  <leftmargin> 5 </leftmargin>
 
   <xaxis>
     <name> System.X </name>

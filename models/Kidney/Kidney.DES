@@ -7,10 +7,12 @@ Copyright : 2008-2011
 By : University of Mississippi Medical Center
 
 Notice the path processing instruction. I'm
-assuming that this file, Kidney.DES (the model's
-root file) is located in a subfolder named
-Kidney while Model Editor.EXE and DESolver.EXE
-are in Kidney.DES's parent folder.
+assuming the following folder structure.
+
+  Root Folder has Model Editor.EXE
+                     has DESolver.EXE
+                     \ models has various models
+                                   \ Kidney has Kidney.DES
 
 <?xml version = '1.0' ?>
 
@@ -18,7 +20,7 @@ are in Kidney.DES's parent folder.
 
 <title><basic> Kidney Model </basic></title>
 
-<?path Kidney ?>
+<?path models\Kidney ?>
 
 <?include ReninAndA2Vars.DES ?>
 <?include COP.DES ?>
