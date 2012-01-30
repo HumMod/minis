@@ -1,0 +1,332 @@
+<?xml version = '1.0' ?>
+
+<model>
+
+<title><basic> Delay </basic></title>
+
+<structure>
+<name> Model </name>
+
+<variables> ---------------------------------------
+
+<parm><name> k </name><val> 1 </val></parm>
+<parm><name> Strength </name><val> 7 </val></parm>
+<var><name> Target </name></var>
+
+<var><name> Ppl </name><val> 1022.31 </val></var>1022.31
+<var><name> Pbs </name><val> 1029.81 </val></var>1029.81
+<var><name> Ccw </name><val>0.15  </val></var>
+<var><name> Rcw </name><val> 0.3 </val></var>
+<var><name> Cl </name><val> 0.2 </val></var>
+<var><name> Raw </name><val> 1.7 </val></var>
+<var><name> pa0 </name><val> 1029.81 </val></var>1029.81
+<var><name> Pl </name><val> 1023 </val></var>1025
+
+<var><name> T </name>><val> 0 </val></var>
+<var><name> Q </name><val> 0 </val></var>
+<var><name> InitPpl </name></var>
+<var><name> InitPl </name></var>
+<var><name> InitVl </name></var>
+
+<var><name> DelPpl </name></var>
+<var><name> DelPl </name></var>
+<var><name> DelVl </name></var>
+
+<parm><name> RespiratoryRate </name><val> 12 </val></parm>
+<var><name> RespiratoryPeriod </name></var>
+<var><name> Inhale </name></var>
+<var><name> Exhale </name></var>
+<var><name> ParmX </name></var>
+<var><name> ModX </name></var>
+<var><name> ActualVcw </name></var>
+<var><name> ActualVl </name></var>
+<parm><name> factor </name><val> 1.0 </val></parm>
+<var><name> DriverInit </name><val> -3 </val></var>
+
+
+<var><name> DisplayPl </name></var>
+<var><name> DisplayPbs </name></var>
+<var><name> DisplayPpl </name></var>
+<var><name> Driver </name></var>
+<var><name> PrevPeriods </name><val> 0 </val></var>
+<var><name> PreviousT </name><val> 0 </val></var>
+
+</variables>
+
+<equations> ----------------------------------
+
+<diffeq>
+  <name> Vcw </name>
+  <integralname> Vcw </integralname>
+  <initialval> 2.250 </initialval>
+  <dervname> dVcw </dervname>
+  <errorlim> .05 </errorlim>
+</diffeq>
+
+<diffeq>
+  <name> Vl</name>
+  <integralname> Vl </integralname>
+  <initialval> 2.300 </initialval>
+  <dervname> dVl </dervname>
+  <errorlim> 0.05 </errorlim>
+</diffeq>
+
+
+</equations>
+
+<definitions> -----------------------------------
+
+<block>
+<name> Parms </name>
+
+<if>
+  <test> System.X EQ 0 </test>
+  <true> 
+	<def><name> PrevPeriods </name><val> 0 </val></def>
+  </true>
+</if>
+<def><name> ParmX </name><val> System.X - T </val></def>
+
+<if>
+<test> RespiratoryRate GT 0 </test>
+<true>
+<def><name> RespiratoryPeriod </name><val> 60 / RespiratoryRate </val></def>
+</true>
+<false>
+<def><name> RespiratoryPeriod </name><val> 10000</val></def>
+</false>
+</if>
+<def><name> Inhale </name><val> 0.4 * RespiratoryPeriod </val></def>
+<def><name> Exhale </name><val> 0.6 * RespiratoryPeriod </val></def>
+
+</block>
+
+<block><name> Dervs </name> ====================
+
+    <def><name> ModX </name><val> System.X - ParmX </val></def>
+
+<def><name> Q </name><val> ROUNDDOWN ( ModX / RespiratoryPeriod ) </val></def>
+<def><name> T </name><val> System.X - ( PrevPeriods * RespiratoryPeriod )  </val></def>
+  <if> <test> T GE RespiratoryPeriod </test>
+      <true>
+	<def><name> T </name><val> T - RespiratoryPeriod </val></def>
+	<def><name> PrevPeriods </name><val> PrevPeriods + 1 </val></def>
+     </true>
+  </if>
+
+<if>
+ <test> T LE Inhale </test>
+  <true>
+  <def><name> Driver </name><val> Strength * SIN ( T * 3.1415926 / (  2 * Inhale ) ) </val></def>
+ </true>
+ <false>
+  <def><name> Driver </name><val> Strength * SIN ( ( T + ( 2 * Inhale ) ) * 3.1415926 / ( 2 * Exhale ) ) + Strength </val></def>
+ </false>
+</if>
+
+
+
+ <def><name> pa0 </name><val> ( factor * Pbs ) + ( ( 1 - factor ) * Pl ) </val></def>
+
+<def><name> dVcw </name><val> ( Driver - ( ( Vcw - 2.250 ) / Ccw ) - ( ( Vl - 2.250 ) / Cl ) ) / ( Rcw + Raw )  </val></def>
+<def><name> dVl </name><val> dVcw </val></def>
+<def><name> Ppl </name><val> pa0 - Driver + ( ( Vcw - 2.250 ) / Ccw ) + ( Rcw * dVcw )  - 5 </val></def>   
+<def><name> Pl </name><val> pa0 -  ( Raw * dVcw )  </val></def>
+
+
+<def><name> DisplayPl </name><val> ( Pl / 1.36 ) - 757.2 </val></def>
+<def><name> DisplayPbs </name><val> ( Pbs / 1.36 ) - 757.2 </val></def>
+<def><name> DisplayPpl </name><val> ( Ppl / 1.36 ) - 757.2 </val></def>
+
+</block>
+
+</definitions>
+
+</structure>
+
+<math>
+  <parms> Model.Parms </parms>
+  <dervs> Model.Dervs </dervs>
+</math>
+
+<control> ========================================
+
+<gofor>
+  <solutionint> 1 </solutionint>
+  <displayint> 0.1 </displayint>
+</gofor>
+
+<gofor>
+  <solutionint> 10 </solutionint>
+  <displayint> 0.1 </displayint>
+</gofor>
+
+<settlingtime> 10 </settlingtime>
+
+</control>
+
+<display> =========================================
+
+<panel><name>  </name>
+
+<structurename> Model </structurename>
+
+<showpanelname>
+  <row> 0.5 </row><col> 1.0 </col>
+</showpanelname>
+
+<repeatlist>
+  <name> Rate </name>
+  <firstval> 0 </firstval>
+  <repeat><reps> 20 </reps><stepsize> 0.05 </stepsize></repeat>
+</repeatlist>
+
+<repeatlist>
+  <name> str </name>
+  <repeat><reps> 20 </reps><stepsize> 1 </stepsize></repeat>
+</repeatlist>
+
+<editbox>
+  <row> 2.4 </row><col> 1.0 </col>
+  <name> RespiratoryRate </name>
+  <label> Respiration Rate </label>
+</editbox>
+
+<slidebar>
+  <row> 2.4 </row><col> 40 </col>
+  <name> Strength </name>
+  <listname> str </listname>
+  <label> Str </label>
+</slidebar>
+
+
+<showvalue>
+  <row> 1.0 </row><col> 61 </col>
+  <name> ParmX </name>
+  <format><decimal> 2 </decimal></format>
+  <label> ParmX </label>
+</showvalue>
+
+<showvalue>
+  <row> 2. </row><col> 61 </col>
+  <name> T </name>
+  <format><decimal> 2 </decimal></format>
+  <label> T </label>
+</showvalue>
+
+<showvalue>
+  <row> 3. </row><col> 61 </col>
+  <name> PrevPeriods </name>
+  <format><decimal> 2 </decimal></format>
+  <label> PrevPeriod </label>
+</showvalue>
+
+<showgraph>
+  <row> 32.0 </row><col> 1 </col>
+  <high> 12 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+   <yvar>
+      <name> DisplayPpl </name>
+      <label> Ppl </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+    <scale><min> -7 </min><max> -4 </max></scale>
+
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 4.0 </row><col> 1 </col>
+  <high> 12 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> Vl </name>
+      <label> Vl </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+    <scale><min> 2.5 </min><max> 3.25 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 18.0 </row><col> 1 </col>
+  <high> 12 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> DisplayPl </name>
+      <label> Pl </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+        <scale><min> 0 </min><max> 1.0 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 4.0 </row><col> 41 </col>
+  <high> 12 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> Driver </name>
+      <label> Driver </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+    <scale><min> 0 </min><max> 1 </max></scale>
+  </yaxis>
+</showgraph>
+
+<showgraph>
+  <row> 18.0 </row><col> 41 </col>
+  <high> 12 </high><wide> 30 </wide>
+  <leftmargin> 5 </leftmargin>
+  <xaxis>
+    <name> System.X </name>
+    <label> time </label>
+    <scale><min> 0 </min><max> 10 </max></scale>
+  </xaxis>
+  <yaxis>
+    <yvar>
+      <name> T </name>
+      <label> T </label>
+      <linecolor> BLACK </linecolor>
+    </yvar>
+   <yvar>
+      <name> Inhale </name>
+      <label> Inhale </label>
+      <linecolor> BLUE </linecolor>
+    </yvar>
+
+    <scale><min> 0 </min><max> 1 </max></scale>
+  </yaxis>
+</showgraph>
+
+
+</panel>
+</display>
+
+</model>
+
+End  
